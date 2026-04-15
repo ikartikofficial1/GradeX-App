@@ -526,7 +526,8 @@
         }
 
         async function fetchGeminiResponse(message, expectedChatId) {
-            const url = `http://localhost:3000/api/chat`;
+            // const url = `http://localhost:3000/api/chat`;
+            const url = `/api/chat`;
             const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
 
             const historyToSend = currentChatMessages.slice(0, -1);
