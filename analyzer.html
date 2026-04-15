@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Study Analyzer - GradeX</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        /* 🔥 THEME VARIABLES 🔥 */
+        :root {
+            --bg-body: #FFF8F0;
+            --text-main: #2c1a18;
+            --input-bg: #ffffff;
+            --input-border: rgba(192, 133, 82, 0.3);
+            --light-brown: #C08552;
+            --med-brown: #8C5A3C;
+            --dark-brown: #4B2E2B;
+            --card-bg: #ffffff;
+            --card-shadow: rgba(140, 90, 60, 0.08);
+        }
+
+        body.dark-theme {
+            --bg-body: #1c1110;
+            --text-main: #e6dfd8;
+            --input-bg: #2c1a18;
+            --input-border: rgba(192, 133, 82, 0.2);
+            --card-bg: #241514;
+            --card-shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: "Lexend Deca", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* NAVBAR WITH TOGGLE FIX (Left & Right Split) */
+        .top-navbar { 
+            padding: 20px 30px; 
+            display: flex; 
+            justify-content: space-between; /* Forces items to opposite ends */
+            align-items: center; 
+            border-bottom: 1px solid rgba(192, 133, 82, 0.15); 
+        }
+        
+        .back-btn { background: var(--card-bg); border: 1px solid var(--input-border); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 10px var(--card-shadow); }
+        .back-btn:hover { background: var(--light-brown); color: white; transform: translateX(-3px); }
+        
+        .theme-toggle-btn { background: var(--card-bg); border: 1px solid var(--input-border); color: var(--text-main); padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
+        .theme-toggle-btn:hover { background: var(--light-brown); color: white; transform: scale(1.05); }
+
+        .main-container { flex-grow: 1; display: flex; justify-content: center; padding: 30px 20px; }
+
+        .analyzer-card { background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px var(--card-shadow); border: 1px solid var(--input-border); width: 100%; max-width: 750px; animation: fadeInUp 0.5s ease; display: flex; flex-direction: column;}
+
+        .tool-icon { font-size: 45px; text-align: center; margin-bottom: 10px; }
+        .tool-title { text-align: center; font-weight: 700; color: var(--med-brown); margin-bottom: 10px; }
+        .tool-desc { text-align: center; font-size: 15px; opacity: 0.8; margin-bottom: 30px; }
+
+        .custom-textarea { background-color: var(--input-bg); border: 2px solid var(--input-border); color: var(--text-main); border-radius: 16px; padding: 18px 20px; font-size: 15.5px; width: 100%; transition: all 0.3s; resize: none; min-height: 120px; line-height: 1.6; }
+        .custom-textarea:focus { border-color: var(--light-brown); outline: none; box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1); }
+        
+        /* 🔥 THEME BASED CUSTOM SCROLLBARS 🔥 */
+        .custom-textarea::-webkit-scrollbar, .ai-result-box::-webkit-scrollbar { width: 8px; }
+        .custom-textarea::-webkit-scrollbar-track, .ai-result-box::-webkit-scrollbar-track { background: rgba(192, 133, 82, 0.05); border-radius: 10px; margin: 10px 0; }
+        .custom-textarea::-webkit-scrollbar-thumb, .ai-result-box::-webkit-scrollbar-thumb { background: rgba(192, 133, 82, 0.4); border-radius: 10px; }
+        .custom-textarea::-webkit-scrollbar-thumb:hover, .ai-result-box::-webkit-scrollbar-thumb:hover { background: var(--light-brown); }
+
+        .analyze-btn { background-color: var(--med-brown); color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-weight: 600; font-size: 16px; margin-top: 20px; transition: 0.3s; box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2); }
+        .analyze-btn:hover:not(:disabled) { background-color: var(--dark-brown); transform: translateY(-2px); color: white; }
+        .analyze-btn:disabled { background-color: #d4c5ba; cursor: not-allowed; transform: none; }
+
+        .continue-btn { background-color: transparent; border: 2px solid var(--med-brown); color: var(--med-brown); width: 100%; padding: 14px; border-radius: 16px; font-weight: 600; font-size: 16px; margin-top: 20px; transition: 0.3s; display: none; }
+        .continue-btn:hover { background-color: var(--med-brown); color: white; transform: translateY(-2px); }
+
+        .ai-result-box { margin-top: 30px; background: rgba(192, 133, 82, 0.05); border: 1px solid rgba(192, 133, 82, 0.2); border-radius: 20px; padding: 25px 20px 25px 25px; display: none; animation: fadeInUp 0.4s ease; font-size: 15.5px; line-height: 1.7; max-height: 450px; overflow-y: auto; overflow-x: hidden; }
+        .ai-result-box h3, .ai-result-box h4 { color: var(--med-brown); font-weight: 600; margin-top: 20px; margin-bottom: 10px; }
+        .ai-result-box h3:first-child { margin-top: 0; }
+        .ai-result-box strong { color: var(--light-brown); }
+        .ai-result-box ul { padding-left: 20px; margin-bottom: 15px; }
+
+        .loader-container { display: flex; justify-content: center; align-items: center; position: relative; width: 50px; height: 50px; margin: 20px auto; }
+        .spinner-ring { position: absolute; width: 100%; height: 100%; border: 3px solid rgba(192, 133, 82, 0.2); border-top-color: var(--light-brown); border-radius: 50%; animation: spin 1s linear infinite; }
+        .loader-logo { width: 25px; height: 25px; object-fit: contain; animation: pulse 1.5s ease-in-out infinite; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.8; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 🔥 100% RESPONSIVE CSS 🔥 */
+        @media (max-width: 600px) {
+            .analyzer-card { padding: 25px; }
+            .tool-icon { font-size: 35px; }
+            .tool-title { font-size: 22px; }
+            .top-navbar { padding: 15px 20px; }
+            .ai-result-box { padding: 15px 10px 15px 15px; font-size: 14.5px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-navbar">
+        <a href="tools.html" class="back-btn"><span>←</span> Back to Tools</a>
+        <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+
+    <div class="main-container">
+        <div class="analyzer-card">
+            <div class="tool-icon">🧠</div>
+            <h2 class="tool-title">AI Performance Analyzer</h2>
+            <p class="tool-desc">Apne subjects aur marks likho. AI tumhe deep detail me batayega ki kahan focus karna chahiye aur growth kaise karni hai.</p>
+
+            <textarea id="marks-input" class="custom-textarea" placeholder="Example:&#10;Maths: 40&#10;Java: 80&#10;DBMS: 60"></textarea>
+
+            <button id="analyze-btn" class="analyze-btn" onclick="startAnalysis()">🚀 Analyze My Performance</button>
+
+            <div id="result-area" class="ai-result-box">
+                <div id="loading-spinner" class="loader-container" style="display: none;">
+                    <div class="spinner-ring"></div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" alt="AI Logo" class="loader-logo">
+                </div>
+                <div id="ai-content" class="typing-content" style="display: none;"></div>
+                
+                <button id="continue-btn" class="continue-btn" onclick="continueInMainChat()">💬 Continue Chatting with AI</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
+            authDomain: "my-gemini-bot-gradex.firebaseapp.com",
+            databaseURL: "https://my-gemini-bot-gradex-default-rtdb.firebaseio.com/",
+            projectId: "my-gemini-bot-gradex",
+            storageBucket: "my-gemini-bot-gradex.firebasestorage.app",
+            messagingSenderId: "979133444805",
+            appId: "1:979133444805:web:e1bc587482362365e2b6ac"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+        const database = firebase.database();
+        let currentUser = null;
+
+        auth.onAuthStateChanged(user => {
+            if (user) currentUser = user;
+            else currentUser = null;
+        });
+
+        // 🔥 THEME LOGIC 🔥
+        function applyTheme(theme) {
+            const btn = document.getElementById('theme-btn');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                btn.innerText = "☀️";
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                btn.innerText = "🌙";
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') applyTheme('dark');
+
+        function toggleTheme() {
+            if (document.body.classList.contains('dark-theme')) applyTheme('light');
+            else applyTheme('dark');
+        }
+
+        let savedUserPrompt = "";
+        let savedAiResponse = "";
+
+        async function startAnalysis() {
+            const inputData = document.getElementById('marks-input').value.trim();
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const resultArea = document.getElementById('result-area');
+            const aiContent = document.getElementById('ai-content');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const continueBtn = document.getElementById('continue-btn');
+
+            if (!inputData) { alert("Bhai, pehle apne marks toh likho dabbe me!"); return; }
+
+            // UI Adjustments
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerText = "Dimaag laga raha hu... ⏳";
+            continueBtn.style.display = 'none';
+            resultArea.style.display = 'block';
+            aiContent.style.display = 'none';
+            loadingSpinner.style.display = 'flex';
+
+            const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
+
+            // 🔥 THE ULTIMATE HYPER-DEEP GUARDRAIL PROMPT 🔥
+            const secretInstruction = `
+            Tu GradeX ka ek Highly Dedicated, Expert Academic Mentor aur bada bhai hai.
+            Tera ek hi maqsad hai: Sirf aur sirf Student ke Subjects aur Marks ko deeply analyze karna.
+            
+            USER INPUT: "${inputData}"
+
+            Tujhe is input ko dhyan se padhna hai aur in 2 Scenarios mein se ek ko STRICTLY follow karna hai:
+
+            ❌ SCENARIO 1 (Agar input mein KOI marks nahi hain / Off-topic hai):
+            Agar user ne sirf 'Hi', 'Hello', 'Tum kon ho', ya koi random sawal pucha hai jisme academic marks ya subjects nahi hain:
+            - Apna jawab EXACTLY is emoji se shuru kar: 🛑
+            - Usko ek witty aur funny reply de (e.g. "🛑 Hello bhai! Main mast hu, par tu apne marks toh bata...").
+            - Usko clearly samjha de ki "Ye ek Performance Analyzer Tool hai, faltu baat ke liye 'Back to Chat' daba kar wahan aaja."
+
+            ✅ SCENARIO 2 (Agar input mein Subjects aur Marks hain):
+            Agar input me sach mein marks hain, toh tujhe 🛑 EMOJI KA USE BILKUL NAHI KARNA HAI.
+            Tujhe ekdum PhD level ki deep, lamba aur extremely detailed analysis karni hai. Kam se kam 300-500 words ka lamba jawab hona chahiye. Is structure ko strictly follow kar:
+            1. 🔬 **Macro & Micro Reality Check:** Student ki overall performance ka post-mortem kar. Kis subject me excel kiya aur kahan dubki lagayi? Data ke base pe bata.
+            2. 🧠 **Psychological & Strategic Diagnosis:** Jo marks kam aaye, wo kyun aaye? (Concept gap, silly mistakes, lack of practice). Deep reason bata.
+            3. 📅 **The 7-Day Micro-Schedule:** Ekdum practical agle 7 din ka action plan de ki kis subject me kitne ghante dene hain.
+            4. 🚀 **Pro-Level Execution Techniques:** Active Recall, Spaced Repetition, ya Feynman Technique ko in specific subjects me kaise lagana hai, wo deep detail me samjha.
+            5. 🔥 **Motivation:** End me ek aisi aag lagane wali line bol jisse padhne ka man kare.
+
+            Bhasha ekdum human, friendly aur Hinglish rakh. Jawab ko Markdown (**, -, \`\`) se properly format kar jisse padhne me maza aaye.
+            `;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: secretInstruction, userName: userNameForPrompt })
+                });
+
+                const data = await response.json();
+                loadingSpinner.style.display = 'none';
+                aiContent.style.display = 'block';
+
+                if (data.error) {
+                    aiContent.innerHTML = `<span class='text-danger fw-bold'>Error: ${data.error.message || data.error}</span>`;
+                    resetButton();
+                    return;
+                }
+
+                if (data && data.candidates) {
+                    let rawBotReply = data.candidates[0].content.parts[0].text;
+                    aiContent.innerHTML = "";
+
+                    savedUserPrompt = `Maine apne marks analyze karne ko diye the:\n${inputData}`;
+                    savedAiResponse = rawBotReply;
+
+                    let index = 0;
+
+                    await new Promise((resolve) => {
+                        let typingInterval = setInterval(() => {
+                            if (index <= rawBotReply.length) {
+                                aiContent.innerHTML = marked.parse(rawBotReply.substring(0, index));
+                                
+                                // 🔥 AUTO-SCROLL TO BOTTOM AS TEXT TYPES 🔥
+                                resultArea.scrollTop = resultArea.scrollHeight;
+                                
+                                index += 4; // Optimized typing speed for long detailed text
+                            } else {
+                                clearInterval(typingInterval);
+                                aiContent.innerHTML = marked.parse(rawBotReply);
+                                resultArea.scrollTop = resultArea.scrollHeight;
+
+                                // Agar reply '🛑' se shuru nahi ho raha (yaani marks the), tabhi button dikhao.
+                                if (!rawBotReply.trim().startsWith("🛑")) {
+                                    continueBtn.style.display = 'block';
+                                    resultArea.scrollTop = resultArea.scrollHeight;
+                                }
+                                resolve();
+                            }
+                        }, 15);
+                    });
+                }
+            } catch (error) {
+                loadingSpinner.style.display = 'none';
+                aiContent.style.display = 'block';
+                aiContent.innerHTML = `<span class='text-danger fw-bold'>Connection Error: Backend server band hai. Apne VS Code terminal me 'node server.js' chalao!</span>`;
+            }
+            resetButton();
+        }
+
+        function resetButton() {
+            const analyzeBtn = document.getElementById('analyze-btn');
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerText = "🚀 Re-Analyze Performance";
+        }
+
+        function continueInMainChat() {
+            if (!currentUser) {
+                alert("Bhai, aage ki chat save karne ke liye pehle login karna padega. Chat page par jaa kar login karo!");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const continueBtn = document.getElementById('continue-btn');
+            continueBtn.innerText = "Chat tayar ho rahi hai... ⏳";
+            continueBtn.disabled = true;
+
+            const newChatId = "chat_" + Date.now();
+
+            const initialMessages = [
+                { role: 'user', text: savedUserPrompt },
+                { role: 'bot', text: savedAiResponse },
+                { role: 'bot', text: "Haan bhai, ab batao is marks analysis ke baare mein aage kya poochna hai? Ya kis subject ka deep plan banau? Main yahin hu, khul ke batao! 😊" }
+            ];
+
+            database.ref('userChats/' + currentUser.uid + '/' + newChatId).set({
+                title: "📊 Marks Analysis Talk",
+                messages: initialMessages
+            }).then(() => {
+                localStorage.setItem('activeChatId', newChatId);
+                window.location.href = 'index.html';
+            });
+        }
+    </script>
+</body>
+</html>

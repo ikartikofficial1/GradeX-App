@@ -1,0 +1,12 @@
+
+  apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
+  authDomain: "my-gemini-bot-gradex.firebaseapp.com",
+  databaseURL: "https://my-gemini-bot-gradex-default-rtdb.firebaseio.com",
+  projectId: "my-gemini-bot-gradex",
+  storageBucket: "my-gemini-bot-gradex.firebasestorage.app",
+  messagingSenderId: "979133444805",
+  appId: "1:979133444805:web:e1bc587482362365e2b6ac",
+  measurementId: "G-0GFKZBZ8M1",
+  databaseURL: "https://my-gemini-bot-gradex-default-rtdb.firebaseio.com/"
+
+  AIzaSyAZIVa6IF5SIxAiU6EGA66ccN6rwcxLu5Q

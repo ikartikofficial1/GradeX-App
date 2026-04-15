@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Auto AI Strategy - GradeX</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        :root {
+            --bg-body: #FFF8F0; --text-main: #2c1a18;
+            --light-brown: #C08552; --med-brown: #8C5A3C; --dark-brown: #4B2E2B;
+            --card-bg: #ffffff; --card-shadow: rgba(140, 90, 60, 0.08);
+        }
+
+        body.dark-theme {
+            --bg-body: #1c1110; --text-main: #e6dfd8;
+            --card-bg: #241514; --card-shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: "Lexend Deca", sans-serif; min-height: 100vh; display: flex; flex-direction: column; transition: 0.3s; }
+        .top-navbar { padding: 20px 30px; border-bottom: 1px solid rgba(192, 133, 82, 0.15); }
+        .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px var(--card-shadow); }
+
+        .main-container { flex-grow: 1; display: flex; justify-content: center; padding: 30px 20px; }
+        .analyzer-card { background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px var(--card-shadow); border: 1px solid rgba(192, 133, 82, 0.15); width: 100%; max-width: 800px; animation: fadeInUp 0.5s ease; }
+
+        .data-box { background: rgba(192, 133, 82, 0.05); border: 1px dashed rgba(192, 133, 82, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14.5px; }
+        
+        .analyze-btn { background-color: var(--med-brown); color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-weight: 600; font-size: 16px; transition: 0.3s; box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2); }
+        .analyze-btn:hover:not(:disabled) { background-color: var(--dark-brown); transform: translateY(-2px); }
+        .analyze-btn:disabled { background-color: #d4c5ba; cursor: not-allowed; transform: none; }
+
+        .ai-result-box { margin-top: 30px; background: rgba(192, 133, 82, 0.05); border-left: 4px solid var(--light-brown); border-radius: 12px; padding: 25px; display: none; font-size: 15.5px; line-height: 1.7; }
+        
+        /* GEMINI LOADER */
+        .loader-container { display: flex; justify-content: center; align-items: center; position: relative; width: 50px; height: 50px; margin: 20px auto; }
+        .spinner-ring { position: absolute; width: 100%; height: 100%; border: 3px solid rgba(192, 133, 82, 0.2); border-top-color: var(--light-brown); border-radius: 50%; animation: spin 1s linear infinite; }
+        .loader-logo { width: 25px; height: 25px; object-fit: contain; animation: pulse 1.5s ease-in-out infinite; }
+
+        /* CONTINUE CHAT BUTTON */
+        .continue-btn { background-color: transparent; border: 2px solid var(--med-brown); color: var(--med-brown); width: 100%; padding: 14px; border-radius: 16px; font-weight: 600; font-size: 16px; margin-top: 25px; transition: 0.3s; display: none; }
+        .continue-btn:hover { background-color: var(--med-brown); color: white; transform: translateY(-2px); }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.8; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+
+<body>
+    <div class="top-navbar">
+        <a href="tools.html" class="back-btn"><span>←</span> Back to Chat</a>
+    </div>
+
+    <div class="main-container">
+        <div class="analyzer-card">
+            <h2 class="text-center fw-bold mb-3" style="color: var(--med-brown);">🤖 Master Auto-Strategy</h2>
+            <p class="text-center opacity-75 mb-4">Tumhara Vault data padh kar AI ek deep, detailed aur personalized Action Plan banayega.</p>
+
+            <div class="data-box" id="vault-data-preview">
+                <span class="opacity-75">Cloud Vault se data sync ho raha hai... ☁️</span>
+            </div>
+
+            <button id="generate-btn" class="analyze-btn" onclick="generateStrategy()" disabled>
+                ✨ Generate Deep Action Plan
+            </button>
+
+            <div id="result-area" class="ai-result-box">
+                <div id="loading-spinner" class="loader-container" style="display: none;">
+                    <div class="spinner-ring"></div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" class="loader-logo">
+                </div>
+                <div id="ai-content"></div>
+
+                <button id="continue-btn" class="continue-btn" onclick="continueToMainChat()">💬 Continue Chatting with AI</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
+            authDomain: "my-gemini-bot-gradex.firebaseapp.com",
+            databaseURL: "https://my-gemini-bot-gradex-default-rtdb.firebaseio.com/",
+            projectId: "my-gemini-bot-gradex",
+            storageBucket: "my-gemini-bot-gradex.firebasestorage.app",
+            messagingSenderId: "979133444805",
+            appId: "1:979133444805:web:e1bc587482362365e2b6ac"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+        const database = firebase.database();
+        
+        let currentUser = null;
+        let fetchedMarksString = ""; 
+        let savedAiResponse = ""; // Chat history ke liye
+
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                fetchVaultData();
+            } else {
+                alert("Pehle login karlo bhai!");
+                window.location.href = 'index.html';
+            }
+        });
+
+        function fetchVaultData() {
+            const previewBox = document.getElementById('vault-data-preview');
+            const genBtn = document.getElementById('generate-btn');
+
+            database.ref('userMarks/' + currentUser.uid).once('value').then((snapshot) => {
+                const data = snapshot.val();
+                
+                if (data) {
+                    let displayHtml = "<strong>Your Academic Vault Data:</strong><br>";
+                    fetchedMarksString = ""; 
+
+                    Object.keys(data).forEach(id => {
+                        let sub = data[id].name;
+                        let marks = data[id].marks;
+                        displayHtml += `• ${sub}: ${marks}<br>`;
+                        fetchedMarksString += `${sub}: ${marks}, `;
+                    });
+
+                    previewBox.innerHTML = displayHtml;
+                    genBtn.disabled = false; 
+                } else {
+                    previewBox.innerHTML = `<span class="text-danger">Tumhara Vault khali hai! Pehle 'My Academic Vault' me jakar apne subjects aur marks save karo.</span>`;
+                    genBtn.innerText = "Vault is empty";
+                }
+            });
+        }
+
+        async function generateStrategy() {
+            const genBtn = document.getElementById('generate-btn');
+            const resultArea = document.getElementById('result-area');
+            const aiContent = document.getElementById('ai-content');
+            const spinner = document.getElementById('loading-spinner');
+            const continueBtn = document.getElementById('continue-btn');
+
+            genBtn.disabled = true;
+            genBtn.innerText = "AI is building your master plan... ⏳";
+            continueBtn.style.display = 'none';
+            resultArea.style.display = 'block';
+            aiContent.style.display = 'none';
+            spinner.style.display = 'flex';
+
+            const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
+
+            // 🔥 THE MASTER PROMPT (Deep Detail Engineering) 🔥
+            const secretInstruction = `
+            Mere Academic Vault mein ye marks save hain: [${fetchedMarksString}].
+            
+            Mera ekdam best friend aur ek expert Academic Mentor bankar in marks ka "Deep Detailed Diagnosis" karo. 
+            Mujhe ek lamba, detailed, aur pyaar bhara response chahiye jo mujhe sach me help kare.
+            
+            Ye cheezein cover karna:
+            1. Har subject ko detail me analyze karo (Weak aur Strong points).
+            2. Ekdam practical "Weekly Routine" bana kar do (Ki mujhe har din kitne ghante kisme dene chahiye).
+            3. "Monthly Goals" set karke do ki 1 mahine me mujhe kitna improve karna hai.
+            4. "Yearly / Final Exam Vision" do ki wahan tak pahunchne ki step-by-step sidi (ladder) kya hogi.
+            
+            Jawab paragraphs aur bullet points me hona chahiye. Emojis use karna taaki padhne me maza aaye aur boring na lage. Koi ai wali language use mat karna.
+            `;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: secretInstruction, userName: userNameForPrompt })
+                });
+                
+                const data = await response.json();
+                spinner.style.display = 'none';
+                aiContent.style.display = 'block';
+
+                if (data.error) {
+                    aiContent.innerHTML = `<span class='text-danger'>Error: ${data.error.message || data.error}</span>`;
+                } else if (data && data.candidates) {
+                    let rawBotReply = data.candidates[0].content.parts[0].text;
+                    aiContent.innerHTML = ""; 
+                    savedAiResponse = rawBotReply; // Save for chat handoff
+                    
+                    let index = 0;
+                    
+                    // Smooth Typewriter
+                    let interval = setInterval(() => {
+                        if (index <= rawBotReply.length) {
+                            aiContent.innerHTML = marked.parse(rawBotReply.substring(0, index));
+                            index += 3; 
+                        } else {
+                            clearInterval(interval);
+                            genBtn.disabled = false;
+                            genBtn.innerText = "✨ Regenerate Action Plan";
+                            continueBtn.style.display = 'block'; // Show Continue Button
+                        }
+                    }, 15); 
+                }
+            } catch (error) {
+                spinner.style.display = 'none';
+                aiContent.style.display = 'block';
+                aiContent.innerHTML = `<span class='text-danger'>Backend server band hai. VS Code mein 'node server.js' chalao!</span>`;
+                genBtn.disabled = false;
+                genBtn.innerText = "Try Again";
+            }
+        }
+
+        // 🔥 CONTEXT HANDOFF LOGIC 🔥
+        function continueToMainChat() {
+            if (!currentUser) { alert("Pehle login karlo bhai!"); return; }
+            
+            const continueBtn = document.getElementById('continue-btn');
+            continueBtn.innerText = "Chat tayar ho rahi hai... ⏳";
+            continueBtn.disabled = true;
+
+            const newChatId = "strategy_" + Date.now();
+            
+            const msgs = [
+                { role: 'user', text: `Ye mere marks hain: [${fetchedMarksString}]. Mujhe inke hisaab se Weekly aur Monthly strategy batao.` },
+                { role: 'bot', text: savedAiResponse },
+                { role: 'bot', text: "Haan bhai, ab batao is master strategy ke baare mein aage kya janna hai? Ya kisi specific subject par detail mein baat karni hai? 😊" }
+            ];
+
+            database.ref('userChats/' + currentUser.uid + '/' + newChatId).set({
+                title: "🧠 Master Strategy Session",
+                messages: msgs
+            }).then(() => {
+                localStorage.setItem('activeChatId', newChatId);
+                window.location.href = 'index.html';
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Lexend Deca", sans-serif;
+  background-color: #FFF8F0;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+a{
+  text-decoration: none;
+}
+
+.main-section{
+  display: flex;
+  height: 100vh;
+  position: relative;
+}
+
+.sidebar-section {
+  width: 35rem !important;
+  background-color: #F0E4D3;
+}
+
+.middle-chat {
+  height: 60vh;
+  overflow-y: scroll;
+}
+
+.middle-chat::-webkit-scrollbar {
+  width: 6px; /* thin */
+}
+
+.middle-chat::-webkit-scrollbar-track {
+  background: #FFF8F0; /* light bg */
+  border-radius: 10px;
+}
+
+.middle-chat::-webkit-scrollbar-thumb {
+  background: #C08552; /* primary brown */
+  border-radius: 10px;
+}
+
+.middle-chat::-webkit-scrollbar-thumb:hover {
+  background: #8C5A3C; /* darker brown */
+}
+
+.middle-chat {
+  scrollbar-width: none;
+  scrollbar-color: #C08552 #FFF8F0;
+}
+
+.middle-chat::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #C08552,
+    #8C5A3C
+  );
+}
+
+.chat-item h5 {
+  background-color: #C08552;
+  color: #ffffff;
+} 
+
+.ai-chat-section {
+  display: flex;
+  flex-direction: column;
+  background-color: #F0E4D3;
+}
+
+.top-chat-nav {
+  height: 50px;
+  background-color: #8C5A3C;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.middle-chat-section {
+  width: 100%;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content:  center;
+  /* flex: 1; */
+  margin: auto;
+}
+
+.ai-search-bar {
+  outline: none;
+  width: 70rem;
+}

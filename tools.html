@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tools Hub - GradeX</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 🔥 THEME VARIABLES 🔥 */
+        :root {
+            --bg-body: #FFF8F0;
+            --text-main: #2c1a18;
+            --light-brown: #C08552;
+            --med-brown: #8C5A3C;
+            --dark-brown: #4B2E2B;
+            --card-bg: #ffffff;
+            --card-shadow: rgba(140, 90, 60, 0.08);
+            --icon-bg: rgba(192, 133, 82, 0.1);
+        }
+
+        body.dark-theme {
+            --bg-body: #1c1110;
+            --text-main: #e6dfd8;
+            --card-bg: #241514;
+            --card-shadow: rgba(0, 0, 0, 0.4);
+            --icon-bg: rgba(192, 133, 82, 0.15);
+        }
+
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            font-family: "Lexend Deca", sans-serif; 
+            min-height: 100vh; 
+            transition: background-color 0.3s ease, color 0.3s ease; 
+        }
+
+        /* 🔝 NAVBAR */
+        .top-navbar { 
+            padding: 20px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid rgba(192, 133, 82, 0.15); 
+            background-color: var(--bg-body);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+        
+        .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 10px var(--card-shadow); }
+        .back-btn:hover { background: var(--light-brown); color: white; transform: translateX(-3px); }
+        
+        .theme-toggle-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
+        .theme-toggle-btn:hover { background: var(--light-brown); color: white; transform: scale(1.05); }
+
+        /* 🛠️ MAIN CONTAINER */
+        .main-container { padding: 40px 20px 60px; max-width: 1200px; margin: 0 auto; }
+        
+        .page-header { text-align: center; margin-bottom: 40px; animation: fadeInDown 0.5s ease; }
+        .page-title { font-weight: 700; color: var(--med-brown); font-size: 32px; }
+        .page-subtitle { font-size: 16px; opacity: 0.7; margin-top: 10px; }
+
+        /* 🃏 TOOL CARDS */
+        .tool-card { 
+            background: var(--card-bg); 
+            padding: 30px 25px; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 30px var(--card-shadow); 
+            border: 1px solid rgba(192, 133, 82, 0.15); 
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            opacity: 0; 
+            transform: translateY(30px);
+            animation: fadeInUpCard 0.6s forwards;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(140, 90, 60, 0.15);
+            border-color: var(--light-brown);
+        }
+
+        /* 🔮 CIRCULAR ICON */
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            background: var(--icon-bg);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 38px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(192, 133, 82, 0.2);
+            transition: 0.3s;
+        }
+
+        .tool-card:hover .icon-circle {
+            background: var(--med-brown);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .tool-card:hover .icon-circle span { filter: grayscale(1) brightness(200%); }
+
+        .tool-name { font-weight: 700; font-size: 20px; margin-bottom: 12px; color: var(--text-main); }
+        .tool-description { font-size: 14px; opacity: 0.75; line-height: 1.6; flex-grow: 1; margin-bottom: 25px; }
+
+        /* 🚀 LAUNCH BUTTON */
+        .launch-btn { 
+            background-color: transparent; 
+            color: var(--med-brown); 
+            border: 2px solid var(--med-brown); 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 16px; 
+            font-weight: 600; 
+            font-size: 15px; 
+            transition: 0.3s; 
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .tool-card:hover .launch-btn { 
+            background: linear-gradient(135deg, var(--med-brown), var(--dark-brown)); 
+            color: white; 
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(140, 90, 60, 0.3);
+        }
+
+        /* 🎬 ANIMATIONS */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUpCard { to { opacity: 1; transform: translateY(0); } }
+
+        /* Staggered Delays for 8 Cards */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-6 { animation-delay: 0.6s; }
+        .delay-7 { animation-delay: 0.7s; }
+        .delay-8 { animation-delay: 0.8s; }
+
+        /* 📱 MOBILE RESPONSIVENESS */
+        @media (max-width: 768px) {
+            .top-navbar { padding: 15px 20px; }
+            .page-title { font-size: 26px; }
+            .tool-card { padding: 25px 20px; }
+            .icon-circle { width: 70px; height: 70px; font-size: 32px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-navbar">
+        <a href="index.html" class="back-btn"><span>←</span> Back to Chat</a>
+        <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">🛠️ GradeX Arsenal</h1>
+            <p class="page-subtitle">Tumhari academic aur college life ko hack karne ke liye sabhi premium tools ek jagah.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="tool-card delay-1">
+                    <div class="icon-circle"><span>🧠</span></div>
+                    <h3 class="tool-name">AI Performance Analyzer</h3>
+                    <p class="tool-description">Apne subjects aur marks manually enter karo, AI tumhe reality check aur deep diagnosis dega.</p>
+                    <a href="analyzer.html" class="launch-btn">Launch Tool 🚀</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="tool-card delay-2">
+                    <div class="icon-circle"><span>🤖</span></div>
+                    <h3 class="tool-name">Auto-Strategy Builder</h3>
+                    <p class="tool-description">Bina type kiye apne Cloud Vault se data sync karo aur AI se Master Study Plan banwao.</p>
+                    <a href="auto-analyzer.html" class="launch-btn">Launch Tool 🚀</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="tool-card delay-3">
+                    <div class="icon-circle"><span>📄</span></div>
+                    <h3 class="tool-name">Resume Roaster & Builder</h3>
+                    <p class="tool-description">Pehle strict HR bankar tumhara resume roast hoga, phir Career Coach bankar theek hoga.</p>
+                    <a href="resume.html" class="launch-btn">Launch Tool 🚀</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="tool-card delay-4">
+                    <div class="icon-circle"><span>💸</span></div>
+                    <h3 class="tool-name">Pocket Money Manager</h3>
+                    <p class="tool-description">Hostel aur college ke daily kharcho ka hisaab. Live balance aur Red/Green transaction history.</p>
+                    <a href="expense.html" class="launch-btn">Launch Tool 🚀</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="tool-card delay-5">
+                    <div class="icon-circle"><span>⏳</span></div>
+                    <h3 class="tool-name">Time vs Syllabus Hacker</h3>
+                    <p class="tool-description">Sirf din aur topics batao. 80/20 rule ke hisaab se AI batayega kya ratna hai aur kya chhodna hai.</p>
+                    <a href="syllabus.html" class="launch-btn">Launch Tool 🚀</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="tool-card delay-6">
+                    <div class="icon-circle"><span>📊</span></div>
+                    <h3 class="tool-name">Attendance Manager</h3>
+                    <p class="tool-description">Target set karo aur dekho kitni classes lagatar attend karni hain. Bunk safe-zone check karo.</p>
+                    <a href="attendance.html" class="launch-btn">Launch Tool 🚀</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="tool-card delay-7">
+                    <div class="icon-circle"><span>🗄️</span></div>
+                    <h3 class="tool-name">My Academic Vault</h3>
+                    <p class="tool-description">Apne subjects aur marks ko permanently cloud me save karo taaki baaki tools unhe use kar sakein.</p>
+                    <a href="vault.html" class="launch-btn">Launch Tool 🚀</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="tool-card delay-8">
+                    <div class="icon-circle"><span>🎯</span></div>
+                    <h3 class="tool-name">Target CGPA Predictor</h3>
+                    <p class="tool-description">Check karo ki apni dream company ke cut-off tak pahunchne ke liye bache hue sems me kitni mehnat chahiye.</p>
+                    <a href="cgpa.html" class="launch-btn">Launch Tool 🚀</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function applyTheme(theme) {
+            const btn = document.getElementById('theme-btn');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                btn.innerText = "☀️";
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                btn.innerText = "🌙";
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') applyTheme('dark');
+
+        function toggleTheme() {
+            if (document.body.classList.contains('dark-theme')) applyTheme('light');
+            else applyTheme('dark');
+        }
+    </script>
+</body>
+</html>

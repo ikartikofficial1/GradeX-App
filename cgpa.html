@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CGPA Calculator - GradeX</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* 🔥 THEME VARIABLES 🔥 */
+        :root {
+            --bg-body: #FFF8F0;
+            --text-main: #2c1a18;
+            --input-bg: #ffffff;
+            --input-border: rgba(192, 133, 82, 0.3);
+            --light-brown: #C08552;
+            --med-brown: #8C5A3C;
+            --dark-brown: #4B2E2B;
+            --card-bg: #ffffff;
+            --card-shadow: rgba(140, 90, 60, 0.08);
+        }
+
+        /* 🌑 DARK THEME (Automatically apply if user set it in chat) 🌑 */
+        body.dark-theme {
+            --bg-body: #1c1110;
+            --text-main: #e6dfd8;
+            --input-bg: #2c1a18;
+            --input-border: rgba(192, 133, 82, 0.2);
+            --card-bg: #241514;
+            --card-shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: "Lexend Deca", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header Navbar */
+        .top-navbar {
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(192, 133, 82, 0.15);
+        }
+
+        .back-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            padding: 8px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px var(--card-shadow);
+        }
+
+        .back-btn:hover {
+            background: var(--light-brown);
+            color: white;
+            transform: translateX(-3px);
+        }
+
+        /* Main Container */
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px var(--card-shadow);
+            border: 1px solid var(--input-border);
+            width: 100%;
+            max-width: 500px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .tool-icon {
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .tool-title {
+            text-align: center;
+            font-weight: 700;
+            color: var(--med-brown);
+            margin-bottom: 30px;
+        }
+
+        /* Inputs */
+        .input-group-custom {
+            margin-bottom: 20px;
+        }
+
+        .input-group-custom label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+            opacity: 0.9;
+        }
+
+        .custom-input {
+            background-color: var(--input-bg);
+            border: 2px solid var(--input-border);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .custom-input:focus {
+            border-color: var(--light-brown);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1);
+        }
+
+        /* Button */
+        .calc-btn {
+            background-color: var(--med-brown);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2);
+        }
+
+        .calc-btn:hover {
+            background-color: var(--dark-brown);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* Reset Button Design */
+        .reset-btn {
+            background-color: transparent;
+            color: var(--med-brown);
+            border: 2px solid rgba(192, 133, 82, 0.3);
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .reset-btn:hover {
+            background-color: rgba(192, 133, 82, 0.08);
+            border-color: var(--light-brown);
+            color: var(--light-brown);
+            transform: translateY(-2px);
+        }
+
+        /* Result Box */
+        .result-box {
+            margin-top: 25px;
+            background: rgba(192, 133, 82, 0.08);
+            border: 1px solid rgba(192, 133, 82, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            display: none;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .stat-divider {
+            width: 2px;
+            background: rgba(192, 133, 82, 0.2);
+            height: 50px;
+            margin: auto;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--med-brown);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .calculator-card {
+                padding: 25px;
+            }
+
+            .stat-value {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-navbar">
+        <a href="tools.html" class="back-btn">
+            <span>←</span> Back to Tools
+        </a>
+    </div>
+
+    <div class="main-container">
+        <div class="calculator-card">
+            <div class="tool-icon">📊</div>
+            <h2 class="tool-title">Performance Calculator</h2>
+
+            <div class="input-group-custom">
+                <label>Total Marks</label>
+                <input type="number" id="total-marks" class="custom-input" placeholder="e.g., 500">
+            </div>
+
+            <div class="input-group-custom">
+                <label>Marks Obtained</label>
+                <input type="number" id="obtained-marks" class="custom-input" placeholder="e.g., 420">
+            </div>
+
+            <button class="calc-btn" onclick="calculateScore()">Calculate Now</button>
+            <button class="reset-btn" onclick="resetCalculator()">Reset</button>
+
+            <div id="result-area" class="result-box">
+                <div id="error-msg" class="text-danger fw-bold text-center mb-0" style="display: none;"></div>
+
+                <div id="success-data" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center text-center">
+                        <div style="flex: 1;">
+                            <div class="stat-label">Percentage</div>
+                            <div class="stat-value" id="res-percent">0%</div>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div style="flex: 1;">
+                            <div class="stat-label">CGPA</div>
+                            <div class="stat-value" id="res-cgpa">0.0</div>
+                        </div>
+                    </div>
+
+                    <hr style="border-color: rgba(192, 133, 82, 0.2); margin: 20px 0;">
+
+                    <div class="text-center h5 mb-0">
+                        Grade: <strong id="res-grade" style="color: var(--med-brown);">A+</strong> <span
+                            id="res-emoji">🔥</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 🔥 DARK MODE SYNC (Agar chat dark hai, toh ye page bhi dark khulega) 🔥
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+        }
+
+        // 🔥 ENTER KEY LISTENER 🔥
+        document.getElementById('total-marks').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') calculateScore();
+        });
+        document.getElementById('obtained-marks').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') calculateScore();
+        });
+
+        // 🔥 CALCULATION ENGINE 🔥
+        function calculateScore() {
+            const total = parseFloat(document.getElementById('total-marks').value);
+            const obtained = parseFloat(document.getElementById('obtained-marks').value);
+
+            const resultArea = document.getElementById('result-area');
+            const errorMsg = document.getElementById('error-msg');
+            const successData = document.getElementById('success-data');
+
+            resultArea.style.display = 'block';
+
+            // Validations
+            if (isNaN(total) || isNaN(obtained)) {
+                successData.style.display = 'none';
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "Dost, dono boxes mein numbers daalna zaroori hai!";
+                return;
+            }
+            if (total <= 0) {
+                successData.style.display = 'none';
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "Total marks 0 nahi ho sakte bhai!";
+                return;
+            }
+            if (obtained > total) {
+                successData.style.display = 'none';
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "Aise kaise? Obtained marks total se zyada kaise aa gaye? 😂";
+                return;
+            }
+            if (obtained < 0) {
+                successData.style.display = 'none';
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "Negative marks laaya hai kya? 0 se upar daal!";
+                return;
+            }
+
+            // Calculations
+            let percentage = (obtained / total) * 100;
+
+            let cgpa = percentage / 9.5;
+            if (cgpa > 10) cgpa = 10; 
+
+            // Determine Grade
+            let grade = "";
+            let emoji = "";
+            if (percentage >= 90) { grade = "A+ (Outstanding)"; emoji = "🌟"; }
+            else if (percentage >= 80) { grade = "A (Excellent)"; emoji = "🔥"; }
+            else if (percentage >= 70) { grade = "B+ (Very Good)"; emoji = "🚀"; }
+            else if (percentage >= 60) { grade = "B (Good)"; emoji = "👍"; }
+            else if (percentage >= 40) { grade = "C (Average)"; emoji = "📚"; }
+            else { grade = "Fail (Needs Work)"; emoji = "💔"; }
+
+            // Update UI
+            errorMsg.style.display = 'none';
+            successData.style.display = 'block';
+
+            document.getElementById('res-percent').innerText = percentage.toFixed(2) + "%";
+            document.getElementById('res-cgpa').innerText = cgpa.toFixed(1);
+            document.getElementById('res-grade').innerText = grade;
+            document.getElementById('res-emoji').innerText = emoji;
+        } // <-- Yahan calculateScore khatam hua!
+
+        // 🔥 RESET ENGINE 🔥
+        function resetCalculator() {
+            // Inputs khali karna
+            document.getElementById('total-marks').value = '';
+            document.getElementById('obtained-marks').value = '';
+            
+            // Result box gayab karna
+            document.getElementById('result-area').style.display = 'none';
+            document.getElementById('error-msg').style.display = 'none';
+            document.getElementById('success-data').style.display = 'none';
+            
+            // Cursor wapas pehle dabbe me le aana taaki user direct type kar sake
+            document.getElementById('total-marks').focus();
+        }
+    </script>
+</body>
+
+</html>

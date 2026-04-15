@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deep Expense Tracker - GradeX</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        /* 🔥 THEME VARIABLES 🔥 */
+        :root {
+            --bg-body: #FFF8F0; --text-main: #2c1a18;
+            --light-brown: #C08552; --med-brown: #8C5A3C; --dark-brown: #4B2E2B;
+            --card-bg: #ffffff; --card-shadow: rgba(140, 90, 60, 0.08);
+            --safe-green: #27ae60; --danger-red: #e74c3c; --warn-yellow: #f39c12;
+            --green-bg: rgba(39, 174, 96, 0.1); --red-bg: rgba(231, 76, 60, 0.1);
+            --wallet-blue: #3498db; --wallet-purple: #9b59b6;
+        }
+
+        body.dark-theme {
+            --bg-body: #1c1110; --text-main: #e6dfd8;
+            --card-bg: #241514; --card-shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: "Lexend Deca", sans-serif; min-height: 100vh; transition: 0.3s; }
+        
+        .top-navbar { padding: 20px 30px; border-bottom: 1px solid rgba(192, 133, 82, 0.15); display: flex; justify-content: space-between; align-items: center;}
+        .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
+        .back-btn:hover { background: var(--light-brown); color: white; transform: translateX(-3px); }
+        .theme-toggle-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
+        .theme-toggle-btn:hover { background: var(--light-brown); color: white; transform: scale(1.05); }
+
+        .main-container { padding: 30px 20px; max-width: 1000px; margin: 0 auto; animation: fadeInUp 0.5s ease; }
+
+        /* 📊 TIME TOGGLES & DASHBOARD CARDS */
+        .dash-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
+        .time-toggles { display: flex; background: var(--card-bg); border-radius: 50px; padding: 5px; border: 1px solid rgba(192, 133, 82, 0.2); box-shadow: 0 4px 15px var(--card-shadow);}
+        .time-btn { background: transparent; border: none; color: var(--text-main); font-weight: 600; font-size: 13px; padding: 6px 16px; border-radius: 50px; cursor: pointer; transition: 0.3s; opacity: 0.7;}
+        .time-btn.active { background: var(--med-brown); color: white; opacity: 1; box-shadow: 0 2px 8px rgba(140, 90, 60, 0.3);}
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 15px; }
+        .dash-card { background: var(--card-bg); padding: 25px; border-radius: 20px; box-shadow: 0 8px 25px var(--card-shadow); border: 1px solid rgba(192, 133, 82, 0.15); text-align: center; position: relative;}
+        .dash-title { font-size: 14px; opacity: 0.8; font-weight: 600; margin-bottom: 5px; }
+        .dash-amt { font-size: 32px; font-weight: 700; margin-bottom: 5px;}
+        .text-green { color: var(--safe-green); }
+        .text-red { color: var(--danger-red); }
+        .text-brown { color: var(--med-brown); }
+        .dash-compare { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 50px; display: inline-block; background: var(--bg-body);}
+
+        /* 🔥 WALLET OVERVIEW UI 🔥 */
+        .wallet-overview { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .wallet-badge { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.2); padding: 8px 16px; border-radius: 50px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px var(--card-shadow); }
+        .wallet-badge span { color: var(--med-brown); font-weight: 700;}
+
+        /* ⚠️ BUDGET PROGRESS & EDIT UI */
+        .budget-section { background: var(--card-bg); padding: 20px; border-radius: 16px; margin-bottom: 30px; border: 1px solid rgba(192, 133, 82, 0.15); }
+        .progress { height: 12px; border-radius: 10px; background-color: rgba(192, 133, 82, 0.1); margin-top: 10px; }
+        .progress-bar { background-color: var(--safe-green); transition: width 0.5s ease, background-color 0.3s ease; }
+        .budget-warning { color: var(--warn-yellow); font-weight: 600; font-size: 14px; display: none; margin-top: 8px; }
+        
+        .edit-budget-btn { background: transparent; border: none; font-size: 14px; cursor: pointer; opacity: 0.6; transition: 0.2s; padding: 0 5px; }
+        .edit-budget-btn:hover { opacity: 1; transform: scale(1.1); }
+        .budget-input-sm { background: var(--bg-body); border: 1px solid rgba(192, 133, 82, 0.4); color: var(--text-main); border-radius: 6px; padding: 4px 8px; width: 100px; font-size: 14px; font-weight: 600; outline: none; transition: 0.2s; }
+        .budget-input-sm:focus { border-color: var(--light-brown); }
+        .save-budget-btn, .cancel-budget-btn { background: transparent; border: none; cursor: pointer; font-size: 14px; padding: 0 4px; transition: 0.2s; }
+        .save-budget-btn:hover { transform: scale(1.1); }
+        .cancel-budget-btn { opacity: 0.6; }
+        .cancel-budget-btn:hover { opacity: 1; color: var(--danger-red); }
+
+        /* 📝 INPUT FORM & CUSTOM SELECT */
+        .form-section { background: var(--card-bg); padding: 30px; border-radius: 24px; box-shadow: 0 8px 25px var(--card-shadow); border: 1px solid rgba(192, 133, 82, 0.15); margin-bottom: 30px; }
+        .custom-input, .custom-select { background-color: var(--bg-body); border: 2px solid rgba(192, 133, 82, 0.3); color: var(--text-main); border-radius: 12px; padding: 14px 20px; font-size: 15px; width: 100%; transition: 0.3s; margin-bottom: 15px; }
+        .custom-input:focus, .custom-select:focus { border-color: var(--light-brown); outline: none; box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1); }
+        
+        .dropdown-wrapper { position: relative; user-select: none; margin-bottom: 15px; width: 100%; }
+        .dropdown-selected { background-color: var(--bg-body); border: 2px solid rgba(192, 133, 82, 0.3); color: var(--text-main); border-radius: 12px; padding: 14px 20px; font-size: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
+        .dropdown-selected:hover, .dropdown-wrapper.active .dropdown-selected { border-color: var(--light-brown); box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1); }
+        .dropdown-arrow { transition: transform 0.3s; font-size: 12px; opacity: 0.7; }
+        .dropdown-wrapper.active .dropdown-arrow { transform: rotate(180deg); }
+
+        .dropdown-options { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.2); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 100; display: none; max-height: 250px; overflow-y: auto; padding: 8px 0; animation: dropdownFadeIn 0.2s ease; }
+        .dropdown-wrapper.active .dropdown-options { display: block; }
+        .dropdown-option { padding: 12px 20px; cursor: pointer; font-size: 14.5px; transition: 0.2s; display: flex; align-items: center; gap: 10px; border-left: 3px solid transparent; }
+        .dropdown-option:hover { background-color: rgba(192, 133, 82, 0.1); color: var(--med-brown); border-left: 3px solid var(--med-brown); padding-left: 25px; font-weight: 500;}
+
+        .btn-row { display: flex; gap: 15px; }
+        .btn-action { flex: 1; padding: 14px; border-radius: 12px; font-weight: 600; border: none; color: white; transition: 0.3s; }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-income { background: var(--safe-green); box-shadow: 0 4px 15px rgba(39, 174, 96, 0.2); }
+        .btn-income:hover:not(:disabled) { background: #219653; transform: translateY(-2px); }
+        .btn-expense { background: var(--danger-red); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.2); }
+        .btn-expense:hover:not(:disabled) { background: #c0392b; transform: translateY(-2px); }
+
+        /* 📋 TRANSACTION LIST, FILTER & PDF BTN */
+        .list-section { background: var(--card-bg); padding: 30px; border-radius: 24px; box-shadow: 0 8px 25px var(--card-shadow); border: 1px solid rgba(192, 133, 82, 0.15); }
+        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;}
+        
+        .pdf-btn { background: rgba(192, 133, 82, 0.1); color: var(--med-brown); border: 1px solid rgba(192, 133, 82, 0.3); padding: 8px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; height: 42px; display: flex; align-items: center; gap: 6px;}
+        .pdf-btn:hover { background: var(--med-brown); color: white; }
+        
+        .txn-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid transparent; transition: 0.2s; }
+        .txn-item:hover { background-color: rgba(192, 133, 82, 0.05); border-color: rgba(192, 133, 82, 0.2); }
+        .txn-left { display: flex; align-items: flex-start; gap: 15px; flex: 1; min-width: 0; padding-right: 15px;}
+        .txn-cat-icon { font-size: 24px; background: var(--bg-body); padding: 10px; border-radius: 50%; border: 1px solid rgba(192, 133, 82, 0.2); width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        .txn-info-div { flex: 1; min-width: 0; }
+        
+        .txn-note-wrapper { display: flex; align-items: flex-start; gap: 5px; margin-bottom: 2px; }
+        .txn-note { font-weight: 600; font-size: 15px; word-break: break-word; line-height: 1.3; color: var(--text-main); }
+        .edit-txn-btn { background: transparent; border: none; font-size: 12px; cursor: pointer; opacity: 0.4; padding: 0; transition: 0.2s; margin-top: 2px; }
+        .edit-txn-btn:hover { opacity: 1; transform: scale(1.2); }
+        
+        .txn-date { font-size: 12px; opacity: 0.7; margin-top: 4px; display: flex; gap: 8px; align-items: center;}
+        .wallet-tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(192, 133, 82, 0.3); font-weight: 600;}
+        
+        .txn-right { text-align: right; flex-shrink: 0; }
+        .txn-amt { font-weight: 700; font-size: 17px; margin-bottom: 5px; }
+        
+        .del-btn { background: transparent; border: none; color: var(--danger-red); font-size: 13px; font-weight: 600; cursor: pointer; opacity: 0.7; transition: 0.2s; padding: 0; }
+        .del-btn:hover:not(:disabled) { opacity: 1; text-decoration: underline; }
+        .del-btn:disabled { cursor: not-allowed; opacity: 0.3; }
+
+        /* ♻️ UNDO TOAST POPUP */
+        .undo-toast {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+            background: var(--card-bg); border: 2px solid var(--med-brown);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); padding: 25px 35px 20px; border-radius: 20px;
+            z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 15px;
+            opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center; min-width: 250px;
+        }
+        .undo-toast.show { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        .undo-msg { font-weight: 600; font-size: 16px; color: var(--text-main); }
+        .undo-btn { background: var(--med-brown); color: white; border: none; padding: 10px 30px; border-radius: 50px; font-weight: bold; font-size: 15px; transition: 0.3s; box-shadow: 0 4px 15px rgba(140, 90, 60, 0.3); }
+        .undo-btn:hover { background: var(--dark-brown); transform: translateY(-2px); }
+        .close-undo-btn { position: absolute; top: 10px; right: 15px; background: transparent; border: none; color: var(--text-main); font-size: 18px; cursor: pointer; opacity: 0.5; transition: 0.2s; padding: 0; }
+        .close-undo-btn:hover { opacity: 1; }
+
+        /* 🔍 SEARCH & FILTER POPUP MODAL */
+        .filter-modal-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+            z-index: 2000; display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .filter-modal-backdrop.show { display: flex; opacity: 1; }
+        .filter-modal {
+            background: var(--card-bg); width: 90%; max-width: 450px; padding: 30px;
+            border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(192, 133, 82, 0.2); transform: scale(0.9); transition: transform 0.3s;
+            position: relative;
+        }
+        .filter-modal-backdrop.show .filter-modal { transform: scale(1); }
+        .modal-close-btn { position: absolute; top: 15px; right: 20px; background: transparent; border: none; font-size: 22px; color: var(--text-main); opacity: 0.5; cursor: pointer; transition: 0.2s;}
+        .modal-close-btn:hover { opacity: 1; color: var(--danger-red); }
+        
+        .filter-modal .custom-select {
+            appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%238C5A3C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+            background-repeat: no-repeat; background-position: right 15px center; background-size: 14px; cursor: pointer;
+        }
+        body.dark-theme .filter-modal .custom-select { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23C08552" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>'); }
+        
+        .active-filter-badge {
+            display: none; background: var(--warn-yellow); color: white;
+            font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 50px;
+            position: absolute; top: -5px; right: -5px;
+        }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes dropdownFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 🔥 MOBILE RESPONSIVE MAGIC 🔥 */
+        @media (max-width: 768px) { 
+            .btn-row { flex-direction: column; } 
+            .dash-amt { font-size: 28px; } 
+            
+            .top-navbar { flex-direction: row; justify-content: space-between; padding: 15px 20px; gap: 0;}
+            .back-btn { width: auto; font-size: 14px; padding: 6px 15px; }
+            .theme-toggle-btn { padding: 6px 12px; font-size: 16px; }
+            
+            .dash-header-row { flex-direction: column; justify-content: center; text-align: center; gap: 15px;}
+            .time-toggles { margin: 0 auto; width: 100%; justify-content: center; display: flex;}
+            .time-btn { flex: 1; text-align: center; }
+
+            .dash-card { padding: 20px 15px; }
+
+            .budget-section .d-flex { flex-direction: column; align-items: center !important; gap: 10px; text-align: center; }
+            #budget-edit { flex-direction: column; margin-top: 10px; }
+            
+            .form-section h5 { text-align: center; margin-bottom: 20px !important;}
+
+            .list-header { flex-direction: row; justify-content: space-between; align-items: center; gap: 10px; }
+            .list-header h5 { font-size: 18px; margin: 0; }
+            
+            .pdf-btn { padding: 8px 12px; font-size: 16px; justify-content: center;}
+            .pdf-text, .filter-text { display: none; } 
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-navbar">
+        <a href="expense.html" class="back-btn"><span>←</span> Basic Tracker</a>
+        <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+
+    <div class="undo-toast" id="undo-toast">
+        <button class="close-undo-btn" onclick="closeUndoToast()">✖</button>
+        <div class="undo-msg" id="undo-msg">Transaction Action!</div>
+        <button class="undo-btn" onclick="executeUndo()">↩️ Undo Action</button>
+    </div>
+
+    <div class="filter-modal-backdrop" id="filterModal">
+        <div class="filter-modal">
+            <button class="modal-close-btn" onclick="closeFilterModal()">✖</button>
+            <h4 class="fw-bold mb-4 text-center" style="color: var(--med-brown);">🔍 Search & Filters</h4>
+            
+            <div class="mb-3">
+                <label class="fw-bold mb-1" style="font-size: 13px; opacity:0.8;">Search Name/Note</label>
+                <input type="text" id="modal-search" class="custom-input mb-0" placeholder="e.g. Rahul, Canteen...">
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-6">
+                    <label class="fw-bold mb-1" style="font-size: 13px; opacity:0.8;">Transaction Type</label>
+                    <select id="modal-type" class="custom-select mb-0">
+                        <option value="All">All Types</option>
+                        <option value="credit">Income (+)</option>
+                        <option value="debit">Expense (-)</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label class="fw-bold mb-1" style="font-size: 13px; opacity:0.8;">Category</label>
+                    <select id="modal-category" class="custom-select mb-0">
+                        <option value="All">All Categories</option>
+                        <option value="Food">Food 🍔</option>
+                        <option value="Travel">Travel 🚌</option>
+                        <option value="Study">Study 📚</option>
+                        <option value="Fun">Fun 🎮</option>
+                        <option value="Recharge">Recharge 📱</option>
+                        <option value="Salary">Salary 💰</option>
+                        <option value="General">General 🛒</option>
+                        <option value="Other">Other 🛒</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-bold mb-1" style="font-size: 13px; opacity:0.8;">Wallet Method</label>
+                <select id="modal-wallet" class="custom-select mb-0">
+                    <option value="All">All Wallets</option>
+                    <option value="Cash">Cash 💵</option>
+                    <option value="UPI">UPI / Bank 📱</option>
+                    <option value="CreditCard">Credit Card 💳</option>
+                </select>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-6">
+                    <label class="fw-bold mb-1" style="font-size: 13px; opacity:0.8;">From Date</label>
+                    <input type="date" id="modal-start-date" class="custom-input mb-0">
+                </div>
+                <div class="col-6">
+                    <label class="fw-bold mb-1" style="font-size: 13px; opacity:0.8;">To Date</label>
+                    <input type="date" id="modal-end-date" class="custom-input mb-0">
+                </div>
+            </div>
+
+            <div class="d-flex gap-3">
+                <button class="btn-action btn-income" onclick="applySearchFilters()">Apply Filters 🚀</button>
+                <button class="btn-action" style="background: rgba(192, 133, 82, 0.1); color: var(--med-brown); border: 1px solid var(--med-brown);" onclick="resetSearchFilters()">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        
+        <div class="dash-header-row">
+            <h5 class="fw-bold m-0" style="color: var(--med-brown);">Financial Overview</h5>
+            <div class="time-toggles">
+                <button class="time-btn" id="btn-week" onclick="setDashTime('week')">Week</button>
+                <button class="time-btn active" id="btn-month" onclick="setDashTime('month')">Month</button>
+                <button class="time-btn" id="btn-year" onclick="setDashTime('year')">Year</button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="dash-card">
+                <div class="dash-title">Income (<span id="lbl-inc-time">Month</span>)</div>
+                <div class="dash-amt text-green" id="dash-income">₹0</div>
+                <div class="dash-compare" id="comp-income">-</div>
+            </div>
+            <div class="dash-card">
+                <div class="dash-title">Expense (<span id="lbl-exp-time">Month</span>)</div>
+                <div class="dash-amt text-red" id="dash-expense">₹0</div>
+                <div class="dash-compare" id="comp-expense">-</div>
+            </div>
+            <div class="dash-card">
+                <div class="dash-title">Net Savings</div>
+                <div class="dash-amt text-brown" id="dash-savings">₹0</div>
+                <div class="dash-compare" id="comp-savings">-</div>
+            </div>
+        </div>
+
+        <div class="wallet-overview">
+            <div class="wallet-badge">💵 Cash: <span id="wal-cash">₹0</span></div>
+            <div class="wallet-badge" style="border-color: rgba(52, 152, 219, 0.3);">📱 UPI: <span id="wal-upi" style="color: var(--wallet-blue);">₹0</span></div>
+            <div class="wallet-badge" style="border-color: rgba(155, 89, 182, 0.3);">💳 Card: <span id="wal-card" style="color: var(--wallet-purple);">₹0</span></div>
+        </div>
+
+        <div class="budget-section">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold d-flex align-items-center gap-2">
+                    Monthly Budget:
+                    <span id="budget-view">
+                        <span id="budget-limit-text" class="text-brown">₹5000</span>
+                        <button class="edit-budget-btn" onclick="toggleBudgetEdit(true)">✏️</button>
+                    </span>
+                    <span id="budget-edit" style="display: none; align-items: center; gap: 5px;">
+                        <input type="number" id="new-budget-input" class="budget-input-sm" placeholder="Amount">
+                        <button class="save-budget-btn" onclick="saveNewBudget()">💾</button>
+                        <button class="cancel-budget-btn" onclick="toggleBudgetEdit(false)">✖</button>
+                    </span>
+                </span>
+                <span class="fw-bold text-brown" id="budget-percent">0%</span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar" id="budget-bar" role="progressbar" style="width: 0%"></div>
+            </div>
+            <div class="budget-warning" id="budget-warning">⚠️ Alert: You have crossed 80% of your monthly budget!</div>
+        </div>
+
+        <div class="form-section">
+            <h5 class="fw-bold mb-3" style="color: var(--med-brown);">Add New Record</h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="number" id="dp-amount" class="custom-input" placeholder="Amount (₹)">
+                </div>
+                <div class="col-md-4">
+                    <input type="hidden" id="dp-category" value="">
+                    <div class="dropdown-wrapper" id="input-dropdown" onclick="toggleCustomDropdown('input-dropdown', event)">
+                        <div class="dropdown-selected">
+                            <span id="dp-category-text">Select Category 📁</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option" onclick="selectOption('dp-category', 'Food 🍔', 'Food & Drinks 🍔', 'input-dropdown', event)">Food & Drinks 🍔</div>
+                            <div class="dropdown-option" onclick="selectOption('dp-category', 'Travel 🚌', 'Travel & Commute 🚌', 'input-dropdown', event)">Travel & Commute 🚌</div>
+                            <div class="dropdown-option" onclick="selectOption('dp-category', 'Study 📚', 'Books & Study 📚', 'input-dropdown', event)">Books & Study 📚</div>
+                            <div class="dropdown-option" onclick="selectOption('dp-category', 'Fun 🎮', 'Entertainment 🎮', 'input-dropdown', event)">Entertainment 🎮</div>
+                            <div class="dropdown-option" onclick="selectOption('dp-category', 'Recharge 📱', 'Recharge & Bills 📱', 'input-dropdown', event)">Recharge & Bills 📱</div>
+                            <div class="dropdown-option" onclick="selectOption('dp-category', 'Salary 💰', 'Pocket Money / Income 💰', 'input-dropdown', event)">Pocket Money / Income 💰</div>
+                            <div class="dropdown-option" onclick="selectOption('dp-category', 'Other 🛒', 'Other 🛒', 'input-dropdown', event)">Other 🛒</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <input type="hidden" id="dp-wallet" value="Cash">
+                    <div class="dropdown-wrapper" id="wallet-dropdown" onclick="toggleCustomDropdown('wallet-dropdown', event)">
+                        <div class="dropdown-selected">
+                            <span id="dp-wallet-text">Cash 💵</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option" onclick="selectOption('dp-wallet', 'Cash', 'Cash 💵', 'wallet-dropdown', event)">Cash 💵</div>
+                            <div class="dropdown-option" onclick="selectOption('dp-wallet', 'UPI', 'UPI / Bank 📱', 'wallet-dropdown', event)">UPI / Bank 📱</div>
+                            <div class="dropdown-option" onclick="selectOption('dp-wallet', 'CreditCard', 'Credit Card 💳', 'wallet-dropdown', event)">Credit Card 💳</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="text" id="dp-note" class="custom-input" placeholder="Custom Note (Optional)">
+            
+            <div class="btn-row">
+                <button class="btn-action btn-income" id="btn-add-inc" onclick="saveDeepData('credit')">Add Income (+)</button>
+                <button class="btn-action btn-expense" id="btn-add-exp" onclick="saveDeepData('debit')">Add Expense (-)</button>
+            </div>
+        </div>
+
+        <div class="list-section">
+            <div class="list-header">
+                <h5 class="fw-bold m-0" style="color: var(--med-brown);">All Transactions</h5>
+                <div class="d-flex gap-2 align-items-center">
+                    <button class="pdf-btn position-relative" onclick="openFilterModal()">
+                        <span class="filter-icon">🔍</span> 
+                        <span class="filter-text">Search & Filter</span>
+                        <span class="active-filter-badge" id="filter-badge">!</span>
+                    </button>
+
+                    <button class="pdf-btn" onclick="downloadPDF()">
+                        <span class="filter-icon">📥</span> 
+                        <span class="pdf-text">PDF</span>
+                    </button>
+                </div>
+            </div>
+            <div id="deep-txn-list">
+                <div class="text-center opacity-50 mt-3">Loading deep records... ☁️</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function applyTheme(theme) {
+            const btn = document.getElementById('theme-btn');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                if(btn) btn.innerText = "☀️";
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                if(btn) btn.innerText = "🌙";
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        if (localStorage.getItem('theme') === 'dark') applyTheme('dark');
+        function toggleTheme() {
+            if (document.body.classList.contains('dark-theme')) applyTheme('light');
+            else applyTheme('dark');
+        }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
+            authDomain: "my-gemini-bot-gradex.firebaseapp.com",
+            databaseURL: "https://my-gemini-bot-gradex-default-rtdb.firebaseio.com/",
+            projectId: "my-gemini-bot-gradex",
+            storageBucket: "my-gemini-bot-gradex.firebasestorage.app",
+            messagingSenderId: "979133444805",
+            appId: "1:979133444805:web:e1bc587482362365e2b6ac"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+        const database = firebase.database();
+        let currentUser = null;
+
+        let userMonthlyBudget = 5000; 
+
+        let globalTransactionsData = []; 
+        let globalTransactionsFiltered = []; 
+        
+        let dashboardTimeFrame = 'month'; 
+        let isUndoActive = false;
+        let lastAction = null; 
+        let undoTimeout = null;
+
+        let fSearchQuery = "";
+        let fType = "All";
+        let fCategory = "All";
+        let fWallet = "All"; // NEW WALLET FILTER
+        let fStartDate = "";
+        let fEndDate = "";
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                fetchUserBudget(); 
+                fetchDataFromFirebase();
+            } else {
+                alert("Login required!");
+                window.location.href = 'index.html';
+            }
+        });
+
+        function openFilterModal() {
+            document.getElementById('filterModal').classList.add('show');
+            document.getElementById('modal-search').focus();
+        }
+
+        function closeFilterModal() {
+            document.getElementById('filterModal').classList.remove('show');
+        }
+
+        function applySearchFilters() {
+            fSearchQuery = document.getElementById('modal-search').value.trim().toLowerCase();
+            fType = document.getElementById('modal-type').value;
+            fCategory = document.getElementById('modal-category').value;
+            fWallet = document.getElementById('modal-wallet').value; // GET WALLET FILTER
+            fStartDate = document.getElementById('modal-start-date').value;
+            fEndDate = document.getElementById('modal-end-date').value;
+
+            const hasFilters = fSearchQuery || fType !== "All" || fCategory !== "All" || fWallet !== "All" || fStartDate || fEndDate;
+            document.getElementById('filter-badge').style.display = hasFilters ? 'block' : 'none';
+
+            closeFilterModal();
+            renderDashboardAndList();
+        }
+
+        function resetSearchFilters() {
+            document.getElementById('modal-search').value = "";
+            document.getElementById('modal-type').value = "All";
+            document.getElementById('modal-category').value = "All";
+            document.getElementById('modal-wallet').value = "All";
+            document.getElementById('modal-start-date').value = "";
+            document.getElementById('modal-end-date').value = "";
+            applySearchFilters();
+        }
+
+        function fetchUserBudget() {
+            database.ref('userFinance/' + currentUser.uid + '/settings/monthlyBudget').on('value', (snapshot) => {
+                if(snapshot.exists()) { userMonthlyBudget = snapshot.val(); } 
+                else { userMonthlyBudget = 5000; }
+                document.getElementById('budget-limit-text').innerText = "₹" + userMonthlyBudget;
+                if(globalTransactionsData.length > 0) renderDashboardAndList();
+            });
+        }
+
+        function toggleBudgetEdit(showEdit) {
+            if(showEdit) {
+                document.getElementById('budget-view').style.display = 'none';
+                document.getElementById('budget-edit').style.display = 'flex';
+                document.getElementById('new-budget-input').value = userMonthlyBudget;
+                document.getElementById('new-budget-input').focus();
+            } else {
+                document.getElementById('budget-view').style.display = 'block';
+                document.getElementById('budget-edit').style.display = 'none';
+            }
+        }
+
+        function saveNewBudget() {
+            let newBudg = parseFloat(document.getElementById('new-budget-input').value);
+            if(!newBudg || newBudg <= 0) return alert("Sahi budget amount daalo bhai!");
+            
+            database.ref('userFinance/' + currentUser.uid + '/settings/monthlyBudget').set(newBudg).then(() => {
+                toggleBudgetEdit(false);
+                showUndoToast("✅ Budget Updated Successfully!");
+            });
+        }
+
+        function setDashTime(time) {
+            dashboardTimeFrame = time;
+            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + time).classList.add('active');
+            
+            let label = time === 'week' ? 'Week' : (time === 'year' ? 'Year' : 'Month');
+            document.getElementById('lbl-inc-time').innerText = label;
+            document.getElementById('lbl-exp-time').innerText = label;
+            renderDashboardAndList();
+        }
+
+        function toggleCustomDropdown(id, event) {
+            event.stopPropagation();
+            document.querySelectorAll('.dropdown-wrapper').forEach(dw => {
+                if(dw.id !== id) dw.classList.remove('active');
+            });
+            document.getElementById(id).classList.toggle('active');
+        }
+
+        function selectOption(inputId, value, text, dropdownId, event) {
+            if(event) event.stopPropagation(); 
+            document.getElementById(inputId).value = value;
+            document.getElementById(inputId + '-text').innerText = text;
+            document.getElementById(dropdownId).classList.remove('active');
+        }
+
+        window.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-wrapper').forEach(dw => dw.classList.remove('active'));
+        });
+
+        function toggleActionButtons(disable) {
+            document.getElementById('btn-add-inc').disabled = disable;
+            document.getElementById('btn-add-exp').disabled = disable;
+            const delBtns = document.querySelectorAll('.del-btn');
+            delBtns.forEach(btn => btn.disabled = disable);
+        }
+
+        function showUndoToast(message) {
+            isUndoActive = true;
+            toggleActionButtons(true); 
+            const toast = document.getElementById('undo-toast');
+            document.getElementById('undo-msg').innerText = message;
+            toast.classList.add('show');
+            if(undoTimeout) clearTimeout(undoTimeout);
+            undoTimeout = setTimeout(() => { closeUndoToast(); }, 5000);
+        }
+
+        function closeUndoToast() {
+            const toast = document.getElementById('undo-toast');
+            toast.classList.remove('show');
+            isUndoActive = false;
+            lastAction = null;
+            if(undoTimeout) clearTimeout(undoTimeout);
+            toggleActionButtons(false); 
+        }
+
+        function executeUndo() {
+            if(!lastAction) return;
+            if(lastAction.type === 'delete') {
+                database.ref('userFinance/' + currentUser.uid + '/transactions/' + lastAction.id).set(lastAction.data);
+            } else if(lastAction.type === 'add') {
+                database.ref('userFinance/' + currentUser.uid + '/transactions/' + lastAction.id).remove();
+            } else if(lastAction.type === 'edit') {
+                database.ref('userFinance/' + currentUser.uid + '/transactions/' + lastAction.id).update({ reason: lastAction.oldReason });
+            }
+            closeUndoToast(); 
+        }
+
+        // 🔥 SAVE TRANSACTION WITH WALLET 🔥
+        function saveDeepData(type) {
+            if(isUndoActive) return; 
+            const amt = parseFloat(document.getElementById('dp-amount').value);
+            const cat = document.getElementById('dp-category').value;
+            const wallet = document.getElementById('dp-wallet').value; // Get Wallet
+            let note = document.getElementById('dp-note').value.trim();
+
+            if (!amt || amt <= 0) return alert("Valid amount daalo bhai!");
+            if (!cat) return alert("Bhai Category select karna zaroori hai!");
+            if (!wallet) return alert("Bhai Wallet select karna zaroori hai!");
+            if (!note) note = cat.split(" ")[0]; 
+
+            const txnId = "deep_" + Date.now();
+            const payload = { type: type, amount: amt, category: cat, wallet: wallet, reason: note, timestamp: Date.now() };
+            
+            database.ref('userFinance/' + currentUser.uid + '/transactions/' + txnId).set(payload).then(() => {
+                lastAction = { type: 'add', id: txnId, data: payload };
+                showUndoToast("✅ Entry Added Successfully!");
+                
+                // Clear only amount and note, keep category and wallet as they were for quick multi-entry
+                document.getElementById('dp-amount').value = "";
+                document.getElementById('dp-note').value = "";
+            });
+        }
+
+        function deleteTxn(txnId) {
+            if(isUndoActive) return; 
+            if(confirm("Bhai sach me ye entry delete karni hai?")) {
+                database.ref('userFinance/' + currentUser.uid + '/transactions/' + txnId).once('value').then(snap => {
+                    const dataToSave = snap.val();
+                    if(dataToSave) {
+                        database.ref('userFinance/' + currentUser.uid + '/transactions/' + txnId).remove().then(() => {
+                            lastAction = { type: 'delete', id: txnId, data: dataToSave };
+                            showUndoToast("🗑️ Entry Deleted!");
+                        });
+                    }
+                });
+            }
+        }
+
+        function toggleTxnEdit(id, showEdit) {
+            if(showEdit) {
+                document.getElementById(`view-mode-${id}`).style.display = 'none';
+                document.getElementById(`edit-mode-${id}`).style.display = 'flex';
+                document.getElementById(`edit-input-${id}`).focus();
+            } else {
+                document.getElementById(`view-mode-${id}`).style.display = 'block';
+                document.getElementById(`edit-mode-${id}`).style.display = 'none';
+            }
+        }
+
+        function saveTxnName(id, oldReason) {
+            const newName = document.getElementById(`edit-input-${id}`).value.trim();
+            if(!newName) return alert("Bhai naam khali nahi chhod sakte!");
+            
+            if(newName === oldReason) { toggleTxnEdit(id, false); return; }
+
+            database.ref('userFinance/' + currentUser.uid + '/transactions/' + id).update({
+                reason: newName
+            }).then(() => {
+                lastAction = { type: 'edit', id: id, oldReason: oldReason, newReason: newName };
+                showUndoToast("✏️ Name Updated!");
+            });
+        }
+
+        function fetchDataFromFirebase() {
+            database.ref('userFinance/' + currentUser.uid + '/transactions').on('value', (snapshot) => {
+                const data = snapshot.val();
+                globalTransactionsData = [];
+                if (data) {
+                    globalTransactionsData = Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a, b) => b.timestamp - a.timestamp);
+                }
+                renderDashboardAndList();
+            });
+        }
+
+        function getPeriodData(txns, period) {
+            const now = new Date();
+            let currentInc = 0, currentExp = 0;
+            let prevInc = 0, prevExp = 0;
+
+            txns.forEach(txn => {
+                const tDate = new Date(txn.timestamp);
+                let isCurrent = false; let isPrev = false;
+
+                if(period === 'month') {
+                    isCurrent = (tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear());
+                    let pMonth = now.getMonth() - 1; let pYear = now.getFullYear();
+                    if(pMonth < 0) { pMonth = 11; pYear--; }
+                    isPrev = (tDate.getMonth() === pMonth && tDate.getFullYear() === pYear);
+                } 
+                else if (period === 'year') {
+                    isCurrent = (tDate.getFullYear() === now.getFullYear());
+                    isPrev = (tDate.getFullYear() === now.getFullYear() - 1);
+                }
+                else if (period === 'week') {
+                    const daysDiff = (now.getTime() - txn.timestamp) / (1000 * 3600 * 24);
+                    isCurrent = daysDiff <= 7;
+                    isPrev = daysDiff > 7 && daysDiff <= 14;
+                }
+
+                if(isCurrent) { txn.type === 'credit' ? currentInc += txn.amount : currentExp += txn.amount; }
+                if(isPrev) { txn.type === 'credit' ? prevInc += txn.amount : prevExp += txn.amount; }
+            });
+
+            return { currentInc, currentExp, prevInc, prevExp };
+        }
+
+        function getCompareHtml(current, previous, invertedColor = false) {
+            if(previous === 0) return `<span style="color: var(--text-main); opacity:0.6;">No prev data</span>`;
+            let diff = current - previous;
+            let percent = Math.round((Math.abs(diff) / previous) * 100);
+            let arrow = diff >= 0 ? '↑' : '↓';
+            let isPositiveTrend = diff >= 0;
+            if (invertedColor) isPositiveTrend = !isPositiveTrend;
+
+            let color = isPositiveTrend ? 'var(--safe-green)' : 'var(--danger-red)';
+            if(diff === 0) return `<span style="color: var(--text-main); opacity:0.6;">Flat vs prev</span>`;
+            return `<span style="color: ${color};">${arrow} ${percent}% vs prev</span>`;
+        }
+
+        function renderDashboardAndList() {
+            const listArea = document.getElementById('deep-txn-list');
+            listArea.innerHTML = "";
+            globalTransactionsFiltered = []; 
+
+            // WALLET TOTALS
+            let wCash = 0, wUpi = 0, wCard = 0;
+
+            globalTransactionsData.forEach(txn => {
+                
+                // 📊 Global Wallet Calculation (Independent of Filters)
+                let txnWallet = txn.wallet || 'Cash'; // Default to Cash for old entries
+                if(txn.type === 'credit') {
+                    if(txnWallet === 'Cash') wCash += txn.amount;
+                    else if(txnWallet === 'UPI') wUpi += txn.amount;
+                    else if(txnWallet === 'CreditCard') wCard += txn.amount;
+                } else {
+                    if(txnWallet === 'Cash') wCash -= txn.amount;
+                    else if(txnWallet === 'UPI') wUpi -= txn.amount;
+                    else if(txnWallet === 'CreditCard') wCard -= txn.amount;
+                }
+
+                // 🔍 Filters Logic
+                const catLabel = txn.category ? txn.category.split(" ")[0] : 'General';
+                if (fCategory !== 'All' && catLabel !== fCategory) return; 
+                if (fType !== 'All' && txn.type !== fType) return;
+                if (fWallet !== 'All' && txnWallet !== fWallet) return; // Wallet Filter
+
+                if (fSearchQuery !== "") {
+                    const reasonLower = txn.reason.toLowerCase();
+                    const catLower = catLabel.toLowerCase();
+                    if (!reasonLower.includes(fSearchQuery) && !catLower.includes(fSearchQuery)) return;
+                }
+
+                if (fStartDate !== "") {
+                    const startMs = new Date(fStartDate).getTime();
+                    if (txn.timestamp < startMs) return;
+                }
+                if (fEndDate !== "") {
+                    const endMs = new Date(fEndDate).getTime() + 86399999;
+                    if (txn.timestamp > endMs) return;
+                }
+                
+                globalTransactionsFiltered.push(txn);
+                
+                const isCredit = txn.type === 'credit';
+                const sign = isCredit ? '+' : '-';
+                const colorClass = isCredit ? 'text-green' : 'text-red';
+                const dateStr = new Date(txn.timestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                const emoji = txn.category ? txn.category.slice(-2) : '🛒'; 
+                const safeReason = txn.reason.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                
+                // Wallet UI Badge
+                let walletBadgeHtml = '';
+                if(txnWallet === 'UPI') walletBadgeHtml = `<span class="wallet-tag" style="color: var(--wallet-blue); border-color: rgba(52, 152, 219, 0.3);">UPI</span>`;
+                else if(txnWallet === 'CreditCard') walletBadgeHtml = `<span class="wallet-tag" style="color: var(--wallet-purple); border-color: rgba(155, 89, 182, 0.3);">Card</span>`;
+                else walletBadgeHtml = `<span class="wallet-tag" style="color: var(--med-brown);">Cash</span>`;
+
+                listArea.innerHTML += `
+                    <div class="txn-item">
+                        <div class="txn-left">
+                            <div class="txn-cat-icon">${emoji}</div>
+                            
+                            <div class="txn-info-div">
+                                <div id="view-mode-${txn.id}">
+                                    <div class="txn-note-wrapper">
+                                        <div class="txn-note">${txn.reason}</div>
+                                        <button class="edit-txn-btn" onclick="toggleTxnEdit('${txn.id}', true)">✏️</button>
+                                    </div>
+                                    <span class="badge bg-secondary" style="font-size:10px; opacity:0.7;">${catLabel}</span>
+                                    <div class="txn-date">${dateStr} ${walletBadgeHtml}</div>
+                                </div>
+                                
+                                <div id="edit-mode-${txn.id}" style="display: none; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
+                                    <input type="text" id="edit-input-${txn.id}" class="budget-input-sm" style="width: 100%; margin-bottom: 2px;" value="${safeReason}">
+                                    <div class="d-flex gap-2">
+                                        <button class="save-budget-btn" onclick="saveTxnName('${txn.id}', '${safeReason}')">💾 Save</button>
+                                        <button class="cancel-budget-btn" onclick="toggleTxnEdit('${txn.id}', false)">✖ Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="txn-right">
+                            <div class="txn-amt ${colorClass}">${sign}₹${txn.amount}</div>
+                            <button class="del-btn" onclick="deleteTxn('${txn.id}')">Delete 🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (globalTransactionsFiltered.length === 0) {
+                listArea.innerHTML = `<div class="text-center opacity-50 mt-4 mb-4">No records found for this filter. 🕵️‍♂️</div>`;
+            }
+
+            // 💰 UPDATE WALLET UI BALANCES
+            document.getElementById('wal-cash').innerText = "₹" + wCash;
+            document.getElementById('wal-upi').innerText = "₹" + wUpi;
+            document.getElementById('wal-card').innerText = "₹" + wCard;
+
+            // DASHBOARD MATH
+            const stats = getPeriodData(globalTransactionsFiltered, dashboardTimeFrame);
+            document.getElementById('dash-income').innerText = "₹" + stats.currentInc;
+            document.getElementById('dash-expense').innerText = "₹" + stats.currentExp;
+            document.getElementById('dash-savings').innerText = "₹" + (stats.currentInc - stats.currentExp);
+
+            let currentNet = stats.currentInc - stats.currentExp;
+            let prevNet = stats.prevInc - stats.prevExp;
+
+            document.getElementById('comp-income').innerHTML = getCompareHtml(stats.currentInc, stats.prevInc, false);
+            document.getElementById('comp-expense').innerHTML = getCompareHtml(stats.currentExp, stats.prevExp, true); 
+            document.getElementById('comp-savings').innerHTML = getCompareHtml(currentNet, prevNet, false);
+
+            const monthStats = getPeriodData(globalTransactionsFiltered, 'month');
+            let budgetPercent = Math.min((monthStats.currentExp / userMonthlyBudget) * 100, 100).toFixed(1);
+            
+            const budgetBar = document.getElementById('budget-bar');
+            document.getElementById('budget-percent').innerText = budgetPercent + "%";
+            budgetBar.style.width = budgetPercent + "%";
+
+            if (budgetPercent >= 80) {
+                budgetBar.style.backgroundColor = "var(--danger-red)";
+                document.getElementById('budget-warning').style.display = "block";
+            } else if (budgetPercent >= 50) {
+                budgetBar.style.backgroundColor = "var(--warn-yellow)";
+                document.getElementById('budget-warning').style.display = "none";
+            } else {
+                budgetBar.style.backgroundColor = "var(--safe-green)";
+                document.getElementById('budget-warning').style.display = "none";
+            }
+
+            if (isUndoActive) toggleActionButtons(true);
+        }
+
+        window.jsPDF = window.jspdf.jsPDF;
+        function downloadPDF() {
+            if(globalTransactionsFiltered.length === 0) return alert("Bhai list me koi transaction nahi hai PDF banane ke liye!");
+            
+            const doc = new jsPDF();
+            
+            doc.setFontSize(22);
+            doc.setTextColor(140, 90, 60); 
+            doc.text("GradeX - Deep Expense Report", 14, 22);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            let filterText = `Time: ${dashboardTimeFrame.toUpperCase()} | Type: ${fType} | Category: ${fCategory} | Wallet: ${fWallet}`;
+            if(fSearchQuery) filterText += ` | Search: "${fSearchQuery}"`;
+            if(fStartDate || fEndDate) filterText += ` | Dates: ${fStartDate} to ${fEndDate}`;
+            
+            doc.text(filterText, 14, 32);
+
+            const tableColumn = ["Date", "Description", "Category", "Wallet", "Type", "Amount"];
+            const tableRows = [];
+
+            let filteredTotalExp = 0;
+            let filteredTotalInc = 0;
+
+            globalTransactionsFiltered.forEach(txn => {
+                const dateStr = new Date(txn.timestamp).toLocaleDateString('en-IN');
+                const catLabel = txn.category ? txn.category.split(" ")[0] : 'General';
+                const walletLabel = txn.wallet || 'Cash';
+                const typeLabel = txn.type === 'credit' ? 'Income' : 'Expense';
+                const amtLabel = `Rs. ${txn.amount}`;
+                
+                if(txn.type === 'credit') filteredTotalInc += txn.amount;
+                else filteredTotalExp += txn.amount;
+
+                tableRows.push([dateStr, txn.reason, catLabel, walletLabel, typeLabel, amtLabel]);
+            });
+
+            doc.text(`Filtered Income: Rs. ${filteredTotalInc}`, 14, 42);
+            doc.text(`Filtered Expense: Rs. ${filteredTotalExp}`, 14, 48);
+
+            doc.autoTable({
+                startY: 55,
+                head: [tableColumn],
+                body: tableRows,
+                theme: 'grid',
+                headStyles: { fillColor: [140, 90, 60] },
+                styles: { overflow: 'linebreak' },
+                columnStyles: { 1: { cellWidth: 40 } } 
+            });
+
+            doc.save(`GradeX_Expense_Report.pdf`);
+        }
+    </script>
+</body>
+</html>
