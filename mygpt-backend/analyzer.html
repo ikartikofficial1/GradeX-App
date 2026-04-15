@@ -9,8 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
@@ -50,65 +51,311 @@
         }
 
         /* NAVBAR WITH TOGGLE FIX (Left & Right Split) */
-        .top-navbar { 
-            padding: 20px 30px; 
-            display: flex; 
-            justify-content: space-between; /* Forces items to opposite ends */
-            align-items: center; 
-            border-bottom: 1px solid rgba(192, 133, 82, 0.15); 
+        .top-navbar {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            /* Forces items to opposite ends */
+            align-items: center;
+            border-bottom: 1px solid rgba(192, 133, 82, 0.15);
         }
-        
-        .back-btn { background: var(--card-bg); border: 1px solid var(--input-border); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 10px var(--card-shadow); }
-        .back-btn:hover { background: var(--light-brown); color: white; transform: translateX(-3px); }
-        
-        .theme-toggle-btn { background: var(--card-bg); border: 1px solid var(--input-border); color: var(--text-main); padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
-        .theme-toggle-btn:hover { background: var(--light-brown); color: white; transform: scale(1.05); }
 
-        .main-container { flex-grow: 1; display: flex; justify-content: center; padding: 30px 20px; }
+        .back-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            padding: 8px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px var(--card-shadow);
+        }
 
-        .analyzer-card { background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px var(--card-shadow); border: 1px solid var(--input-border); width: 100%; max-width: 750px; animation: fadeInUp 0.5s ease; display: flex; flex-direction: column;}
+        .back-btn:hover {
+            background: var(--light-brown);
+            color: white;
+            transform: translateX(-3px);
+        }
 
-        .tool-icon { font-size: 45px; text-align: center; margin-bottom: 10px; }
-        .tool-title { text-align: center; font-weight: 700; color: var(--med-brown); margin-bottom: 10px; }
-        .tool-desc { text-align: center; font-size: 15px; opacity: 0.8; margin-bottom: 30px; }
+        .theme-toggle-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            padding: 8px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px var(--card-shadow);
+            transition: 0.3s;
+        }
 
-        .custom-textarea { background-color: var(--input-bg); border: 2px solid var(--input-border); color: var(--text-main); border-radius: 16px; padding: 18px 20px; font-size: 15.5px; width: 100%; transition: all 0.3s; resize: none; min-height: 120px; line-height: 1.6; }
-        .custom-textarea:focus { border-color: var(--light-brown); outline: none; box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1); }
-        
+        .theme-toggle-btn:hover {
+            background: var(--light-brown);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            padding: 30px 20px;
+        }
+
+        .analyzer-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px var(--card-shadow);
+            border: 1px solid var(--input-border);
+            width: 100%;
+            max-width: 750px;
+            animation: fadeInUp 0.5s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-icon {
+            font-size: 45px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .tool-title {
+            text-align: center;
+            font-weight: 700;
+            color: var(--med-brown);
+            margin-bottom: 10px;
+        }
+
+        .tool-desc {
+            text-align: center;
+            font-size: 15px;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        .custom-textarea {
+            background-color: var(--input-bg);
+            border: 2px solid var(--input-border);
+            color: var(--text-main);
+            border-radius: 16px;
+            padding: 18px 20px;
+            font-size: 15.5px;
+            width: 100%;
+            transition: all 0.3s;
+            resize: none;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .custom-textarea:focus {
+            border-color: var(--light-brown);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1);
+        }
+
         /* 🔥 THEME BASED CUSTOM SCROLLBARS 🔥 */
-        .custom-textarea::-webkit-scrollbar, .ai-result-box::-webkit-scrollbar { width: 8px; }
-        .custom-textarea::-webkit-scrollbar-track, .ai-result-box::-webkit-scrollbar-track { background: rgba(192, 133, 82, 0.05); border-radius: 10px; margin: 10px 0; }
-        .custom-textarea::-webkit-scrollbar-thumb, .ai-result-box::-webkit-scrollbar-thumb { background: rgba(192, 133, 82, 0.4); border-radius: 10px; }
-        .custom-textarea::-webkit-scrollbar-thumb:hover, .ai-result-box::-webkit-scrollbar-thumb:hover { background: var(--light-brown); }
+        .custom-textarea::-webkit-scrollbar,
+        .ai-result-box::-webkit-scrollbar {
+            width: 8px;
+        }
 
-        .analyze-btn { background-color: var(--med-brown); color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-weight: 600; font-size: 16px; margin-top: 20px; transition: 0.3s; box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2); }
-        .analyze-btn:hover:not(:disabled) { background-color: var(--dark-brown); transform: translateY(-2px); color: white; }
-        .analyze-btn:disabled { background-color: #d4c5ba; cursor: not-allowed; transform: none; }
+        .custom-textarea::-webkit-scrollbar-track,
+        .ai-result-box::-webkit-scrollbar-track {
+            background: rgba(192, 133, 82, 0.05);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
 
-        .continue-btn { background-color: transparent; border: 2px solid var(--med-brown); color: var(--med-brown); width: 100%; padding: 14px; border-radius: 16px; font-weight: 600; font-size: 16px; margin-top: 20px; transition: 0.3s; display: none; }
-        .continue-btn:hover { background-color: var(--med-brown); color: white; transform: translateY(-2px); }
+        .custom-textarea::-webkit-scrollbar-thumb,
+        .ai-result-box::-webkit-scrollbar-thumb {
+            background: rgba(192, 133, 82, 0.4);
+            border-radius: 10px;
+        }
 
-        .ai-result-box { margin-top: 30px; background: rgba(192, 133, 82, 0.05); border: 1px solid rgba(192, 133, 82, 0.2); border-radius: 20px; padding: 25px 20px 25px 25px; display: none; animation: fadeInUp 0.4s ease; font-size: 15.5px; line-height: 1.7; max-height: 450px; overflow-y: auto; overflow-x: hidden; }
-        .ai-result-box h3, .ai-result-box h4 { color: var(--med-brown); font-weight: 600; margin-top: 20px; margin-bottom: 10px; }
-        .ai-result-box h3:first-child { margin-top: 0; }
-        .ai-result-box strong { color: var(--light-brown); }
-        .ai-result-box ul { padding-left: 20px; margin-bottom: 15px; }
+        .custom-textarea::-webkit-scrollbar-thumb:hover,
+        .ai-result-box::-webkit-scrollbar-thumb:hover {
+            background: var(--light-brown);
+        }
 
-        .loader-container { display: flex; justify-content: center; align-items: center; position: relative; width: 50px; height: 50px; margin: 20px auto; }
-        .spinner-ring { position: absolute; width: 100%; height: 100%; border: 3px solid rgba(192, 133, 82, 0.2); border-top-color: var(--light-brown); border-radius: 50%; animation: spin 1s linear infinite; }
-        .loader-logo { width: 25px; height: 25px; object-fit: contain; animation: pulse 1.5s ease-in-out infinite; }
+        .analyze-btn {
+            background-color: var(--med-brown);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2);
+        }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.8; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .analyze-btn:hover:not(:disabled) {
+            background-color: var(--dark-brown);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .analyze-btn:disabled {
+            background-color: #d4c5ba;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .continue-btn {
+            background-color: transparent;
+            border: 2px solid var(--med-brown);
+            color: var(--med-brown);
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: 0.3s;
+            display: none;
+        }
+
+        .continue-btn:hover {
+            background-color: var(--med-brown);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .ai-result-box {
+            margin-top: 30px;
+            background: rgba(192, 133, 82, 0.05);
+            border: 1px solid rgba(192, 133, 82, 0.2);
+            border-radius: 20px;
+            padding: 25px 20px 25px 25px;
+            display: none;
+            animation: fadeInUp 0.4s ease;
+            font-size: 15.5px;
+            line-height: 1.7;
+            max-height: 450px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .ai-result-box h3,
+        .ai-result-box h4 {
+            color: var(--med-brown);
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .ai-result-box h3:first-child {
+            margin-top: 0;
+        }
+
+        .ai-result-box strong {
+            color: var(--light-brown);
+        }
+
+        .ai-result-box ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+        }
+
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid rgba(192, 133, 82, 0.2);
+            border-top-color: var(--light-brown);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-logo {
+            width: 25px;
+            height: 25px;
+            object-fit: contain;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* 🔥 100% RESPONSIVE CSS 🔥 */
         @media (max-width: 600px) {
-            .analyzer-card { padding: 25px; }
-            .tool-icon { font-size: 35px; }
-            .tool-title { font-size: 22px; }
-            .top-navbar { padding: 15px 20px; }
-            .ai-result-box { padding: 15px 10px 15px 15px; font-size: 14.5px; }
+            .analyzer-card {
+                padding: 25px;
+            }
+
+            .tool-icon {
+                font-size: 35px;
+            }
+
+            .tool-title {
+                font-size: 22px;
+            }
+
+            .top-navbar {
+                padding: 15px 20px;
+            }
+
+            .ai-result-box {
+                padding: 15px 10px 15px 15px;
+                font-size: 14.5px;
+            }
         }
     </style>
 </head>
@@ -124,20 +371,24 @@
         <div class="analyzer-card">
             <div class="tool-icon">🧠</div>
             <h2 class="tool-title">AI Performance Analyzer</h2>
-            <p class="tool-desc">Apne subjects aur marks likho. AI tumhe deep detail me batayega ki kahan focus karna chahiye aur growth kaise karni hai.</p>
+            <p class="tool-desc">Apne subjects aur marks likho. AI tumhe deep detail me batayega ki kahan focus karna
+                chahiye aur growth kaise karni hai.</p>
 
-            <textarea id="marks-input" class="custom-textarea" placeholder="Example:&#10;Maths: 40&#10;Java: 80&#10;DBMS: 60"></textarea>
+            <textarea id="marks-input" class="custom-textarea"
+                placeholder="Example:&#10;Maths: 40&#10;Java: 80&#10;DBMS: 60"></textarea>
 
             <button id="analyze-btn" class="analyze-btn" onclick="startAnalysis()">🚀 Analyze My Performance</button>
 
             <div id="result-area" class="ai-result-box">
                 <div id="loading-spinner" class="loader-container" style="display: none;">
                     <div class="spinner-ring"></div>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" alt="AI Logo" class="loader-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" alt="AI Logo"
+                        class="loader-logo">
                 </div>
                 <div id="ai-content" class="typing-content" style="display: none;"></div>
-                
-                <button id="continue-btn" class="continue-btn" onclick="continueInMainChat()">💬 Continue Chatting with AI</button>
+
+                <button id="continue-btn" class="continue-btn" onclick="continueInMainChat()">💬 Continue Chatting with
+                    AI</button>
             </div>
         </div>
     </div>
@@ -234,7 +485,7 @@
             `;
 
             try {
-                const response = await fetch('http://localhost:3000/api/chat', {
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: secretInstruction, userName: userNameForPrompt })
@@ -263,10 +514,10 @@
                         let typingInterval = setInterval(() => {
                             if (index <= rawBotReply.length) {
                                 aiContent.innerHTML = marked.parse(rawBotReply.substring(0, index));
-                                
+
                                 // 🔥 AUTO-SCROLL TO BOTTOM AS TEXT TYPES 🔥
                                 resultArea.scrollTop = resultArea.scrollHeight;
-                                
+
                                 index += 4; // Optimized typing speed for long detailed text
                             } else {
                                 clearInterval(typingInterval);
@@ -326,4 +577,5 @@
         }
     </script>
 </body>
+
 </html>

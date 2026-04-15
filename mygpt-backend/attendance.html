@@ -178,7 +178,7 @@
             const prompt = `${mathAnalysis}. Mera ek best friend bankar mujhe deep aur friendly detail me samjhao ki ye calculation kaise hui? Mujhe dilaasa do aur ek solid plan batao ki main apni attendance kaise improve karu bina stress liye. Jawab ekdum human touch me dena.`;
 
             try {
-                const response = await fetch('http://localhost:3000/api/chat', {
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: prompt, userName: currentUser ? currentUser.displayName.split(" ")[0] : "Dost" })
