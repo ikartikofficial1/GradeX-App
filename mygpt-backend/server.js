@@ -5,24 +5,30 @@ const rateLimit = require("express-rate-limit");
 const path = require("path");
 
 const app = express();
+
+// 🔥 FIX 1: Render Proxy Error (ValidationError) ko khatam karne ke liye
+app.set('trust proxy', 1);
+
 app.use(cors());
 app.use(express.json());
 
-// 1. Static Files Middleware
+// Static Files Middleware
 app.use(express.static(__dirname));
 
 const PORT = process.env.PORT || 3000;
 
-// 2. Bouncer (Rate Limiter) - Security Guard
+// 🔥 FIX 2: Bouncer (Rate Limiter) ko setup kiya
 const chatLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 Minute
-  max: 20, // 20 messages per minute for safety
+  windowMs: 1 * 60 * 1000, 
+  max: 20, 
   message: {
     error: "Yaar lagta hai tumhari speed bullet train jaisi hai! 🚄 Mere server ke bouncer ne tumhe rok diya hai. Pls 1 minute wait karke dobara message bhej na.",
   },
+  standardHeaders: true, // Recommended for Render
+  legacyHeaders: false,
 });
 
-// 3. API Route
+// API Route
 app.post("/api/chat", chatLimiter, async (req, res) => {
   try {
     const { message, userName, history } = req.body;
@@ -39,7 +45,6 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         4. You are not an AI assistant. You are a real emotionally intelligent human friend.
     `;
 
-    // History formatting
     let formattedContents = [];
     if (history && Array.isArray(history)) {
       formattedContents = history.map((msg) => ({
@@ -53,9 +58,8 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       parts: [{ text: message }],
     });
 
-    // 🔥 FIXED URL: Paid Pro Tier ke liye ye model name perfect hai
-    // 🔥 YE HAI TERA FINAL BULLETPROOF URL
-const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    // 🔥 FIX 3: Confirmed Model Name from your list
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${GEMINI_API_KEY}`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -68,19 +72,29 @@ const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-
 
     const data = await response.json();
 
-    // Smart Error Interceptor
+    // Error Interceptor
     if (data.error) {
-      console.log("Bhai limit lag gayi ya error aaya! Error:", data.error.message);
-      
-      let userText = message ? message.toLowerCase() : "";
+      console.error("Bhai API error aaya:", data.error.message);
       let finalReply = `Arre yaar ${userName}, main yahin hoon. Bas meri battery thodi down hai, 20 second baad try kar na! ⚡`;
-
-      if (userText.includes("pls") || userText.includes("yrr")) {
-        finalReply = `Arre ${userName} mere bhai, please mat bol yaar! 15 second baad aata hu pakka! ❤️`;
-      }
-
+      
       return res.json({
         candidates: [{ content: { parts: [{ text: finalReply }] } }],
+      });
+    }
+
+    // 🔥 FIX 4: Response Handling (Thinking models ke liye special)
+    // Hum sirf woh part bhejenge jisme AI ka reply hai
+    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+      // "thinking" models multiple parts bhej sakte hain, isliye sabko join kar rahe hain
+      const aiText = data.candidates[0].content.parts.map(part => part.text).join("");
+      
+      // Frontend ko waisa hi format de rahe hain jaisa wo expect kar raha hai
+      return res.json({
+        candidates: [{
+          content: {
+            parts: [{ text: aiText }]
+          }
+        }]
       });
     }
 
@@ -91,12 +105,12 @@ const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-
   }
 });
 
-// 4. Specific Routes (Must be above Fallback)
+// Specific Routes
 app.get("/share.html", (req, res) => {
   res.sendFile(path.join(__dirname, "share.html"));
 });
 
-// 5. General Fallback Route (Sabse niche)
+// General Fallback (Sabse niche)
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
