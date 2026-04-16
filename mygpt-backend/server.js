@@ -54,7 +54,8 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     });
 
     // 🔥 FIXED URL: Paid Pro Tier ke liye ye model name perfect hai
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    // 🔥 YE HAI TERA FINAL BULLETPROOF URL
+const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const response = await fetch(url, {
       method: "POST",
