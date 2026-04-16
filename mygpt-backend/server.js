@@ -59,7 +59,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     });
 
     // 🔥 FIX 3: Confirmed Model Name from your list
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const response = await fetch(url, {
       method: "POST",
