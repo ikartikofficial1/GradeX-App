@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 // 🔥 BOUNCER KI DUTY LAGAYI 🔥
 const chatLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 Minute ka time
-  max: 10, // 10 message se zyada nahi
+  max: 20, // 20 message se zyada nahi
   message: {
     error:
       "Yaar lagta hai tumhari speed bullet train jaisi hai! 🚄 Mere server ke bouncer ne tumhe rok diya hai. Pls 1 minute wait karke dobara message bhej na.",
@@ -91,7 +91,7 @@ app.post("/api/chat", async (req, res) => {
       parts: [{ text: message }],
     });
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const response = await fetch(url, {
       method: "POST",
