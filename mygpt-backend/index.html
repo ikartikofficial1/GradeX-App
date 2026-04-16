@@ -525,10 +525,9 @@
             }
         }
 
-        async function fetchGeminiResponse(message, expectedChatId) {
+     async function fetchGeminiResponse(message, expectedChatId) {
             const url = `/api/chat`;
             const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
-
             const historyToSend = currentChatMessages.slice(0, -1);
 
             try {
@@ -542,69 +541,66 @@
                     })
                 });
 
-                const data = await response.json();
-                if (currentChatId !== expectedChatId) return;
+                // 🔥 ASLI STREAMING LOGIC START 🔥
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let rawBotReply = "";
+                let msgId = "msg_" + Date.now();
 
-                if (data.error) {
-                    chatHistory.innerHTML += `
-                    <div class="d-flex justify-content-start w-100 mb-2">
-                        <div class="message-bubble bot-msg text-danger" style="border-color: #ffcccc; background-color: #fff5f5;">
-                            <strong>Backend Error:</strong> <br> ${data.error.message || data.error}
-                        </div>
-                    </div>`;
-                    chatHistory.scrollTop = chatHistory.scrollHeight;
-                }
-                else if (data && data.candidates) {
-                    let rawBotReply = data.candidates[0].content.parts[0].text;
-                    let msgId = "msg_" + Date.now();
+                // Pehle hi ek khaali bubble bana do
+                chatHistory.innerHTML += `
+                <div class="d-flex justify-content-start w-100 mb-2">
+                    <div class="message-bubble bot-msg" id="${msgId}">
+                        <strong>MyGPT:</strong> <br><span class="typing-content"></span>
+                    </div>
+                </div>`;
 
-                    chatHistory.innerHTML += `
-                    <div class="d-flex justify-content-start w-100 mb-2">
-                        <div class="message-bubble bot-msg" id="${msgId}">
-                            <strong>MyGPT:</strong> <br><span class="typing-content typing-cursor"></span>
-                        </div>
-                    </div>`;
+                let contentDiv = document.querySelector(`#${msgId} .typing-content`);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
 
-                    let contentDiv = document.querySelector(`#${msgId} .typing-content`);
-                    let index = 0;
+                // Loop chalao jab tak data aa raha hai
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                    await new Promise((resolve) => {
-                        let typingInterval = setInterval(() => {
-                            if (currentChatId !== expectedChatId) {
-                                clearInterval(typingInterval);
-                                resolve();
-                                return;
+                    // Google SSE format se text nikalna
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split("\n");
+
+                    for (const line of lines) {
+                        if (line.startsWith("data: ")) {
+                            try {
+                                const json = JSON.parse(line.substring(6));
+                                // Gemini 3.1 Pro ka structure check kar rahe hain
+                                if (json.candidates && json.candidates[0].content.parts[0].text) {
+                                    const text = json.candidates[0].content.parts[0].text;
+                                    rawBotReply += text;
+                                    
+                                    // Markdown parse karke turant update karo
+                                    contentDiv.innerHTML = marked.parse(rawBotReply);
+                                    chatHistory.scrollTop = chatHistory.scrollHeight;
+                                }
+                            } catch (e) {
+                                // Kuch chunks pure nahi hote, unhe skip karo
                             }
-
-                            if (index <= rawBotReply.length) {
-                                contentDiv.innerHTML = marked.parse(rawBotReply.substring(0, index));
-                                chatHistory.scrollTop = chatHistory.scrollHeight;
-                                index += 2;
-                            } else {
-                                clearInterval(typingInterval);
-                                contentDiv.innerHTML = marked.parse(rawBotReply);
-                                contentDiv.classList.remove('typing-cursor');
-
-                                currentChatMessages.push({ role: 'bot', text: rawBotReply });
-                                saveStateToCloud(); 
-                                resolve();
-                            }
-                        }, 15);
-                    });
+                        }
+                    }
                 }
+
+                // Poora jawab khatam hone ke baad cloud me save karo
+                if (rawBotReply) {
+                    currentChatMessages.push({ role: 'bot', text: rawBotReply });
+                    saveStateToCloud();
+                }
+
             } catch (error) {
+                console.error("Streaming Error:", error);
                 if (currentChatId === expectedChatId) {
-                    chatHistory.innerHTML += `
-                    <div class="d-flex justify-content-start w-100 mb-2">
-                        <div class="message-bubble bot-msg text-danger">
-                            <strong>Connection Error:</strong> Lagta hai backend server band hai bhai! VS Code terminal mein jakar 'node server.js' chalao.
-                        </div>
-                    </div>`;
-                    chatHistory.scrollTop = chatHistory.scrollHeight;
+                    chatHistory.innerHTML += `<div class="text-danger p-2">Connection lost...</div>`;
                 }
             }
         }
-
+        
         function sendMessage() {
             if (!currentUser) return alert("Dost, pehle login karlo!");
             const text = userInput.value.trim();
