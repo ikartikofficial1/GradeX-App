@@ -43,7 +43,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     formattedContents.push({ role: "user", parts: [{ text: message }] });
 
     // 🚀 STREAMING URL: streamGenerateContent use kar rahe hain
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`;
 
     const response = await fetch(url, {
       method: "POST",
