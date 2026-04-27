@@ -845,6 +845,14 @@
             }
         }
 
+        /* 🔥 INVISIBLE BUMPER FIX (Taki text input ke piche na chhupe) 🔥 */
+        .chat-history::after {
+            content: "";
+            display: block;
+            min-height: 10px; /* Desktop ke input box ki height */
+            width: 100%;
+            flex-shrink: 0;
+        }
 
         @media (max-width: 768px) {
             .input-container {
@@ -868,7 +876,9 @@
                 padding-bottom: 90px;
                 /* Input box ke liye jagah */
             }
-
+ .chat-history::after {
+                min-height: 130px !important; /* Mobile ke input box + thodi extra jagah */
+            }
             .centered-state {
                 /* Centered state me input ko middle me wapas lane ke liye */
                 position: absolute;
