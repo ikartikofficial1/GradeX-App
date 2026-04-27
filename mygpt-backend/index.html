@@ -818,7 +818,8 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 125px; /* Header tak ka area cover karega */
+            height: 125px;
+            /* Header tak ka area cover karega */
             /* Theme ke hisaab se solid color jo dheere-dheere transparent hoga */
             background: linear-gradient(to bottom, var(--bg-body) 30%, transparent 100%);
             /* Peeche ke text ko blur karne ka jadoo */
@@ -827,8 +828,10 @@
             /* Blur ko bhi smooth fade dene ke liye mask */
             -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
             mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-            z-index: 800; /* Chat ke upar, par tere Menu/Login buttons (1000) ke neeche */
-            pointer-events: none; /* Taaki iske peeche agar koi click kare toh kaam kare */
+            z-index: 800;
+            /* Chat ke upar, par tere Menu/Login buttons (1000) ke neeche */
+            pointer-events: none;
+            /* Taaki iske peeche agar koi click kare toh kaam kare */
         }
 
         @keyframes pulse {
@@ -845,14 +848,6 @@
             }
         }
 
-        /* 🔥 INVISIBLE BUMPER FIX (Taki text input ke piche na chhupe) 🔥 */
-        .chat-history::after {
-            content: "";
-            display: block;
-            min-height: 100px; /* Desktop ke input box ki height */
-            width: 100%;
-            flex-shrink: 0;
-        }
 
         @media (max-width: 768px) {
             .input-container {
@@ -876,9 +871,12 @@
                 padding-bottom: 90px;
                 /* Input box ke liye jagah */
             }
- .chat-history::after {
-                min-height: 50px !important; /* Mobile ke input box + thodi extra jagah */
+
+            .chat-history::after {
+                min-height: 50px !important;
+                /* Mobile ke input box + thodi extra jagah */
             }
+
             .centered-state {
                 /* Centered state me input ko middle me wapas lane ke liye */
                 position: absolute;
@@ -985,7 +983,7 @@
 </head>
 
 <body class="d-flex">
-<div class="top-fade-mask"></div>
+    <div class="top-fade-mask"></div>
     <div class="share-modal-backdrop" id="share-modal-backdrop" onclick="closeShareModal()">
         <div class="share-modal" onclick="event.stopPropagation()">
             <h4 style="color: var(--med-brown); font-weight: bold;">Share Chat 🚀</h4>
@@ -1053,7 +1051,7 @@
         </div>
     </div>
 
-     <script>
+    <script>
         // 🛑 FIREBASE CONFIG 🛑
         const firebaseConfig = {
             apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
@@ -1365,15 +1363,15 @@
             let phraseInterval = setInterval(() => {
                 phraseIndex = (phraseIndex + 1) % thinkingPhrases.length;
                 if (thinkingText) {
-                    thinkingText.style.opacity = 0; 
+                    thinkingText.style.opacity = 0;
                     setTimeout(() => {
                         if (thinkingText) {
                             thinkingText.innerText = thinkingPhrases[phraseIndex];
-                            thinkingText.style.opacity = 1; 
+                            thinkingText.style.opacity = 1;
                         }
                     }, 300);
                 }
-            }, 2500); 
+            }, 2500);
 
             try {
                 // 🚀 STEP 2: AB GOOGLE SE FETCH KARO 
@@ -1399,13 +1397,13 @@
                 function processQueue() {
                     if (charQueue.length > 0) {
                         isTyping = true;
-                        let charsToTake = Math.max(1, Math.ceil(charQueue.length / 15)); 
+                        let charsToTake = Math.max(1, Math.ceil(charQueue.length / 15));
                         rawBotReply += charQueue.substring(0, charsToTake);
                         charQueue = charQueue.substring(charsToTake);
-                        
+
                         contentDiv.innerHTML = marked.parse(rawBotReply);
                         chatHistory.scrollTop = chatHistory.scrollHeight;
-                        
+
                         setTimeout(processQueue, 15);
                     } else {
                         isTyping = false;
@@ -1423,7 +1421,7 @@
                         if (line.startsWith("data: ")) {
                             try {
                                 const json = JSON.parse(line.substring(6));
-                                
+
                                 // 🔥 NAYA CATCH: Agar Backend ne explicitly error bheja ho (jaise Timeout ya Safety Error)
                                 if (json.error) {
                                     if (isFirstChunk) {
@@ -1439,22 +1437,22 @@
 
                                 // Normal Processing
                                 if (json.candidates && json.candidates[0].content && json.candidates[0].content.parts && json.candidates[0].content.parts[0].text) {
-                                    
+
                                     // 🔥 JAISE HI PEHLA WORD AAYA, THINKING BOX KO JAD SE DELETE MAAR DO 🔥
                                     if (isFirstChunk) {
-                                        clearInterval(phraseInterval); 
+                                        clearInterval(phraseInterval);
                                         if (thinkingBox) {
-                                            thinkingBox.remove(); 
+                                            thinkingBox.remove();
                                         }
                                         if (contentDiv) {
-                                            contentDiv.style.display = 'block'; 
+                                            contentDiv.style.display = 'block';
                                         }
                                         isFirstChunk = false;
                                     }
 
                                     const text = json.candidates[0].content.parts[0].text;
                                     charQueue += text;
-                                    
+
                                     if (!isTyping) {
                                         processQueue();
                                     }
@@ -1507,7 +1505,7 @@
                     body: JSON.stringify({ message: firstMessage })
                 });
                 const data = await res.json();
-                
+
                 if (data.title && currentUser) {
                     // Firebase mein jahan 'Nayi Baat...' save hua tha, usko Smart Title se replace kar do
                     database.ref('userChats/' + currentUser.uid + '/' + chatId).update({
@@ -1518,7 +1516,7 @@
                 console.log("Title background sync failed.");
             }
         }
-        
+
         function sendMessage() {
             if (!currentUser) return alert("Dost, pehle login karlo!");
             const text = userInput.value.trim();
@@ -1540,10 +1538,10 @@
             userInput.value = '';
 
             // 🛑 CHECK KARO: Kya ye nayi chat hai?
-            const isNewChat = !currentChatId; 
+            const isNewChat = !currentChatId;
 
             currentChatMessages.push({ role: 'user', text: text });
-            
+
             // 🔥 THE REAL CHATGPT FIX: Agar nayi chat hai, toh title me Loading State dalo
             if (isNewChat) {
                 saveStateToCloud("⏳ Title soch raha hu"); // Firebase isme '...' apne aap laga dega
