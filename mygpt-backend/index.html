@@ -238,14 +238,21 @@
             left: 15px;
             z-index: 990;
             /* ... baaki style wahi rahega ... */
-            background: var(--white);
-            border: 1px solid rgba(192, 133, 82, 0.3);
-            color: var(--dark-brown);
+            background: transparent;
+            border: none;
+            color: var(--text-main); /* Light mode me dark, Dark mode me light */
             font-size: 22px;
-            padding: 4px 12px;
+            padding: 5px;
             border-radius: 8px;
             cursor: pointer;
+            line-height: 1;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .hamburger-btn:active {
+            transform: scale(0.9);
+            opacity: 0.7;
         }
 
         .mobile-overlay {
