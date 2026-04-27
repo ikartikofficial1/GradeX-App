@@ -856,6 +856,24 @@
             }
         }
 
+        .loader-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            min-height: 200px;
+            flex-grow: 1;
+        }
+        
+        .fade-in-smooth {
+            animation: smoothFadeIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+        }
+
+        @keyframes smoothFadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         @media (max-width: 768px) {
             .input-container {
@@ -1050,7 +1068,8 @@
 
         <div id="input-section" class="input-container centered-state">
             <div class="input-history-line"></div>
-            <h1 id="welcome-text" class="mb-4 fw-bold text-center">Hello! How can I help?</h1>
+            <!-- <h1 id="welcome-text" class="mb-4 fw-bold text-center">Hello! How can I help?</h1> -->
+            <h1 id="welcome-text" class="mb-4 fw-bold text-center" style="opacity: 0; transition: opacity 0.5s ease;"></h1>
             <div class="input-group input-group-lg w-100 d-flex gap-3 flex-nowrap">
                 <input type="text" id="user-input" class="form-control custom-input" placeholder="Dil ki baat likho..."
                     autocomplete="off" disabled>
@@ -1142,7 +1161,7 @@
             auth.signOut();
         }
 
-        auth.onAuthStateChanged(user => {
+       auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
                 loginBtn.style.display = 'none';
@@ -1159,6 +1178,7 @@
                     loadSpecificChat(savedChatId);
                 } else {
                     welcomeText.innerText = `Hello ${user.displayName.split(" ")[0]}, Main hamesha tumhare sath hu...`;
+                    welcomeText.style.opacity = "1"; // 🔥 NAYA FIX: Data aane ke baad text fade-in karo
                     resetToNewChat();
                 }
             } else {
@@ -1169,16 +1189,27 @@
                 userInput.disabled = true;
                 sendBtn.disabled = true;
                 welcomeText.innerText = "Dost, pehle login karlo!";
+                welcomeText.style.opacity = "1"; // 🔥 NAYA FIX: Bina login wale text ko bhi fade-in karo
                 sidebarChatList.innerHTML = '';
                 resetToNewChat();
             }
         });
 
-        function loadSidebarHistory() {
+     function loadSidebarHistory() {
             if (!currentUser) return;
+
+            // 🔥 PERFECT CENTERED SPINNER 🔥
+            sidebarChatList.innerHTML = `
+                <div class="loader-center">
+                    <div class="thinking-spinner" style="width: 35px; height: 35px; border-width: 4px;"></div>
+                </div>`;
+
             database.ref('userChats/' + currentUser.uid).on('value', (snapshot) => {
-                sidebarChatList.innerHTML = '<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Tumhari Baatein</small>';
                 const data = snapshot.val();
+                
+                // 🔥 FADE-IN WRAPPER START 🔥
+                let htmlContent = '<div class="fade-in-smooth">';
+                htmlContent += '<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Tumhari Baatein</small>';
 
                 if (data) {
                     const chatsArray = Object.keys(data).map(key => {
@@ -1195,10 +1226,9 @@
                         const id = chat.id;
                         const title = chat.title || "Nayi Baat";
                         const safeTitle = title.replace(/"/g, '&quot;');
-
                         let isActive = (currentChatId === id) ? "active-chat" : "";
 
-                        sidebarChatList.innerHTML += `
+                        htmlContent += `
                             <div class="chat-wrapper" id="wrapper-${id}">
                                 <div class="chat-item mt-2 ${isActive}" id="chat-item-${id}" onclick="loadSpecificChat('${id}')">
                                      <span class="chat-icon">💬</span> 
@@ -1228,6 +1258,10 @@
                         `;
                     });
                 }
+                
+                // 🔥 FADE-IN WRAPPER END 🔥
+                htmlContent += '</div>';
+                sidebarChatList.innerHTML = htmlContent;
             });
         }
 
@@ -1269,7 +1303,7 @@
                 });
         }
 
-        window.loadSpecificChat = function (id) {
+      window.loadSpecificChat = function (id) {
             currentChatId = id;
             localStorage.setItem('activeChatId', id);
             if (window.innerWidth <= 768) { closeSidebar(); }
@@ -1278,35 +1312,52 @@
             let activeElement = document.getElementById(`chat-item-${id}`);
             if (activeElement) activeElement.classList.add('active-chat');
 
+            inputSection.classList.remove('centered-state');
+            inputSection.classList.add('bottom-state');
+            welcomeText.style.display = 'none';
+            chatHistory.style.display = 'flex';
+
+            // 🔥 PERFECT CENTERED SPINNER (Main Chat) 🔥
+            chatHistory.innerHTML = `
+                <div class="loader-center" style="height: 60vh;">
+                    <div class="thinking-spinner" style="width: 50px; height: 50px; border-width: 5px;"></div>
+                </div>`;
+
             database.ref('userChats/' + currentUser.uid + '/' + id).once('value').then((snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    inputSection.classList.remove('centered-state');
-                    inputSection.classList.add('bottom-state');
-                    welcomeText.style.display = 'none';
-                    chatHistory.style.display = 'flex';
-
-                    chatHistory.innerHTML = "";
                     currentChatMessages = data.messages || [];
+
+                    // 🔥 FADE-IN WRAPPER START 🔥
+                    let htmlContent = '<div class="fade-in-smooth w-100 d-flex flex-column" style="gap: 15px;">';
 
                     currentChatMessages.forEach(msg => {
                         if (msg.role === 'user') {
-                            chatHistory.innerHTML += `
-                            <div class="d-flex justify-content-end w-100 mb-2">
+                            htmlContent += `
+                            <div class="d-flex justify-content-end w-100">
                                 <div class="message-bubble user-msg">
                                     <strong>${currentUser.displayName.split(" ")[0]}:</strong> <br>${msg.text}
                                 </div>
                             </div>`;
                         } else {
-                            chatHistory.innerHTML += `
-                            <div class="d-flex justify-content-start w-100 mb-2">
+                            htmlContent += `
+                            <div class="d-flex justify-content-start w-100">
                                 <div class="message-bubble bot-msg">
                                     <strong>MyGPT:</strong> <br>${marked.parse(msg.text)}
                                 </div>
                             </div>`;
                         }
                     });
-                    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+                    // 🔥 FADE-IN WRAPPER END 🔥
+                    htmlContent += '</div>';
+                    
+                    chatHistory.innerHTML = htmlContent;
+                    
+                    // Thoda delay taaki DOM render hone ke baad scroll bottom pe aaye
+                    setTimeout(() => {
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                    }, 50);
                 }
             });
         }
