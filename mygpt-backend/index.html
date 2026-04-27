@@ -240,7 +240,8 @@
             /* ... baaki style wahi rahega ... */
             background: transparent;
             border: none;
-            color: var(--text-main); /* Light mode me dark, Dark mode me light */
+            color: var(--text-main);
+            /* Light mode me dark, Dark mode me light */
             font-size: 22px;
             padding: 5px;
             border-radius: 8px;
@@ -537,30 +538,44 @@
             /* 🔥 FIX: Main content ko poori height do */
         }
 
+        /* 🔥 THEEK KIYA HUA MAIN INPUT CONTAINER 🔥 */
         .input-container {
             width: 100%;
-            max-width: 850px;
+            max-width: 100% !important; /* 🔥 FIX: Pehle 850px tha. Ab ye pura 100% width cover karega taaki text na jhaanke */
             margin: 0 auto;
-            padding: 15px 20px;
-            /* Thoda padding kam kiya */
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            /* 🔥 FIX: Input ko hamesha neeche fixed rakho */
+            padding: 40px 20px 25px 20px; /* Upar se thodi padding badhai taaki text aaram se fade ho */
             position: absolute;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(to top, var(--bg-body) 80%, transparent);
-            /* Piche se transparent fade effect */
+            left: 0; 
+            right: 0; 
+            transform: none; 
+            /* 🔥 NAYA PREMIUM BOTTOM FADE: Ab line nahi katega, smooth dhundhla hoga 🔥 */
+            background: linear-gradient(to top, var(--bg-body) 40%, transparent 100%);
             z-index: 100;
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-sizing: border-box;
         }
 
+       /* Nayi Chat - Beech me dikhane ke liye (Desktop) */
         .input-container.centered-state {
             position: absolute;
-            top: 50%; /* Aankhon ke hisaab se perfect center (thoda upar) */
+            top: 35%; /* 🔥 FIX: 45% se 50% kar diya (True Center) */
             bottom: auto;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: transparent; /* Piche ka gradient hata diya */
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            transform: translateY(-50%);
+            background: transparent;
+        }
+
+        /* 🔥 NAYA RULE: Background 100% hua, par Text aur Input 850px hi rahenge 🔥 */
+        .input-container .input-group,
+        .input-container h1#welcome-text {
+            width: 100%;
+            font-size: 30px;
+            max-width: 850px;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
 
         .bottom-state {
@@ -592,17 +607,11 @@
         }
 
         .input-history-line {
-            position: absolute;
-            bottom: 100%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: rgba(192, 133, 82, 0.1);
-            display: none;
+            display: none !important;
         }
 
         .bottom-state .input-history-line {
-            display: block;
+            display: none !important;
         }
 
         .custom-input {
@@ -756,6 +765,7 @@
             color: var(--med-brown);
             letter-spacing: -0.5px;
             transition: color 0.3s ease;
+            margin-bottom: 20px !important; /* 🔥 FIX: Text aur Input ke beech ka gap chota kiya taaki ek block lage */
         }
 
         body.dark-theme h1#welcome-text {
@@ -865,14 +875,21 @@
             min-height: 200px;
             flex-grow: 1;
         }
-        
+
         .fade-in-smooth {
             animation: smoothFadeIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
         }
 
         @keyframes smoothFadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 768px) {
@@ -898,9 +915,9 @@
                 /* Input box ke liye jagah */
             }
 
-            .chat-history > div:last-child {
+            .chat-history>div:last-child {
                 /* Mobile pe input box thoda lamba hota hai, isliye space zyada */
-                margin-bottom: 50px !important; 
+                margin-bottom: 50px !important;
             }
 
             .centered-state {
@@ -996,12 +1013,23 @@
             }
 
             h1#welcome-text {
-                font-size: 24px;
+                font-size: 20px !important;
                 margin-top: 30px;
             }
 
             .chat-options-btn {
                 display: block;
+                background: transparent;
+            }
+            .input-container.centered-state {
+                position: absolute;
+                top: 35%; /* 🔥 FIX: Mobile pe bhi 50% kar diya */
+                bottom: auto;
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+                transform: translateY(-50%);
+                width: 100%;
                 background: transparent;
             }
         }
@@ -1010,6 +1038,17 @@
 
 <body class="d-flex">
     <div class="top-fade-mask"></div>
+    <div id="onboarding-overlay" class="share-modal-backdrop" style="z-index: 3000;">
+        <div class="share-modal fade-in-smooth" style="max-width: 450px;">
+            <h3 style="color: var(--med-brown); font-weight: bold; margin-bottom: 15px;">Ek choti si baat... 🤫</h3>
+            <p style="font-size: 14px; opacity: 0.8; margin-bottom: 20px;">Google ne toh tumhara naam kuch aur bataya
+                hai, par main tumhe pyar se kis naam se bulaun?</p>
+            <input type="text" id="nickname-input" class="form-control custom-input"
+                placeholder="Tumhara pyara sa naam..." autocomplete="off" style="margin-bottom: 20px;">
+            <button class="send-btn w-100" style="padding: 12px; font-size: 16px !important;"
+                onclick="saveNickname()">Shuru Karein 🚀</button>
+        </div>
+    </div>
     <div class="share-modal-backdrop" id="share-modal-backdrop" onclick="closeShareModal()">
         <div class="share-modal" onclick="event.stopPropagation()">
             <h4 style="color: var(--med-brown); font-weight: bold;">Share Chat 🚀</h4>
@@ -1064,12 +1103,16 @@
     </div>
 
     <div class="main-content">
+        <div id="main-initial-loader" class="loader-center" style="height: 100vh;">
+            <div class="thinking-spinner" style="width: 50px; height: 50px; border-width: 5px;"></div>
+        </div>
+
         <div id="chat-history" class="chat-history" style="display: none;"></div>
 
-        <div id="input-section" class="input-container centered-state">
+        <div id="input-section" class="input-container centered-state" style="display: none;">
             <div class="input-history-line"></div>
-            <!-- <h1 id="welcome-text" class="mb-4 fw-bold text-center">Hello! How can I help?</h1> -->
-            <h1 id="welcome-text" class="mb-4 fw-bold text-center" style="opacity: 0; transition: opacity 0.5s ease;"></h1>
+            <h1 id="welcome-text" class="mb-4 fw-bold text-center" style="opacity: 0; transition: opacity 0.5s ease;">
+            </h1>
             <div class="input-group input-group-lg w-100 d-flex gap-3 flex-nowrap">
                 <input type="text" id="user-input" class="form-control custom-input" placeholder="Dil ki baat likho..."
                     autocomplete="off" disabled>
@@ -1099,6 +1142,7 @@
         let currentUser = null;
         let currentChatId = null;
         let currentChatMessages = [];
+        let userNickname = "";
 
         const inputSection = document.getElementById('input-section');
         const chatHistory = document.getElementById('chat-history');
@@ -1161,41 +1205,97 @@
             auth.signOut();
         }
 
-       auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
                 loginBtn.style.display = 'none';
                 profileTrigger.style.display = 'flex';
                 userPic.src = user.photoURL;
-                userName.innerText = user.displayName.split(" ")[0];
+                // 🔥 NAYA FIX: Jab tak DB se naam na aaye, yahan "..." (Loading) dikhao
+                userName.innerText = "...";
+                // 🔥 NAYA FIX: Yahan se 'userName' hataya. Ab flash nahi hoga!
+                // Input aur Chat ko hide rakho jab tak loader chal raha hai
+                document.getElementById('main-initial-loader').style.display = 'flex';
+                inputSection.style.display = 'none';
 
                 userInput.disabled = false;
                 sendBtn.disabled = false;
                 loadSidebarHistory();
 
-                const savedChatId = localStorage.getItem('activeChatId');
-                if (savedChatId) {
-                    loadSpecificChat(savedChatId);
-                } else {
-                    welcomeText.innerText = `Hello ${user.displayName.split(" ")[0]}, Main hamesha tumhare sath hu...`;
-                    welcomeText.style.opacity = "1"; // 🔥 NAYA FIX: Data aane ke baad text fade-in karo
-                    resetToNewChat();
-                }
+                database.ref('users/' + user.uid + '/profile').once('value').then((snapshot) => {
+                    const profile = snapshot.val();
+                    
+                    if (profile && profile.nickname) {
+                        // User purana hai! Ab naam set karo
+                        userNickname = profile.nickname;
+                        userName.innerText = userNickname; // Bina flash hue direct Kittu aayega!
+                        document.getElementById('onboarding-overlay').style.display = 'none';
+                        loadMainApp(); 
+                    } else {
+                        // Naya User hai! Modal dikhao.
+                        userName.innerText = user.displayName.split(" ")[0]; // Backup name
+                        document.getElementById('main-initial-loader').style.display = 'none';
+                        document.getElementById('onboarding-overlay').style.display = 'flex';
+                    }
+                });
+
             } else {
                 currentUser = null;
                 currentChatId = null;
+                userNickname = "";
                 loginBtn.style.display = 'block';
                 profileTrigger.style.display = 'none';
                 userInput.disabled = true;
                 sendBtn.disabled = true;
+                document.getElementById('onboarding-overlay').style.display = 'none';
+                
+                // Logout hone par loader chupao aur input box dikhao (disabled state me)
+                document.getElementById('main-initial-loader').style.display = 'none';
+                inputSection.style.display = ''; 
+                
                 welcomeText.innerText = "Dost, pehle login karlo!";
-                welcomeText.style.opacity = "1"; // 🔥 NAYA FIX: Bina login wale text ko bhi fade-in karo
+                welcomeText.style.opacity = "1"; 
                 sidebarChatList.innerHTML = '';
                 resetToNewChat();
             }
         });
 
-     function loadSidebarHistory() {
+          // 🔥 NAYA FUNCTION: Nickname save karne ke liye 🔥
+        window.saveNickname = function () {
+            const nameInput = document.getElementById('nickname-input').value.trim();
+            if (!nameInput) return alert("Are naam toh bata do yaar! 😅");
+
+            // Firebase me naam save karo
+            database.ref('users/' + currentUser.uid + '/profile').set({
+                nickname: nameInput,
+                joinedAt: Date.now()
+            }).then(() => {
+                userNickname = nameInput;
+                document.getElementById('onboarding-overlay').style.display = 'none';
+                loadMainApp(); // Save hote hi app chalu!
+            });
+        }
+
+      // 🔥 MAIN APP LOAD FUNCTION 🔥
+        function loadMainApp() {
+            userName.innerText = userNickname; 
+
+            // 🔥 LOADER HATAO, INPUT BOX DIKHAO 🔥
+            document.getElementById('main-initial-loader').style.display = 'none';
+            inputSection.style.display = ''; // inline display none hata diya
+            inputSection.classList.add('fade-in-smooth'); // Premium fade effect se ayega
+
+            const savedChatId = localStorage.getItem('activeChatId');
+            if (savedChatId) {
+                loadSpecificChat(savedChatId);
+            } else {
+                welcomeText.innerText = `Hello ${userNickname}, Main hamesha tumhare sath hu...`;
+                welcomeText.style.opacity = "1"; 
+                resetToNewChat();
+            }
+        }
+
+        function loadSidebarHistory() {
             if (!currentUser) return;
 
             // 🔥 PERFECT CENTERED SPINNER 🔥
@@ -1206,10 +1306,10 @@
 
             database.ref('userChats/' + currentUser.uid).on('value', (snapshot) => {
                 const data = snapshot.val();
-                
+
                 // 🔥 FADE-IN WRAPPER START 🔥
                 let htmlContent = '<div class="fade-in-smooth">';
-                htmlContent += '<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Tumhari Baatein</small>';
+                htmlContent += '<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Your Chats</small>';
 
                 if (data) {
                     const chatsArray = Object.keys(data).map(key => {
@@ -1258,7 +1358,7 @@
                         `;
                     });
                 }
-                
+
                 // 🔥 FADE-IN WRAPPER END 🔥
                 htmlContent += '</div>';
                 sidebarChatList.innerHTML = htmlContent;
@@ -1303,7 +1403,7 @@
                 });
         }
 
-      window.loadSpecificChat = function (id) {
+        window.loadSpecificChat = function (id) {
             currentChatId = id;
             localStorage.setItem('activeChatId', id);
             if (window.innerWidth <= 768) { closeSidebar(); }
@@ -1351,9 +1451,9 @@
 
                     // 🔥 FADE-IN WRAPPER END 🔥
                     htmlContent += '</div>';
-                    
+
                     chatHistory.innerHTML = htmlContent;
-                    
+
                     // Thoda delay taaki DOM render hone ke baad scroll bottom pe aaye
                     setTimeout(() => {
                         chatHistory.scrollTop = chatHistory.scrollHeight;
@@ -1388,7 +1488,7 @@
         // 🔥 THE ULTIMATE SMOOTH STREAMING AND THINKING FIX (WITH ERROR CATCHER) 🔥
         async function fetchGeminiResponse(message, expectedChatId) {
             const url = `/api/chat`;
-            const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
+            const userNameForPrompt = userNickname || (currentUser ? currentUser.displayName.split(" ")[0] : "Dost");
             const historyToSend = currentChatMessages.slice(0, -1);
             let msgId = "msg_" + Date.now();
 
