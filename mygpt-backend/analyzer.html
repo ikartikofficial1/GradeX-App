@@ -55,7 +55,6 @@
             padding: 20px 30px;
             display: flex;
             justify-content: space-between;
-            /* Forces items to opposite ends */
             align-items: center;
             border-bottom: 1px solid rgba(192, 133, 82, 0.15);
         }
@@ -162,7 +161,6 @@
             box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1);
         }
 
-        /* 🔥 THEME BASED CUSTOM SCROLLBARS 🔥 */
         .custom-textarea::-webkit-scrollbar,
         .ai-result-box::-webkit-scrollbar {
             width: 8px;
@@ -268,94 +266,23 @@
             margin-bottom: 15px;
         }
 
-        .loader-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            width: 50px;
-            height: 50px;
-            margin: 20px auto;
-        }
-
-        .spinner-ring {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 3px solid rgba(192, 133, 82, 0.2);
-            border-top-color: var(--light-brown);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        .loader-logo {
-            width: 25px;
-            height: 25px;
-            object-fit: contain;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
         @keyframes pulse {
-            0% {
-                transform: scale(0.9);
-                opacity: 0.8;
-            }
-
-            50% {
-                transform: scale(1.1);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(0.9);
-                opacity: 0.8;
-            }
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 🔥 100% RESPONSIVE CSS 🔥 */
         @media (max-width: 600px) {
-            .analyzer-card {
-                padding: 25px;
-            }
-
-            .tool-icon {
-                font-size: 35px;
-            }
-
-            .tool-title {
-                font-size: 22px;
-            }
-
-            .top-navbar {
-                padding: 15px 20px;
-            }
-
-            .ai-result-box {
-                padding: 15px 10px 15px 15px;
-                font-size: 14.5px;
-            }
+            .analyzer-card { padding: 25px; }
+            .tool-icon { font-size: 35px; }
+            .tool-title { font-size: 22px; }
+            .top-navbar { padding: 15px 20px; }
+            .ai-result-box { padding: 15px 10px 15px 15px; font-size: 14.5px; }
         }
     </style>
 </head>
@@ -380,15 +307,8 @@
             <button id="analyze-btn" class="analyze-btn" onclick="startAnalysis()">🚀 Analyze My Performance</button>
 
             <div id="result-area" class="ai-result-box">
-                <div id="loading-spinner" class="loader-container" style="display: none;">
-                    <div class="spinner-ring"></div>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" alt="AI Logo"
-                        class="loader-logo">
-                </div>
-                <div id="ai-content" class="typing-content" style="display: none;"></div>
-
-                <button id="continue-btn" class="continue-btn" onclick="continueInMainChat()">💬 Continue Chatting with
-                    AI</button>
+                <div id="ai-content" class="typing-content"></div>
+                <button id="continue-btn" class="continue-btn" onclick="continueInMainChat()">💬 Continue Chatting with AI</button>
             </div>
         </div>
     </div>
@@ -442,7 +362,6 @@
             const analyzeBtn = document.getElementById('analyze-btn');
             const resultArea = document.getElementById('result-area');
             const aiContent = document.getElementById('ai-content');
-            const loadingSpinner = document.getElementById('loading-spinner');
             const continueBtn = document.getElementById('continue-btn');
 
             if (!inputData) { alert("Bhai, pehle apne marks toh likho dabbe me!"); return; }
@@ -452,12 +371,12 @@
             analyzeBtn.innerText = "Dimaag laga raha hu... ⏳";
             continueBtn.style.display = 'none';
             resultArea.style.display = 'block';
-            aiContent.style.display = 'none';
-            loadingSpinner.style.display = 'flex';
-
+            
+            // Initial Loading Text
+            aiContent.innerHTML = `<span style="color: var(--light-brown); font-weight: bold; font-style: italic; animation: pulse 1.5s infinite;">⏳ Marks deeply analyze ho rahe hain...</span>`;
+            
             const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
 
-            // 🔥 THE ULTIMATE HYPER-DEEP GUARDRAIL PROMPT 🔥
             const secretInstruction = `
             Tu GradeX ka ek Highly Dedicated, Expert Academic Mentor aur bada bhai hai.
             Tera ek hi maqsad hai: Sirf aur sirf Student ke Subjects aur Marks ko deeply analyze karna.
@@ -467,21 +386,20 @@
             Tujhe is input ko dhyan se padhna hai aur in 2 Scenarios mein se ek ko STRICTLY follow karna hai:
 
             ❌ SCENARIO 1 (Agar input mein KOI marks nahi hain / Off-topic hai):
-            Agar user ne sirf 'Hi', 'Hello', 'Tum kon ho', ya koi random sawal pucha hai jisme academic marks ya subjects nahi hain:
+            Agar user ne sirf 'Hi', 'Hello', ya koi random sawal pucha hai jisme academic marks nahi hain:
             - Apna jawab EXACTLY is emoji se shuru kar: 🛑
-            - Usko ek witty aur funny reply de (e.g. "🛑 Hello bhai! Main mast hu, par tu apne marks toh bata...").
-            - Usko clearly samjha de ki "Ye ek Performance Analyzer Tool hai, faltu baat ke liye 'Back to Chat' daba kar wahan aaja."
+            - Usko ek witty aur funny reply de.
+            - Usko clearly samjha de ki "Ye ek Performance Analyzer Tool hai".
 
             ✅ SCENARIO 2 (Agar input mein Subjects aur Marks hain):
-            Agar input me sach mein marks hain, toh tujhe 🛑 EMOJI KA USE BILKUL NAHI KARNA HAI.
-            Tujhe ekdum PhD level ki deep, lamba aur extremely detailed analysis karni hai. Kam se kam 300-500 words ka lamba jawab hona chahiye. Is structure ko strictly follow kar:
-            1. 🔬 **Macro & Micro Reality Check:** Student ki overall performance ka post-mortem kar. Kis subject me excel kiya aur kahan dubki lagayi? Data ke base pe bata.
-            2. 🧠 **Psychological & Strategic Diagnosis:** Jo marks kam aaye, wo kyun aaye? (Concept gap, silly mistakes, lack of practice). Deep reason bata.
-            3. 📅 **The 7-Day Micro-Schedule:** Ekdum practical agle 7 din ka action plan de ki kis subject me kitne ghante dene hain.
-            4. 🚀 **Pro-Level Execution Techniques:** Active Recall, Spaced Repetition, ya Feynman Technique ko in specific subjects me kaise lagana hai, wo deep detail me samjha.
-            5. 🔥 **Motivation:** End me ek aisi aag lagane wali line bol jisse padhne ka man kare.
+            Tujhe ekdum PhD level ki deep, lamba aur extremely detailed analysis karni hai. Kam se kam 300-500 words ka jawab de. Is structure ko strictly follow kar:
+            1. 🔬 Macro & Micro Reality Check.
+            2. 🧠 Psychological & Strategic Diagnosis.
+            3. 📅 The 7-Day Micro-Schedule.
+            4. 🚀 Pro-Level Execution Techniques.
+            5. 🔥 Motivation.
 
-            Bhasha ekdum human, friendly aur Hinglish rakh. Jawab ko Markdown (**, -, \`\`) se properly format kar jisse padhne me maza aaye.
+            Bhasha human, friendly aur Hinglish rakh. Markdown (**, -, \`\`) se properly format kar.
             `;
 
             try {
@@ -491,55 +409,64 @@
                     body: JSON.stringify({ message: secretInstruction, userName: userNameForPrompt })
                 });
 
-                const data = await response.json();
-                loadingSpinner.style.display = 'none';
-                aiContent.style.display = 'block';
+                // 🔥 ASLI STREAMING LOGIC FOR TOOLS 🔥
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let rawBotReply = "";
+                let isFirstChunk = true;
 
-                if (data.error) {
-                    aiContent.innerHTML = `<span class='text-danger fw-bold'>Error: ${data.error.message || data.error}</span>`;
-                    resetButton();
-                    return;
-                }
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                if (data && data.candidates) {
-                    let rawBotReply = data.candidates[0].content.parts[0].text;
-                    aiContent.innerHTML = "";
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split("\n");
 
-                    savedUserPrompt = `Maine apne marks analyze karne ko diye the:\n${inputData}`;
-                    savedAiResponse = rawBotReply;
+                    for (const line of lines) {
+                        if (line.startsWith("data: ")) {
+                            try {
+                                const json = JSON.parse(line.substring(6));
+                                
+                                if (json.error) {
+                                    aiContent.innerHTML = `<span class='text-danger fw-bold'>Error: ${json.error.message || json.error}</span>`;
+                                    resetButton();
+                                    return;
+                                }
 
-                    let index = 0;
+                                if (json.candidates && json.candidates[0].content.parts[0].text) {
+                                    if (isFirstChunk) {
+                                        aiContent.innerHTML = ""; // Loading text hatao
+                                        isFirstChunk = false;
+                                    }
 
-                    await new Promise((resolve) => {
-                        let typingInterval = setInterval(() => {
-                            if (index <= rawBotReply.length) {
-                                aiContent.innerHTML = marked.parse(rawBotReply.substring(0, index));
-
-                                // 🔥 AUTO-SCROLL TO BOTTOM AS TEXT TYPES 🔥
-                                resultArea.scrollTop = resultArea.scrollHeight;
-
-                                index += 4; // Optimized typing speed for long detailed text
-                            } else {
-                                clearInterval(typingInterval);
-                                aiContent.innerHTML = marked.parse(rawBotReply);
-                                resultArea.scrollTop = resultArea.scrollHeight;
-
-                                // Agar reply '🛑' se shuru nahi ho raha (yaani marks the), tabhi button dikhao.
-                                if (!rawBotReply.trim().startsWith("🛑")) {
-                                    continueBtn.style.display = 'block';
+                                    const text = json.candidates[0].content.parts[0].text;
+                                    rawBotReply += text;
+                                    
+                                    aiContent.innerHTML = marked.parse(rawBotReply);
                                     resultArea.scrollTop = resultArea.scrollHeight;
                                 }
-                                resolve();
+                            } catch (e) {
+                                // Ignore incomplete chunks
                             }
-                        }, 15);
-                    });
+                        }
+                    }
                 }
+
+                savedUserPrompt = `Maine apne marks analyze karne ko diye the:\n${inputData}`;
+                savedAiResponse = rawBotReply;
+
+                if (!rawBotReply.trim().startsWith("🛑")) {
+                    continueBtn.style.display = 'block';
+                    resultArea.scrollTop = resultArea.scrollHeight;
+                }
+                
+                resetButton();
+
             } catch (error) {
-                loadingSpinner.style.display = 'none';
-                aiContent.style.display = 'block';
-                aiContent.innerHTML = `<span class='text-danger fw-bold'>Connection Error: Backend server band hai. Apne VS Code terminal me 'node server.js' chalao!</span>`;
+                console.error("Tool Streaming Error:", error);
+                aiContent.innerHTML = `<span class='text-danger fw-bold'>Connection Error: Backend server theek se stream nahi kar pa raha hai.</span>`;
+                resetButton();
             }
-            resetButton();
         }
 
         function resetButton() {

@@ -72,27 +72,6 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* 🔥 AI THINKING SPINNER & ANIMATIONS 🔥 */
-        .thinking-spinner {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 3px solid rgba(192, 133, 82, 0.2);
-            border-top-color: var(--light-brown);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .thinking-text-phrase {
-            transition: opacity 0.3s ease;
-            font-size: 14px;
-        }
-
         .auth-container {
             position: absolute;
             top: 15px;
@@ -698,17 +677,33 @@
         }
 
         @keyframes blink {
-            50% { opacity: 0; }
+            50% {
+                opacity: 0;
+            }
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes dropdownFadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         h1#welcome-text {
@@ -780,13 +775,24 @@
         }
 
         @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
+            0% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
         }
 
         @media (max-width: 768px) {
-            .hamburger-btn { display: block; }
+            .hamburger-btn {
+                display: block;
+            }
+
             .sidebar {
                 position: fixed;
                 top: 0;
@@ -796,27 +802,85 @@
                 border-radius: 0;
                 z-index: 1070;
             }
-            .sidebar.active { transform: translateX(0); }
-            .mobile-overlay.active { display: block; opacity: 1; }
-            .close-sidebar-btn { display: block; }
-            .auth-container { top: 12px; right: 12px; }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .mobile-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+
+            .close-sidebar-btn {
+                display: block;
+            }
+
+            .auth-container {
+                top: 12px;
+                right: 12px;
+            }
+
             .profile-trigger {
                 padding: 5px 12px;
                 gap: 8px;
                 box-shadow: none;
                 border-color: rgba(192, 133, 82, 0.1);
             }
-            .profile-pic { width: 32px; height: 32px; }
-            #user-name { font-size: 13px; }
-            .dropdown-arrow { font-size: 8px; }
-            .profile-dropdown { right: 0; left: auto; min-width: 180px; }
-            .dropdown-item { font-size: 13.5px; padding: 8px 15px; }
-            .message-bubble { max-width: 95%; font-size: 14.5px; padding: 14px 18px; }
-            .input-container { padding: 15px 10px; }
-            .custom-input { padding: 12px 20px; font-size: 15px; }
-            .send-btn { padding: 0 18px; margin-left: 5px; }
-            h1#welcome-text { font-size: 24px; margin-top: 30px; }
-            .chat-options-btn { display: block; background: transparent; }
+
+            .profile-pic {
+                width: 32px;
+                height: 32px;
+            }
+
+            #user-name {
+                font-size: 13px;
+            }
+
+            .dropdown-arrow {
+                font-size: 8px;
+            }
+
+            .profile-dropdown {
+                right: 0;
+                left: auto;
+                min-width: 180px;
+            }
+
+            .dropdown-item {
+                font-size: 13.5px;
+                padding: 8px 15px;
+            }
+
+            .message-bubble {
+                max-width: 95%;
+                font-size: 14.5px;
+                padding: 14px 18px;
+            }
+
+            .input-container {
+                padding: 15px 10px;
+            }
+
+            .custom-input {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+
+            .send-btn {
+                padding: 0 18px;
+                margin-left: 5px;
+            }
+
+            h1#welcome-text {
+                font-size: 24px;
+                margin-top: 30px;
+            }
+
+            .chat-options-btn {
+                display: block;
+                background: transparent;
+            }
         }
     </style>
 </head>
@@ -890,10 +954,467 @@
         </div>
     </div>
 
+  
     <script>
-    //   ye mai khud krlunga
-    </script>
+        // 🛑 FIREBASE CONFIG 🛑
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
+            authDomain: "my-gemini-bot-gradex.firebaseapp.com",
+            databaseURL: "https://my-gemini-bot-gradex-default-rtdb.firebaseio.com/",
+            projectId: "my-gemini-bot-gradex",
+            storageBucket: "my-gemini-bot-gradex.firebasestorage.app",
+            messagingSenderId: "979133444805",
+            appId: "1:979133444805:web:e1bc587482362365e2b6ac",
+            measurementId: "G-0GFKZBZ8M1"
+        };
 
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const database = firebase.database();
+
+        let currentUser = null;
+        let currentChatId = null;
+        let currentChatMessages = [];
+
+        const inputSection = document.getElementById('input-section');
+        const chatHistory = document.getElementById('chat-history');
+        const welcomeText = document.getElementById('welcome-text');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const sidebarChatList = document.getElementById('sidebar-chat-list');
+        const loginBtn = document.getElementById('login-btn');
+        const profileArea = document.getElementById('profile-area');
+        const userPic = document.getElementById('user-pic');
+        const userName = document.getElementById('user-name');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const profileTrigger = document.getElementById('profile-trigger');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+        function initTheme() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-theme');
+                darkModeToggle.checked = true;
+            }
+        }
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-theme', darkModeToggle.checked);
+            localStorage.setItem('theme', darkModeToggle.checked ? 'dark' : 'light');
+        }
+        initTheme();
+
+        function toggleProfileDropdown(event) {
+            if (!currentUser) return;
+            profileDropdown.classList.toggle('active');
+            profileTrigger.classList.toggle('active');
+        }
+
+        function closeAllMenus() {
+            document.querySelectorAll('.chat-options-menu.active').forEach(menu => menu.classList.remove('active'));
+        }
+
+        window.addEventListener('click', function (e) {
+            if (!profileArea.contains(e.target)) {
+                profileDropdown.classList.remove('active');
+                profileTrigger.classList.remove('active');
+            }
+            closeAllMenus();
+        });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('mobile-overlay').classList.toggle('active');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('mobile-overlay').classList.remove('active');
+        }
+
+        function signInWithGoogle() { auth.signInWithPopup(provider).catch(err => alert("Login failed")); }
+        function signOut(event) {
+            profileDropdown.classList.remove('active');
+            profileTrigger.classList.remove('active');
+            localStorage.removeItem('activeChatId');
+            auth.signOut();
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                loginBtn.style.display = 'none';
+                profileTrigger.style.display = 'flex';
+                userPic.src = user.photoURL;
+                userName.innerText = user.displayName.split(" ")[0];
+
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                loadSidebarHistory();
+
+                const savedChatId = localStorage.getItem('activeChatId');
+                if (savedChatId) {
+                    loadSpecificChat(savedChatId);
+                } else {
+                    welcomeText.innerText = `Hello ${user.displayName.split(" ")[0]}, Main hamesha tumhare sath hu...`;
+                    resetToNewChat();
+                }
+            } else {
+                currentUser = null;
+                currentChatId = null;
+                loginBtn.style.display = 'block';
+                profileTrigger.style.display = 'none';
+                userInput.disabled = true;
+                sendBtn.disabled = true;
+                welcomeText.innerText = "Dost, pehle login karlo!";
+                sidebarChatList.innerHTML = '';
+                resetToNewChat();
+            }
+        });
+
+        function loadSidebarHistory() {
+            if (!currentUser) return;
+            database.ref('userChats/' + currentUser.uid).on('value', (snapshot) => {
+                sidebarChatList.innerHTML = '<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Tumhari Baatein</small>';
+                const data = snapshot.val();
+
+                if (data) {
+                    const chatsArray = Object.keys(data).map(key => {
+                        return { id: key, ...data[key] };
+                    });
+
+                    chatsArray.sort((a, b) => {
+                        let timeA = a.updatedAt || parseInt(a.id.split('_')[1]) || 0;
+                        let timeB = b.updatedAt || parseInt(b.id.split('_')[1]) || 0;
+                        return timeB - timeA;
+                    });
+
+                    chatsArray.forEach(chat => {
+                        const id = chat.id;
+                        const title = chat.title || "Nayi Baat";
+                        const safeTitle = title.replace(/"/g, '&quot;');
+
+                        let isActive = (currentChatId === id) ? "active-chat" : "";
+
+                        sidebarChatList.innerHTML += `
+                            <div class="chat-wrapper" id="wrapper-${id}">
+                                <div class="chat-item mt-2 ${isActive}" id="chat-item-${id}" onclick="loadSpecificChat('${id}')">
+                                     <span class="chat-icon">💬</span> 
+                                    <span class="chat-title-text">${title}</span>
+                                    <button class="chat-options-btn" onclick="event.stopPropagation(); toggleOptionsMenu('${id}')">⋮</button>
+                                    <div class="chat-options-menu" id="menu-${id}">
+                                        <button class="chat-option-item" onclick="event.stopPropagation(); shareChat('${id}')">🔗 Share</button>
+                                        <button class="chat-option-item" onclick="event.stopPropagation(); showRenameUI('${id}')">✏️ Rename</button>
+                                        <button class="chat-option-item chat-option-delete" onclick="event.stopPropagation(); showDeleteUI('${id}')">🗑️ Delete</button>
+                                    </div>
+                                </div>
+                                <div class="inline-action-box" id="rename-box-${id}">
+                                    <input type="text" class="rename-input-box" id="rename-input-${id}" value="${safeTitle}">
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn btn-confirm-save" onclick="saveRename('${id}')">Save</button>
+                                        <button class="action-btn btn-cancel" onclick="hideActionBox('${id}', 'rename')">Cancel</button>
+                                    </div>
+                                </div>
+                                <div class="inline-action-box" id="delete-box-${id}">
+                                    <div style="font-size: 13px; margin-bottom: 8px; color: var(--white); text-align: center;">Sach me delete karna hai?</div>
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn btn-confirm-del" onclick="confirmDelete('${id}')">Yes</button>
+                                        <button class="action-btn btn-cancel" onclick="hideActionBox('${id}', 'delete')">No</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+        }
+
+        window.toggleOptionsMenu = function (id) {
+            closeAllMenus();
+            const menu = document.getElementById(`menu-${id}`);
+            if (menu) menu.classList.toggle('active');
+        }
+
+        window.showRenameUI = function (id) {
+            closeAllMenus();
+            document.getElementById(`rename-box-${id}`).classList.add('active');
+            document.getElementById(`delete-box-${id}`).classList.remove('active');
+        }
+
+        window.showDeleteUI = function (id) {
+            closeAllMenus();
+            document.getElementById(`delete-box-${id}`).classList.add('active');
+            document.getElementById(`rename-box-${id}`).classList.remove('active');
+        }
+
+        window.hideActionBox = function (id, type) {
+            if (type === 'rename') document.getElementById(`rename-box-${id}`).classList.remove('active');
+            if (type === 'delete') document.getElementById(`delete-box-${id}`).classList.remove('active');
+        }
+
+        window.saveRename = function (id) {
+            const newTitle = document.getElementById(`rename-input-${id}`).value.trim();
+            if (newTitle) {
+                database.ref('userChats/' + currentUser.uid + '/' + id).update({ title: newTitle })
+                    .then(() => hideActionBox(id, 'rename'));
+            }
+        }
+
+        window.confirmDelete = function (id) {
+            database.ref('userChats/' + currentUser.uid + '/' + id).remove()
+                .then(() => {
+                    if (currentChatId === id) resetToNewChat();
+                });
+        }
+
+        window.loadSpecificChat = function (id) {
+            currentChatId = id;
+            localStorage.setItem('activeChatId', id);
+            if (window.innerWidth <= 768) { closeSidebar(); }
+
+            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active-chat'));
+            let activeElement = document.getElementById(`chat-item-${id}`);
+            if (activeElement) activeElement.classList.add('active-chat');
+
+            database.ref('userChats/' + currentUser.uid + '/' + id).once('value').then((snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    inputSection.classList.remove('centered-state');
+                    inputSection.classList.add('bottom-state');
+                    welcomeText.style.display = 'none';
+                    chatHistory.style.display = 'flex';
+
+                    chatHistory.innerHTML = "";
+                    currentChatMessages = data.messages || [];
+
+                    currentChatMessages.forEach(msg => {
+                        if (msg.role === 'user') {
+                            chatHistory.innerHTML += `
+                            <div class="d-flex justify-content-end w-100 mb-2">
+                                <div class="message-bubble user-msg">
+                                    <strong>${currentUser.displayName.split(" ")[0]}:</strong> <br>${msg.text}
+                                </div>
+                            </div>`;
+                        } else {
+                            chatHistory.innerHTML += `
+                            <div class="d-flex justify-content-start w-100 mb-2">
+                                <div class="message-bubble bot-msg">
+                                    <strong>MyGPT:</strong> <br>${marked.parse(msg.text)}
+                                </div>
+                            </div>`;
+                        }
+                    });
+                    chatHistory.scrollTop = chatHistory.scrollHeight;
+                }
+            });
+        }
+
+        function saveStateToCloud(firstMessageText = "Nayi Baat") {
+            if (!currentUser) return;
+
+            let now = Date.now();
+
+            if (!currentChatId) {
+                currentChatId = "chat_" + now;
+                localStorage.setItem('activeChatId', currentChatId);
+                let safeTitle = firstMessageText ? firstMessageText.substring(0, 30) : "Nayi Baat";
+
+                database.ref('userChats/' + currentUser.uid + '/' + currentChatId).set({
+                    title: safeTitle + "...",
+                    messages: currentChatMessages,
+                    updatedAt: now
+                });
+            } else {
+                database.ref('userChats/' + currentUser.uid + '/' + currentChatId).update({
+                    messages: currentChatMessages,
+                    updatedAt: now
+                });
+            }
+        }
+
+        // 🔥 YAHAN THI GALTI: Ab isko ekdum perfectly pack kar diya hai
+        async function fetchGeminiResponse(message, expectedChatId) {
+            const url = `/api/chat`;
+            const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
+            const historyToSend = currentChatMessages.slice(0, -1);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        userName: userNameForPrompt,
+                        history: historyToSend
+                    })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let rawBotReply = "";
+                let msgId = "msg_" + Date.now();
+
+                // NAYA UI LOGIC: Loading span aur Text span
+                chatHistory.innerHTML += `
+                <div class="d-flex justify-content-start w-100 mb-2">
+                    <div class="message-bubble bot-msg" id="${msgId}">
+                        <strong>MyGPT:</strong> <br>
+                        <span class="thinking-indicator" style="color: var(--light-brown); font-style: italic; animation: pulse 1.5s infinite;">
+                            ⏳ MyGPT dimaag laga raha hai...
+                        </span>
+                        <span class="typing-content" style="display: none;"></span>
+                    </div>
+                </div>`;
+
+                let thinkingIndicator = document.querySelector(`#${msgId} .thinking-indicator`);
+                let contentDiv = document.querySelector(`#${msgId} .typing-content`);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+
+                let isFirstChunk = true;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split("\n");
+
+                    for (const line of lines) {
+                        if (line.startsWith("data: ")) {
+                            try {
+                                const json = JSON.parse(line.substring(6));
+                                if (json.candidates && json.candidates[0].content.parts[0].text) {
+                                    
+                                    // JAISE HI PEHLA WORD AAYA, LOADING GAYAB KARO
+                                    if (isFirstChunk) {
+                                        thinkingIndicator.style.display = 'none';
+                                        contentDiv.style.display = 'inline';
+                                        isFirstChunk = false;
+                                    }
+
+                                    const text = json.candidates[0].content.parts[0].text;
+                                    rawBotReply += text;
+                                    
+                                    contentDiv.innerHTML = marked.parse(rawBotReply);
+                                    chatHistory.scrollTop = chatHistory.scrollHeight;
+                                }
+                            } catch (e) {
+                                // Ignore incomplete chunks
+                            }
+                        }
+                    }
+                }
+
+                if (rawBotReply) {
+                    currentChatMessages.push({ role: 'bot', text: rawBotReply });
+                    saveStateToCloud();
+                }
+
+            } catch (error) {
+                console.error("Streaming Error:", error);
+                if (currentChatId === expectedChatId) {
+                    chatHistory.innerHTML += `<div class="text-danger p-2">Dost, connection toot gaya ya bot atak gaya...</div>`;
+                    chatHistory.scrollTop = chatHistory.scrollHeight;
+                }
+            }
+        }
+
+        function sendMessage() {
+            if (!currentUser) return alert("Dost, pehle login karlo!");
+            const text = userInput.value.trim();
+            if (text === '') return;
+
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            inputSection.classList.remove('centered-state');
+            inputSection.classList.add('bottom-state');
+            welcomeText.style.display = 'none';
+            chatHistory.style.display = 'flex';
+
+            chatHistory.innerHTML += `
+            <div class="d-flex justify-content-end w-100 mb-2">
+                <div class="message-bubble user-msg">
+                    <strong>${currentUser.displayName.split(" ")[0]}:</strong> <br>${text}
+                </div>
+            </div>`;
+            userInput.value = '';
+
+            currentChatMessages.push({ role: 'user', text: text });
+            saveStateToCloud(text);
+
+            const chatRoomIdAtTimeOfSend = currentChatId;
+            
+            // Ab ye setTimeout turant API call karega kyunki loading indicator `fetchGeminiResponse` ke andar hai
+            setTimeout(() => {
+                fetchGeminiResponse(text, chatRoomIdAtTimeOfSend).then(() => {
+                    userInput.disabled = false;
+                    sendBtn.disabled = false;
+                    userInput.focus();
+                });
+            }, 100);
+        }
+
+        userInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') sendMessage(); });
+
+        function resetToNewChat() {
+            currentChatId = null;
+            currentChatMessages = [];
+            localStorage.removeItem('activeChatId');
+            if (window.innerWidth <= 768) { closeSidebar(); }
+
+            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active-chat'));
+
+            chatHistory.innerHTML = '';
+            chatHistory.style.display = 'none';
+            inputSection.classList.remove('bottom-state');
+            inputSection.classList.add('centered-state');
+            if (currentUser) welcomeText.style.display = 'block';
+        }
+
+        // 🔥 SHARE CHAT LOGIC 🔥
+        window.shareChat = function (id) {
+            closeAllMenus();
+
+            database.ref('userChats/' + currentUser.uid + '/' + id).once('value').then((snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const shareId = "share_" + Date.now();
+
+                    database.ref('sharedChats/' + shareId).set({
+                        title: data.title || "Shared Chat",
+                        messages: data.messages,
+                        sharedBy: currentUser.displayName.split(" ")[0],
+                        sharedAt: Date.now()
+                    }).then(() => {
+                        let baseUrl = window.location.href.split('index.html')[0];
+                        if (!baseUrl.endsWith('/')) baseUrl += '/';
+                        const finalLink = baseUrl + 'share.html?id=' + shareId;
+
+                        document.getElementById('share-link-text').innerText = finalLink;
+                        document.getElementById('share-modal-backdrop').classList.add('active');
+                        document.getElementById('copy-link-btn').innerText = "📋 Copy Link";
+                    });
+                }
+            });
+        }
+
+        window.closeShareModal = function () {
+            document.getElementById('share-modal-backdrop').classList.remove('active');
+        }
+
+        window.copyShareLink = function () {
+            const linkText = document.getElementById('share-link-text').innerText;
+            navigator.clipboard.writeText(linkText).then(() => {
+                const btn = document.getElementById('copy-link-btn');
+                btn.innerText = "✅ Copied!";
+                btn.style.background = "var(--safe-green, #27ae60)";
+
+                setTimeout(() => {
+                    btn.innerText = "📋 Copy Link";
+                    btn.style.background = "var(--med-brown)";
+                }, 2000);
+            });
+        }
+    </script>
+    
 </body>
 
 </html>
