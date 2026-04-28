@@ -11,8 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
-   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -522,13 +523,15 @@
         /* 🔥 THE FIX: Cancel Button ab dono mode me saaf dikhega 🔥 */
         .btn-cancel {
             background: transparent;
-            color: var(--text-main) !important; /* Light me dark, Dark me light */
+            color: var(--text-main) !important;
+            /* Light me dark, Dark me light */
             border: 1px solid var(--input-border);
             font-size: 15px;
         }
 
         .btn-cancel:hover {
-            background: rgba(192, 133, 82, 0.1); /* Hover par halka sa brown effect */
+            background: rgba(192, 133, 82, 0.1);
+            /* Hover par halka sa brown effect */
             color: var(--text-main);
         }
 
@@ -644,30 +647,124 @@
             color: #a3958d;
         }
 
+
+       
+/* =========================================
+           🔥 60FPS ULTRA SMOOTH PREMIUM BUTTON 🔥
+        ========================================= */
         .send-btn {
-            background-color: var(--med-brown);
-            border-radius: 50px !important;
-            color: white;
-            border: none;
-            padding: 0 25px;
+            background-color: var(--med-brown); 
+            color: white !important; 
+            border: none !important;
+            border-radius: 50% !important; 
+            
+            width: 55px !important;
+            height: 55px !important;
+            min-width: 55px !important; 
+            
             margin-left: 10px;
-            font-size: 15px !important;
-            font-weight: 600;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2);
+            padding: 0 !important; 
+            cursor: pointer;
+            
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            
+            /* Basic button transitions */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+            
+            position: relative; /* Ring ko position karne ke liye zaroori */
+        }
+
+        .send-btn:disabled {
+            background-color: #d4c5ba !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            cursor: not-allowed;
+            box-shadow: none;
         }
 
         .send-btn:hover:not(:disabled) {
             background-color: var(--dark-brown);
-            transform: scale(1.05);
-            color: white;
         }
 
-        .send-btn:disabled {
-            background-color: #d4c5ba;
-            cursor: not-allowed;
-            box-shadow: none;
+        /* =========================================
+           ✨ THE MAGIC: GPU ACCELERATED RING ✨
+           Ye CPU nahi, seedha Graphic Card se chalegi
+        ========================================= */
+        .send-btn::after {
+            content: '';
+            position: absolute;
+            top: -6px; left: -6px; right: -6px; bottom: -6px; /* 4px Gap + 2px Border ki maths */
+            border: 2px solid var(--med-brown);
+            border-radius: 50%;
+            
+            /* Hidden State */
+            opacity: 0;
+            transform: scale(0.7); /* Andar chupa hoga */
+            
+            /* 🔥 ULTRA SMOOTH ANIMATION (Halka sa Apple style bounce karega) 🔥 */
+            transition: opacity 0.25s ease-out, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1); 
+            pointer-events: none; /* Click ko block nahi karega */
         }
+
+        /* Hover pe Ring ekdum smooth expand hogi */
+        .send-btn:hover:not(:disabled)::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Dark mode adjustment */
+        body.dark-theme .send-btn::after {
+            border-color: var(--light-brown);
+        }
+
+        /* 🔥 SVG Icon Styling (Makhan Animation) 🔥 */
+        .send-btn svg {
+            width: 26px;
+            height: 26px;
+            fill: currentColor;
+            display: block;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* Icon tilt karega */
+        .send-btn:hover:not(:disabled) svg {
+            transform: rotate(20deg) scale(1.1);
+        }
+
+        .send-btn:disabled svg {
+            transform: none !important;
+        }
+
+        /* RESPONSIVE: Mobile Devices */
+        @media (max-width: 768px) {
+            .send-btn {
+                width: 48px !important;
+                height: 48px !important;
+                min-width: 48px !important;
+                margin-left: 5px;
+            }
+            .send-btn svg {
+                width: 22px;
+                height: 22px;
+            }
+            /* Mobile me gap thoda kam rakhna padega */
+            .send-btn::after {
+                top: -5px; left: -5px; right: -5px; bottom: -5px;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+        
 
         .message-bubble {
             padding: 16px 22px;
@@ -961,7 +1058,8 @@
         ========================================= */
         .go-to-top-btn {
             position: fixed;
-            bottom: 130px; /* Input box ke theek upar */
+            bottom: 130px;
+            /* Input box ke theek upar */
             right: 30px;
             width: 45px;
             height: 45px;
@@ -974,14 +1072,15 @@
             line-height: 1;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             cursor: pointer;
-            z-index: 105; /* Input box ke upar rahega */
-            
+            z-index: 105;
+            /* Input box ke upar rahega */
+
             /* Hidden State */
             opacity: 0;
             transform: translateY(20px) scale(0.8);
-            pointer-events: none; 
+            pointer-events: none;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            
+
             display: flex;
             justify-content: center;
             align-items: center;
@@ -990,13 +1089,97 @@
         .go-to-top-btn.visible {
             opacity: 1;
             transform: translateY(0) scale(1);
-            pointer-events: auto; /* Clickable ho jayega */
+            pointer-events: auto;
+            /* Clickable ho jayega */
         }
 
         .go-to-top-btn:hover {
             background-color: var(--dark-brown);
-            transform: translateY(-5px) scale(1.1); /* Halka sa upar bounce karega */
+            transform: translateY(-5px) scale(1.1);
+            /* Halka sa upar bounce karega */
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* =========================================
+           🔥 STOP BUTTON STYLING & ANIMATION 🔥
+        ========================================= */
+        .send-btn.stop-mode {
+            background-color: rgba(255, 77, 77, 0.15) !important; /* Halka Red Background */
+        }
+        
+        .send-btn.stop-mode svg {
+            fill: #ff4d4d !important; /* Red Icon */
+            transform: none !important; /* Rotation band */
+        }
+        
+        .send-btn.stop-mode::after {
+            border-color: #ff4d4d !important; /* Ring ka color Red */
+            animation: pulse-red 1.5s infinite ease-out; /* Dhadkane wala effect */
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        /* =========================================
+           🔥 COPY BUTTON (BOT + USER HOVER) 🔥
+        ========================================= */
+        .message-bubble.bot-msg,
+        .message-bubble.user-msg {
+            position: relative; /* Button iske andar fix karne ke liye */
+            padding-bottom: 35px; /* Niche thodi jagah button ke liye */
+        }
+
+        .copy-action-wrapper {
+            position: absolute;
+            bottom: 5px;
+            right: 12px;
+            opacity: 0; /* By default chupa hua */
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        /* Hover karne par button dikhega (Dono me) */
+        .message-bubble.bot-msg:hover .copy-action-wrapper,
+        .message-bubble.user-msg:hover .copy-action-wrapper {
+            opacity: 1;
+        }
+
+        .copy-msg-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            opacity: 0.5;
+            cursor: pointer;
+            padding: 5px 8px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        /* Bot Message Hover Color */
+        .bot-msg .copy-msg-btn:hover {
+            opacity: 1;
+            background: rgba(192, 133, 82, 0.1);
+            color: var(--med-brown);
+        }
+
+        /* 🔥 NAYA: User Message Copy Color (Kyunki bg Brown hai, toh icon White chahiye) 🔥 */
+        .user-msg .copy-msg-btn {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .user-msg .copy-msg-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        /* Mobile pe hover nahi hota, isliye hamesha dikhao */
+        @media (max-width: 768px) {
+           
         }
 
         @media (max-width: 768px) {
@@ -1109,14 +1292,26 @@
                 padding: 15px 10px;
             }
 
+            .input-group {
+                gap: 10px !important;
+                /* Moblie pe gaps kam */
+            }
+
             .custom-input {
                 padding: 12px 20px;
                 font-size: 15px;
             }
 
             .send-btn {
-                padding: 0 18px;
+                width: 48px !important;
+                height: 48px !important;
+                min-width: 48px !important;
                 margin-left: 5px;
+            }
+
+            .send-btn svg {
+                width: 20px !important;
+                height: 20px !important;
             }
 
             h1#welcome-text {
@@ -1141,12 +1336,17 @@
                 width: 100%;
                 background: transparent;
             }
+
             .go-to-top-btn {
-                bottom: 100px; /* Phone pe input box chhota hota hai, isliye isko thoda neeche laya */
+                bottom: 100px;
+                /* Phone pe input box chhota hota hai, isliye isko thoda neeche laya */
                 right: 15px;
                 width: 40px;
                 height: 40px;
                 font-size: 20px;
+            }
+              .copy-action-wrapper {
+                opacity: 0.7; 
             }
         }
     </style>
@@ -1190,7 +1390,8 @@
             </div>
 
             <div class="d-flex gap-2">
-                <button class="send-btn w-100" style="padding: 10px; margin: 0;" onclick="saveSettings()">Save Changes</button>
+                <button class="send-btn w-100" style="padding: 10px; margin: 0;" onclick="saveSettings()">Save
+                    Changes</button>
                 <button class="btn btn-cancel w-100" style="border: 1px solid var(--input-border);"
                     onclick="closeSettingsModal()">Cancel</button>
             </div>
@@ -1210,7 +1411,8 @@
     <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
 
     <div class="auth-container">
-        <button id="login-btn" class="btn btn-custom-outline" onclick="signInWithGoogle()"style="display: none;">Sign in with Google</button>
+        <button id="login-btn" class="btn btn-custom-outline" onclick="signInWithGoogle()" style="display: none;">Sign
+            in with Google</button>
 
         <div id="profile-area" class="profile-area">
             <div id="profile-trigger" class="profile-trigger" onclick="toggleProfileDropdown(event)">
@@ -1258,20 +1460,33 @@
 
         <div id="chat-history" class="chat-history" style="display: none;"></div>
 
-        <div id="input-section" class="input-container centered-state" style="display: none;">
+       <div id="input-section" class="input-container centered-state" style="display: none;">
             <div class="input-history-line"></div>
             <h1 id="welcome-text" class="mb-4 fw-bold text-center" style="opacity: 0; transition: opacity 0.5s ease;">
             </h1>
-            <div class="input-group input-group-lg w-100 d-flex gap-3 flex-nowrap">
+            <div class="input-group input-group-lg w-100 d-flex gap-3 flex-nowrap align-items-center">
                 <input type="text" id="user-input" class="form-control custom-input" placeholder="Dil ki baat likho..."
                     autocomplete="off" disabled>
-                <button id="send-btn" class="btn send-btn" onclick="sendMessage()" disabled>Send</button>
+
+                <button id="send-btn" class="btn send-btn d-flex align-items-center justify-content-center"
+                    onclick="handleSendClick()" disabled aria-label="Send message">
+                    
+                    <svg id="send-icon" viewBox="0 0 24 24">
+                        <path d="M12 5l7 7-1.4 1.4L13 8.8V19h-2V8.8l-4.6 4.6L5 12z" />
+                    </svg>
+
+                    <svg id="stop-icon" viewBox="0 0 24 24" style="display: none;">
+                        <rect x="7" y="7" width="10" height="10" rx="2" ry="2" />
+                    </svg>
+                </button>
             </div>
         </div>
-        <button id="scroll-action-btn" class="go-to-top-btn" onclick="handleScrollAction()" title="Scroll Chat">↓</button>
+
+        <button id="scroll-action-btn" class="go-to-top-btn" onclick="handleScrollAction()"
+            title="Scroll Chat">↓</button>
     </div>
 
-    <script>
+ <script>
         // 🛑 FIREBASE CONFIG 🛑
         const firebaseConfig = {
             apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
@@ -1288,13 +1503,19 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
         const database = firebase.database();
-        let selectedImageFileBase64 = null; // Temp variable image preview ke liye
+        let selectedImageFileBase64 = null; 
 
+        // 🧠 STATE VARIABLES
         let currentUser = null;
         let currentChatId = null;
         let currentChatMessages = [];
         let userNickname = "";
+        
+        // 🔥 STOP STREAMING VARIABLES
+        let isGenerating = false; 
+        let currentAbortController = null;
 
+        // DOM ELEMENTS
         const inputSection = document.getElementById('input-section');
         const chatHistory = document.getElementById('chat-history');
         const welcomeText = document.getElementById('welcome-text');
@@ -1308,8 +1529,11 @@
         const profileDropdown = document.getElementById('profile-dropdown');
         const profileTrigger = document.getElementById('profile-trigger');
         const darkModeToggle = document.getElementById('dark-mode-toggle');
-        const goToTopBtn = document.getElementById('go-to-top-btn');
+        const scrollBtn = document.getElementById('scroll-action-btn'); 
 
+        // ==========================================
+        // 🔥 UI & THEME LOGIC 🔥
+        // ==========================================
         function initTheme() {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-theme');
@@ -1349,6 +1573,9 @@
             document.getElementById('mobile-overlay').classList.remove('active');
         }
 
+        // ==========================================
+        // 🔥 AUTHENTICATION LOGIC 🔥
+        // ==========================================
         function signInWithGoogle() { auth.signInWithPopup(provider).catch(err => alert("Login failed")); }
         function signOut(event) {
             profileDropdown.classList.remove('active');
@@ -1361,11 +1588,8 @@
             if (user) {
                 currentUser = user;
                 loginBtn.style.display = 'none';
-                
-                // 🔥 NAYA FIX: Jab tak proper data na aaye, Profile Button ko chupa kar rakho
                 profileTrigger.style.display = 'none'; 
 
-                // Main screen par bas loader dikhao
                 document.getElementById('main-initial-loader').style.display = 'flex';
                 inputSection.style.display = 'none';
 
@@ -1375,29 +1599,26 @@
 
                 database.ref('users/' + user.uid + '/profile').once('value').then((snapshot) => {
                     const profile = snapshot.val();
-                    
+
                     if (profile && profile.nickname) {
                         userNickname = profile.nickname;
-                        userName.innerText = userNickname; 
-                        
-                        // 🔥 NAYA FIX: Check karo custom photo hai ya nahi, tabhi set karo
+                        userName.innerText = userNickname;
+
                         if (profile.customPhotoURL) {
                             userPic.src = profile.customPhotoURL;
                         } else {
-                            userPic.src = user.photoURL; // Custom nahi hai toh Google wali lagao
+                            userPic.src = user.photoURL; 
                         }
 
-                        // Sab set hone ke baad Profile Button ko Fade-in ke sath dikhao!
                         profileTrigger.style.display = 'flex';
                         profileTrigger.classList.add('fade-in-smooth');
 
                         document.getElementById('onboarding-overlay').style.display = 'none';
-                        loadMainApp(); 
+                        loadMainApp();
                     } else {
-                        // Naya User hai toh default details set karo
-                        userName.innerText = user.displayName.split(" ")[0]; 
-                        userPic.src = user.photoURL; 
-                        
+                        userName.innerText = user.displayName.split(" ")[0];
+                        userPic.src = user.photoURL;
+
                         profileTrigger.style.display = 'flex';
                         profileTrigger.classList.add('fade-in-smooth');
 
@@ -1416,7 +1637,6 @@
                 sendBtn.disabled = true;
                 document.getElementById('onboarding-overlay').style.display = 'none';
 
-                // Logout hone par loader chupao aur input box dikhao (disabled state me)
                 document.getElementById('main-initial-loader').style.display = 'none';
                 inputSection.style.display = '';
 
@@ -1426,31 +1646,26 @@
                 resetToNewChat();
             }
         });
-       
-        // 🔥 NAYA FUNCTION: Nickname save karne ke liye 🔥
+
         window.saveNickname = function () {
             const nameInput = document.getElementById('nickname-input').value.trim();
             if (!nameInput) return alert("Are naam toh bata do yaar! 😅");
 
-            // Firebase me naam save karo
             database.ref('users/' + currentUser.uid + '/profile').set({
                 nickname: nameInput,
                 joinedAt: Date.now()
             }).then(() => {
                 userNickname = nameInput;
                 document.getElementById('onboarding-overlay').style.display = 'none';
-                loadMainApp(); // Save hote hi app chalu!
+                loadMainApp(); 
             });
         }
 
-        // 🔥 MAIN APP LOAD FUNCTION 🔥
         function loadMainApp() {
             userName.innerText = userNickname;
-
-            // 🔥 LOADER HATAO, INPUT BOX DIKHAO 🔥
             document.getElementById('main-initial-loader').style.display = 'none';
-            inputSection.style.display = ''; // inline display none hata diya
-            inputSection.classList.add('fade-in-smooth'); // Premium fade effect se ayega
+            inputSection.style.display = ''; 
+            inputSection.classList.add('fade-in-smooth'); 
 
             const savedChatId = localStorage.getItem('activeChatId');
             if (savedChatId) {
@@ -1462,10 +1677,12 @@
             }
         }
 
+        // ==========================================
+        // 🔥 CHAT HISTORY & SIDEBAR LOGIC 🔥
+        // ==========================================
         function loadSidebarHistory() {
             if (!currentUser) return;
 
-            // 🔥 PERFECT CENTERED SPINNER 🔥
             sidebarChatList.innerHTML = `
                 <div class="loader-center">
                     <div class="thinking-spinner" style="width: 35px; height: 35px; border-width: 4px;"></div>
@@ -1473,8 +1690,6 @@
 
             database.ref('userChats/' + currentUser.uid).on('value', (snapshot) => {
                 const data = snapshot.val();
-
-                // 🔥 FADE-IN WRAPPER START 🔥
                 let htmlContent = '<div class="fade-in-smooth">';
                 htmlContent += '<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Your Chats</small>';
 
@@ -1525,8 +1740,6 @@
                         `;
                     });
                 }
-
-                // 🔥 FADE-IN WRAPPER END 🔥
                 htmlContent += '</div>';
                 sidebarChatList.innerHTML = htmlContent;
             });
@@ -1537,24 +1750,20 @@
             const menu = document.getElementById(`menu-${id}`);
             if (menu) menu.classList.toggle('active');
         }
-
         window.showRenameUI = function (id) {
             closeAllMenus();
             document.getElementById(`rename-box-${id}`).classList.add('active');
             document.getElementById(`delete-box-${id}`).classList.remove('active');
         }
-
         window.showDeleteUI = function (id) {
             closeAllMenus();
             document.getElementById(`delete-box-${id}`).classList.add('active');
             document.getElementById(`rename-box-${id}`).classList.remove('active');
         }
-
         window.hideActionBox = function (id, type) {
             if (type === 'rename') document.getElementById(`rename-box-${id}`).classList.remove('active');
             if (type === 'delete') document.getElementById(`delete-box-${id}`).classList.remove('active');
         }
-
         window.saveRename = function (id) {
             const newTitle = document.getElementById(`rename-input-${id}`).value.trim();
             if (newTitle) {
@@ -1562,7 +1771,6 @@
                     .then(() => hideActionBox(id, 'rename'));
             }
         }
-
         window.confirmDelete = function (id) {
             database.ref('userChats/' + currentUser.uid + '/' + id).remove()
                 .then(() => {
@@ -1584,7 +1792,6 @@
             welcomeText.style.display = 'none';
             chatHistory.style.display = 'flex';
 
-            // 🔥 PERFECT CENTERED SPINNER (Main Chat) 🔥
             chatHistory.innerHTML = `
                 <div class="loader-center" style="height: 60vh;">
                     <div class="thinking-spinner" style="width: 50px; height: 50px; border-width: 5px;"></div>
@@ -1594,37 +1801,42 @@
                 const data = snapshot.val();
                 if (data) {
                     currentChatMessages = data.messages || [];
-
-                    // 🔥 FADE-IN WRAPPER START 🔥
                     let htmlContent = '<div class="fade-in-smooth w-100 d-flex flex-column" style="gap: 15px;">';
 
                     currentChatMessages.forEach(msg => {
                         if (msg.role === 'user') {
+                            // 🔥 FIX: User chat me bhi position-relative aur copy button laga diya
                             htmlContent += `
                             <div class="d-flex justify-content-end w-100">
-                                <div class="message-bubble user-msg">
+                                <div class="message-bubble user-msg position-relative" data-raw="${encodeURIComponent(msg.text)}">
                                     <strong>${currentUser.displayName.split(" ")[0]}:</strong> <br>${msg.text}
+                                    <div class="copy-action-wrapper">
+                                        <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy your text">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>`;
                         } else {
+                            // 🔥 FIX 1: Purani chats me data-raw aur position-relative lagaya 🔥
                             htmlContent += `
                             <div class="d-flex justify-content-start w-100">
-                                <div class="message-bubble bot-msg">
+                                <div class="message-bubble bot-msg position-relative" data-raw="${encodeURIComponent(msg.text)}">
                                     <strong>MyGPT:</strong> <br>${marked.parse(msg.text)}
+                                    <div class="copy-action-wrapper">
+                                        <button class="copy-msg-btn" onclick="copyBotMessage(this)" title="Copy exact text">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>`;
                         }
                     });
-
-                    // 🔥 FADE-IN WRAPPER END 🔥
                     htmlContent += '</div>';
-
                     chatHistory.innerHTML = htmlContent;
 
-                    // Thoda delay taaki DOM render hone ke baad scroll bottom pe aaye
                     setTimeout(() => {
                         chatHistory.scrollTop = chatHistory.scrollHeight;
-                        // 🔥 NAYA: Chat load hone ke baad check karo ki button dikhana hai ya nahi
                         checkScrollButton();
                     }, 50);
                 }
@@ -1633,7 +1845,6 @@
 
         function saveStateToCloud(firstMessageText = "Nayi Baat") {
             if (!currentUser) return;
-
             let now = Date.now();
 
             if (!currentChatId) {
@@ -1654,23 +1865,197 @@
             }
         }
 
-        // 🔥 THE ULTIMATE SMOOTH STREAMING AND THINKING FIX (WITH ERROR CATCHER) 🔥
-        async function fetchGeminiResponse(message, expectedChatId) {
+        async function generateSmartTitle(firstMessage, chatId) {
+            try {
+                const res = await fetch('/api/title', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: firstMessage })
+                });
+                const data = await res.json();
+                if (data.title && currentUser) {
+                    database.ref('userChats/' + currentUser.uid + '/' + chatId).update({
+                        title: data.title
+                    });
+                }
+            } catch (e) {
+                console.log("Title background sync failed.");
+            }
+        }
+
+        // ==========================================
+        // 🔥 STOP STREAMING, SEND & COPY LOGIC 🔥
+        // ==========================================
+
+        window.handleSendClick = function() {
+            if (isGenerating) {
+                stopGeneration();
+            } else {
+                sendMessage();
+            }
+        }
+
+        // 🔥 EXACT MESSAGE COPY KARNE KA JADOO (BOT + USER) 🔥
+        window.copyMessageData = function(btn) {
+            // Button jis bhi bubble ke andar hai, usko dhoondho
+            const bubble = btn.closest('.message-bubble');
+            
+            // Raw text nikalo
+            let rawText = "";
+            if(bubble.hasAttribute('data-raw') && bubble.getAttribute('data-raw') !== "null" && bubble.getAttribute('data-raw') !== "") {
+                rawText = decodeURIComponent(bubble.getAttribute('data-raw'));
+            } else {
+                // Fallback: Agar raw text nahi mila, toh screen se text utha lo (Name hata ke)
+                rawText = bubble.innerText.replace(/^.*:\n/, "").trim(); 
+            }
+            
+            navigator.clipboard.writeText(rawText).then(() => {
+                const originalSvg = btn.innerHTML;
+                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>`;
+                btn.style.color = "var(--safe-green, #27ae60)";
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalSvg;
+                    btn.style.color = ""; // Color wapas default
+                }, 2000);
+            }).catch(err => {
+                console.log("Copy failed: ", err);
+            });
+        }
+        
+        // Purane bot buttons break na ho isliye backward compatibility
+        window.copyBotMessage = window.copyMessageData;
+
+        window.stopGeneration = function() {
+            if (currentAbortController) {
+                currentAbortController.abort(); 
+            }
+            
+            const randomMessages = [
+                "Kya hua bhai, aage nahi sunna? 😂",
+                "Arre rukk kyu gaye? Chalo theek hai!",
+                "Achha theek hai, zyada gyaan nahi pelunga. 🤐",
+                "Arey stop kar diya? Lagta hai answer pehle hi mil gaya! 😎",
+                "Chalo chhodo, topic hi boring tha. Nayi baat karte hain! 🚀"
+            ];
+            const randomMsg = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+            
+            setTimeout(() => {
+                // 🔥 FIX 2: Stop generation me data-raw aur position-relative lagaya 🔥
+                chatHistory.innerHTML += `
+                <div class="d-flex justify-content-start w-100 mb-2 fade-in-smooth">
+                    <div class="message-bubble bot-msg position-relative" style="background-color: transparent; border: 1px dashed var(--light-brown); font-style: italic; opacity: 0.8;" data-raw="${encodeURIComponent(randomMsg)}">
+                        ${randomMsg}
+                        <div class="copy-action-wrapper">
+                            <button class="copy-msg-btn" onclick="copyBotMessage(this)" title="Copy text">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+                
+                currentChatMessages.push({ role: 'bot', text: `*${randomMsg}*` });
+                saveStateToCloud();
+                
+                resetInputUI(); 
+            }, 300);
+        }
+
+        function resetInputUI() {
+            isGenerating = false;
+            document.getElementById('send-icon').style.display = 'block';
+            document.getElementById('stop-icon').style.display = 'none';
+            sendBtn.classList.remove('stop-mode');
+            setTimeout(() => userInput.focus(), 100);
+        }
+
+        window.sendMessage = function() {
+            if (!currentUser || isGenerating) return;
+            const text = userInput.value.trim();
+            if (text === '') return;
+
+            isGenerating = true;
+            
+            document.getElementById('send-icon').style.display = 'none';
+            document.getElementById('stop-icon').style.display = 'block';
+            sendBtn.classList.add('stop-mode');
+            
+            inputSection.classList.remove('centered-state');
+            inputSection.classList.add('bottom-state');
+            welcomeText.style.display = 'none';
+            chatHistory.style.display = 'flex';
+
+            // ... welcomeText.style.display = 'none';
+            // chatHistory.style.display = 'flex'; ke just niche:
+
+            chatHistory.innerHTML += `
+            <div class="d-flex justify-content-end w-100 mb-2 fade-in-smooth">
+                <div class="message-bubble user-msg position-relative" data-raw="${encodeURIComponent(text)}">
+                    <strong>${currentUser.displayName.split(" ")[0]}:</strong> <br>${text}
+                    <div class="copy-action-wrapper">
+                        <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy your text">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+            userInput.value = '';
+
+            const isNewChat = !currentChatId;
+            currentChatMessages.push({ role: 'user', text: text });
+            
+            if (isNewChat) saveStateToCloud("⏳ Title soch raha hu"); 
+            else saveStateToCloud();
+
+            const chatRoomIdAtTimeOfSend = currentChatId;
+            if (isNewChat) generateSmartTitle(text, chatRoomIdAtTimeOfSend);
+
+            currentAbortController = new AbortController();
+
+            setTimeout(() => {
+                fetchGeminiResponse(text, chatRoomIdAtTimeOfSend, currentAbortController.signal)
+                .then(() => {
+                    if(isGenerating) resetInputUI(); 
+                })
+                .catch(err => {
+                    if (err.name === 'AbortError') {
+                        console.log("Stream ruk gayi bhai!");
+                    } else {
+                        if(isGenerating) resetInputUI();
+                    }
+                });
+            }, 100);
+        }
+
+        userInput.addEventListener('keypress', function (e) { 
+            if (e.key === 'Enter' && !isGenerating) handleSendClick(); 
+        });
+
+        // ==========================================
+        // 🔥 THE ULTIMATE FETCH FUNCTION 🔥
+        // ==========================================
+        async function fetchGeminiResponse(message, expectedChatId, signal) {
             const url = `/api/chat`;
             const userNameForPrompt = userNickname || (currentUser ? currentUser.displayName.split(" ")[0] : "Dost");
             const historyToSend = currentChatMessages.slice(0, -1);
             let msgId = "msg_" + Date.now();
 
-            // 🚀 STEP 1: SABSE PEHLE UI BANAO 
+            // 🔥 FIX 3: Nayi generate hone wali chat me bhi data-raw aur position-relative add kiya 🔥
             chatHistory.innerHTML += `
             <div class="d-flex justify-content-start w-100 mb-2">
-                <div class="message-bubble bot-msg w-100" id="${msgId}">
+                <div class="message-bubble bot-msg w-100 position-relative" id="${msgId}" data-raw="">
                     <strong>MyGPT:</strong> <br>
                     <div id="thinking-box-${msgId}" class="d-flex align-items-center mt-2" style="color: var(--light-brown); font-style: italic;">
                         <div class="thinking-spinner"></div>
                         <div id="thinking-text-${msgId}" class="thinking-text-phrase ms-2">⏳ Dimaag laga raha hu...</div>
                     </div>
                     <div class="typing-content" style="display: none;"></div>
+                    <div class="copy-action-wrapper">
+                        <button class="copy-msg-btn" onclick="copyBotMessage(this)" title="Copy exact text">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>`;
 
@@ -1679,7 +2064,6 @@
             let contentDiv = document.querySelector(`#${msgId} .typing-content`);
             chatHistory.scrollTop = chatHistory.scrollHeight;
 
-            // 🧠 RANDOM THINKING PHRASES LOGIC
             const thinkingPhrases = [
                 "🤔 Tumhari baat samajh raha hu...",
                 "💡 Bas ek second dena...",
@@ -1702,7 +2086,6 @@
             }, 2500);
 
             try {
-                // 🚀 STEP 2: AB GOOGLE SE FETCH KARO 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1710,7 +2093,8 @@
                         message: message,
                         userName: userNameForPrompt,
                         history: historyToSend
-                    })
+                    }),
+                    signal: signal 
                 });
 
                 const reader = response.body.getReader();
@@ -1718,7 +2102,6 @@
                 let rawBotReply = "";
                 let isFirstChunk = true;
 
-                // 🚀 SMOOTH TYPEWRITER QUEUE LOGIC 
                 let charQueue = "";
                 let isTyping = false;
 
@@ -1730,6 +2113,10 @@
                         charQueue = charQueue.substring(charsToTake);
 
                         contentDiv.innerHTML = marked.parse(rawBotReply);
+                        
+                        // 🔥 NAYI LINE YAHI HAI JO LIVE RAW TEXT KO SAVE KARTI HAI 🔥
+                        document.getElementById(msgId).setAttribute('data-raw', encodeURIComponent(rawBotReply));
+                        
                         chatHistory.scrollTop = chatHistory.scrollHeight;
 
                         setTimeout(processQueue, 15);
@@ -1750,7 +2137,6 @@
                             try {
                                 const json = JSON.parse(line.substring(6));
 
-                                // 🔥 NAYA CATCH: Agar Backend ne explicitly error bheja ho (jaise Timeout ya Safety Error)
                                 if (json.error) {
                                     if (isFirstChunk) {
                                         clearInterval(phraseInterval);
@@ -1760,21 +2146,14 @@
                                     }
                                     charQueue += `\n\n<span class="text-danger fw-bold">⚠️ ${json.error}</span>`;
                                     if (!isTyping) processQueue();
-                                    continue; // Aage mat padho
+                                    continue; 
                                 }
 
-                                // Normal Processing
                                 if (json.candidates && json.candidates[0].content && json.candidates[0].content.parts && json.candidates[0].content.parts[0].text) {
-
-                                    // 🔥 JAISE HI PEHLA WORD AAYA, THINKING BOX KO JAD SE DELETE MAAR DO 🔥
                                     if (isFirstChunk) {
                                         clearInterval(phraseInterval);
-                                        if (thinkingBox) {
-                                            thinkingBox.remove();
-                                        }
-                                        if (contentDiv) {
-                                            contentDiv.style.display = 'block';
-                                        }
+                                        if (thinkingBox) thinkingBox.remove();
+                                        if (contentDiv) contentDiv.style.display = 'block';
                                         isFirstChunk = false;
                                     }
 
@@ -1786,13 +2165,11 @@
                                     }
                                 }
                             } catch (e) {
-                                // Ignore incomplete chunks
                             }
                         }
                     }
                 }
 
-                // 🔥 FINAL FALLBACK: Agar stream empty break ho jaye (Error bina bataye aa jaye) 🔥
                 if (isFirstChunk) {
                     clearInterval(phraseInterval);
                     if (thinkingBox) thinkingBox.remove();
@@ -1802,7 +2179,6 @@
                     }
                 }
 
-                // Stream aana band ho gaya, par Queue me text ho sakta hai
                 const finishTypingInterval = setInterval(() => {
                     if (charQueue.length === 0 && !isTyping) {
                         clearInterval(finishTypingInterval);
@@ -1814,6 +2190,12 @@
                 }, 50);
 
             } catch (error) {
+                if (error.name === 'AbortError') {
+                    clearInterval(phraseInterval);
+                    if (thinkingBox) thinkingBox.remove();
+                    return; 
+                }
+                
                 console.error("Streaming Error:", error);
                 clearInterval(phraseInterval);
                 if (thinkingBox) thinkingBox.remove();
@@ -1821,79 +2203,9 @@
                     chatHistory.innerHTML += `<div class="text-danger p-2">Dost, connection toot gaya ya bot atak gaya...</div>`;
                     chatHistory.scrollTop = chatHistory.scrollHeight;
                 }
+                throw error; 
             }
         }
-
-        // 🔥 NEW: Background Smart Title Generator 🔥
-        async function generateSmartTitle(firstMessage, chatId) {
-            try {
-                const res = await fetch('/api/title', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: firstMessage })
-                });
-                const data = await res.json();
-
-                if (data.title && currentUser) {
-                    // Firebase mein jahan 'Nayi Baat...' save hua tha, usko Smart Title se replace kar do
-                    database.ref('userChats/' + currentUser.uid + '/' + chatId).update({
-                        title: data.title
-                    });
-                }
-            } catch (e) {
-                console.log("Title background sync failed.");
-            }
-        }
-
-        function sendMessage() {
-            if (!currentUser) return alert("Dost, pehle login karlo!");
-            const text = userInput.value.trim();
-            if (text === '') return;
-
-            userInput.disabled = true;
-            sendBtn.disabled = true;
-            inputSection.classList.remove('centered-state');
-            inputSection.classList.add('bottom-state');
-            welcomeText.style.display = 'none';
-            chatHistory.style.display = 'flex';
-
-            chatHistory.innerHTML += `
-            <div class="d-flex justify-content-end w-100 mb-2">
-                <div class="message-bubble user-msg">
-                    <strong>${currentUser.displayName.split(" ")[0]}:</strong> <br>${text}
-                </div>
-            </div>`;
-            userInput.value = '';
-
-            // 🛑 CHECK KARO: Kya ye nayi chat hai?
-            const isNewChat = !currentChatId;
-
-            currentChatMessages.push({ role: 'user', text: text });
-
-            // 🔥 THE REAL CHATGPT FIX: Agar nayi chat hai, toh title me Loading State dalo
-            if (isNewChat) {
-                saveStateToCloud("⏳ Title soch raha hu"); // Firebase isme '...' apne aap laga dega
-            } else {
-                saveStateToCloud(); // Purani chat hai toh sirf history update hogi
-            }
-
-            const chatRoomIdAtTimeOfSend = currentChatId;
-
-            // 🔥 TITLE GENERATOR KO TRIGGER KARO
-            if (isNewChat) {
-                generateSmartTitle(text, chatRoomIdAtTimeOfSend);
-            }
-
-            setTimeout(() => {
-                fetchGeminiResponse(text, chatRoomIdAtTimeOfSend).then(() => {
-                    userInput.disabled = false;
-                    sendBtn.disabled = false;
-                    userInput.focus();
-                });
-            }, 100);
-        }
-
-        userInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') sendMessage(); });
 
         function resetToNewChat() {
             currentChatId = null;
@@ -1909,19 +2221,18 @@
             inputSection.classList.add('centered-state');
             if (currentUser) welcomeText.style.display = 'block';
 
-            // 🔥 NAYA: New chat open hote hi button check karke hata do
             checkScrollButton();
         }
 
-        // 🔥 SHARE CHAT LOGIC 🔥
+        // ==========================================
+        // 🔥 SHARE CHAT & PROFILE UPLOAD 🔥
+        // ==========================================
         window.shareChat = function (id) {
             closeAllMenus();
-
             database.ref('userChats/' + currentUser.uid + '/' + id).once('value').then((snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     const shareId = "share_" + Date.now();
-
                     database.ref('sharedChats/' + shareId).set({
                         title: data.title || "Shared Chat",
                         messages: data.messages,
@@ -1939,83 +2250,61 @@
                 }
             });
         }
-
         window.closeShareModal = function () {
             document.getElementById('share-modal-backdrop').classList.remove('active');
         }
-
         window.copyShareLink = function () {
             const linkText = document.getElementById('share-link-text').innerText;
             navigator.clipboard.writeText(linkText).then(() => {
                 const btn = document.getElementById('copy-link-btn');
                 btn.innerText = "✅ Copied!";
                 btn.style.background = "var(--safe-green, #27ae60)";
-
                 setTimeout(() => {
                     btn.innerText = "📋 Copy Link";
                     btn.style.background = "var(--med-brown)";
                 }, 2000);
             });
         }
-        // ==========================================
-        // 🔥 SETTINGS & PROFILE UPLOAD LOGIC 🔥
-        // ==========================================
 
         function openSettingsModal() {
             if (!currentUser) return;
             closeAllMenus();
             profileDropdown.classList.remove('active');
-            
-            // Current data set karo
             document.getElementById('settings-name-input').value = userNickname || currentUser.displayName.split(" ")[0];
             document.getElementById('settings-pic-preview').src = userPic.src;
-            selectedImageFileBase64 = null; // Reset
-            
+            selectedImageFileBase64 = null; 
             document.getElementById('settings-overlay').style.display = 'flex';
-
-            // 🔥 NAYA: Settings khulte hi scroll button chhupao
-            const scrollBtn = document.getElementById('scroll-action-btn');
+            
             if (scrollBtn) scrollBtn.classList.remove('visible');
         }
-
         function closeSettingsModal() {
             document.getElementById('settings-overlay').style.display = 'none';
         }
 
-        // 🔥 AUTO 1:1 CROP & 3MB LIMIT LOGIC 🔥
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-
-            // 1. Check File Size (Max 3MB)
             if (file.size > 3 * 1024 * 1024) {
                 alert("Bhai, photo 3MB se choti honi chahiye! 😅");
                 event.target.value = "";
                 return;
             }
 
-            // 2. Auto Crop to 1:1 Square using Canvas
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const img = new Image();
-                img.onload = function() {
+                img.onload = function () {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    
-                    // Target size (High Quality)
-                    const size = 500; 
+                    const size = 500;
                     canvas.width = size;
                     canvas.height = size;
-                    
-                    // Center crop logic
                     const minDim = Math.min(img.width, img.height);
                     const startX = (img.width - minDim) / 2;
                     const startY = (img.height - minDim) / 2;
-                    
                     ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
-                    
-                    // Convert to base64 preview
-                    selectedImageFileBase64 = canvas.toDataURL('image/jpeg', 0.85); // 80% quality
+
+                    selectedImageFileBase64 = canvas.toDataURL('image/jpeg', 0.85); 
                     document.getElementById('settings-pic-preview').src = selectedImageFileBase64;
                 }
                 img.src = e.target.result;
@@ -2023,39 +2312,30 @@
             reader.readAsDataURL(file);
         }
 
-        // 🔥 ZERO RUPEE JUGAAD: BINA STORAGE KE PHOTO SAVE KARO 🔥
         async function saveSettings() {
             const newName = document.getElementById('settings-name-input').value.trim();
             if (!newName) return alert("Naam khali nahi chhod sakte dost!");
+            document.getElementById('settings-loader').style.display = 'flex'; 
 
-            document.getElementById('settings-loader').style.display = 'flex'; // Loader On
-            
             try {
-                let finalPhotoURL = userPic.src; // Default purani wali
-
-                // Asli Jadoo: Agar nayi photo hai, toh directly uske Base64 text ko use karo!
+                let finalPhotoURL = userPic.src; 
                 if (selectedImageFileBase64) {
-                    finalPhotoURL = selectedImageFileBase64; 
+                    finalPhotoURL = selectedImageFileBase64;
                 }
-
-                // Database Update karo (Text format me photo chali jayegi)
                 await database.ref('users/' + currentUser.uid + '/profile').update({
                     nickname: newName,
                     customPhotoURL: finalPhotoURL,
                     updatedAt: Date.now()
                 });
 
-                // UI Update karo instantly
                 userNickname = newName;
                 userName.innerText = newName;
                 userPic.src = finalPhotoURL;
-                
-                // Welcome text update karo
+
                 if (!currentChatId) {
                     welcomeText.innerText = `Hello ${userNickname}, Main hamesha tumhare sath hu...`;
                 }
-
-                document.getElementById('settings-loader').style.display = 'none'; // Loader Off
+                document.getElementById('settings-loader').style.display = 'none'; 
                 closeSettingsModal();
 
             } catch (error) {
@@ -2064,32 +2344,22 @@
                 document.getElementById('settings-loader').style.display = 'none';
             }
         }
+
         // ==========================================
         // 🔥 ULTIMATE SMART SCROLL LOGIC 🔥
         // ==========================================
-        
-        const scrollBtn = document.getElementById('scroll-action-btn');
-        let isAtTop = true;
-
-        // Ye Master Function hai, jo har situation me button ko control karega
-        window.checkScrollButton = function() {
+        window.checkScrollButton = function () {
             if (!scrollBtn) return;
-
-            // 1. Agar "New Chat" par hain, ya chat gayab hai -> Turant Hide!
             if (chatHistory.style.display === 'none' || !currentChatId) {
                 scrollBtn.classList.remove('visible');
                 return;
             }
-
-            // 2. Agar chat itni choti hai ki scroll hi nahi hai -> Hide!
             if (chatHistory.scrollHeight <= chatHistory.clientHeight + 50) {
                 scrollBtn.classList.remove('visible');
                 return;
             }
-
-            // 3. Varna button dikhao aur arrow set karo
+            
             scrollBtn.classList.add('visible');
-
             if (chatHistory.scrollTop > 300) {
                 scrollBtn.innerHTML = '↑';
                 isAtTop = false;
@@ -2099,19 +2369,16 @@
             }
         };
 
-        // Scroll karte waqt master function ko bulate raho
         chatHistory.addEventListener('scroll', checkScrollButton);
 
-        // Click aane par up/down bhej do
-        window.handleScrollAction = function() {
+        window.handleScrollAction = function () {
             if (isAtTop) {
                 chatHistory.scrollTo({ top: chatHistory.scrollHeight, behavior: 'smooth' });
             } else {
                 chatHistory.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
-         </script>
-
+    </script>
 </body>
 
 </html>
