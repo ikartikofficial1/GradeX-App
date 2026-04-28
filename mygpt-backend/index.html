@@ -2007,7 +2007,9 @@
             
             inputSection.classList.remove('centered-state');
             inputSection.classList.add('bottom-state');
-            welcomeText.style.display = 'none';
+            // 🔥 NAYA: Smooth fade-out
+            welcomeText.style.opacity = '0';
+            setTimeout(() => { welcomeText.style.display = 'none'; }, 300);
             chatHistory.style.display = 'flex';
 
             // ... welcomeText.style.display = 'none';
@@ -2231,7 +2233,7 @@
             }
         }
 
-        function resetToNewChat() {
+       function resetToNewChat() {
             currentChatId = null;
             currentChatMessages = [];
             localStorage.removeItem('activeChatId');
@@ -2239,11 +2241,25 @@
 
             document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active-chat'));
 
+            // Chat history clear karo
             chatHistory.innerHTML = '';
             chatHistory.style.display = 'none';
+            
+            // Input ko smoothly center lao
             inputSection.classList.remove('bottom-state');
             inputSection.classList.add('centered-state');
-            if (currentUser) welcomeText.style.display = 'block';
+            
+            // 🔥 THE FIX: Welcome text ko wapas text aur opacity dekar smooth fade-in karao 🔥
+            if (currentUser) {
+                const nameToShow = userNickname || currentUser.displayName.split(" ")[0];
+                welcomeText.innerText = `Hello ${nameToShow}, Main hamesha tumhare sath hu...`;
+                welcomeText.style.display = 'block';
+                
+                // 50ms delay taaki CSS transition trigger ho sake aur jhatka na lage
+                setTimeout(() => {
+                    welcomeText.style.opacity = "1";
+                }, 50);
+            }
 
             checkScrollButton();
         }
