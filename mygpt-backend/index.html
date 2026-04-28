@@ -519,13 +519,17 @@
             background: var(--med-brown);
         }
 
+        /* 🔥 THE FIX: Cancel Button ab dono mode me saaf dikhega 🔥 */
         .btn-cancel {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--sidebar-text);
+            background: transparent;
+            color: var(--text-main) !important; /* Light me dark, Dark me light */
+            border: 1px solid var(--input-border);
+            font-size: 15px;
         }
 
         .btn-cancel:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(192, 133, 82, 0.1); /* Hover par halka sa brown effect */
+            color: var(--text-main);
         }
 
         .main-content {
@@ -647,7 +651,7 @@
             border: none;
             padding: 0 25px;
             margin-left: 10px;
-            font-size: 18px !important;
+            font-size: 15px !important;
             font-weight: 600;
             transition: 0.3s;
             box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2);
@@ -1186,8 +1190,7 @@
             </div>
 
             <div class="d-flex gap-2">
-                <button class="send-btn w-100" style="padding: 10px; margin: 0;" onclick="saveSettings()">Save
-                    Changes</button>
+                <button class="send-btn w-100" style="padding: 10px; margin: 0;" onclick="saveSettings()">Save Changes</button>
                 <button class="btn btn-cancel w-100" style="border: 1px solid var(--input-border);"
                     onclick="closeSettingsModal()">Cancel</button>
             </div>
@@ -1621,6 +1624,8 @@
                     // Thoda delay taaki DOM render hone ke baad scroll bottom pe aaye
                     setTimeout(() => {
                         chatHistory.scrollTop = chatHistory.scrollHeight;
+                        // 🔥 NAYA: Chat load hone ke baad check karo ki button dikhana hai ya nahi
+                        checkScrollButton();
                     }, 50);
                 }
             });
@@ -1903,6 +1908,9 @@
             inputSection.classList.remove('bottom-state');
             inputSection.classList.add('centered-state');
             if (currentUser) welcomeText.style.display = 'block';
+
+            // 🔥 NAYA: New chat open hote hi button check karke hata do
+            checkScrollButton();
         }
 
         // 🔥 SHARE CHAT LOGIC 🔥
@@ -1964,6 +1972,10 @@
             selectedImageFileBase64 = null; // Reset
             
             document.getElementById('settings-overlay').style.display = 'flex';
+
+            // 🔥 NAYA: Settings khulte hi scroll button chhupao
+            const scrollBtn = document.getElementById('scroll-action-btn');
+            if (scrollBtn) scrollBtn.classList.remove('visible');
         }
 
         function closeSettingsModal() {
@@ -2053,48 +2065,49 @@
             }
         }
         // ==========================================
-        // 🔥 SMART SCROLL (UP & DOWN) LOGIC 🔥
+        // 🔥 ULTIMATE SMART SCROLL LOGIC 🔥
         // ==========================================
         
         const scrollBtn = document.getElementById('scroll-action-btn');
-        let isAtTop = true; // Ye yaad rakhega ki hum upar hain ya neeche
+        let isAtTop = true;
 
-        chatHistory.addEventListener('scroll', () => {
-            // 1. Agar chat me baatein kam hain (scroll ki zaroorat hi nahi), toh button chupa do
+        // Ye Master Function hai, jo har situation me button ko control karega
+        window.checkScrollButton = function() {
+            if (!scrollBtn) return;
+
+            // 1. Agar "New Chat" par hain, ya chat gayab hai -> Turant Hide!
+            if (chatHistory.style.display === 'none' || !currentChatId) {
+                scrollBtn.classList.remove('visible');
+                return;
+            }
+
+            // 2. Agar chat itni choti hai ki scroll hi nahi hai -> Hide!
             if (chatHistory.scrollHeight <= chatHistory.clientHeight + 50) {
                 scrollBtn.classList.remove('visible');
                 return;
             }
 
-            // 2. Chat lambi hai, toh button dikhao!
+            // 3. Varna button dikhao aur arrow set karo
             scrollBtn.classList.add('visible');
 
-            // 3. Logic: Check karo hum kahan hain?
             if (chatHistory.scrollTop > 300) {
-                // Hum neeche hain, toh UPAR jane ka teer (arrow) dikhao
                 scrollBtn.innerHTML = '↑';
                 isAtTop = false;
             } else {
-                // Hum upar hain, toh NEECHE aane ka teer dikhao
                 scrollBtn.innerHTML = '↓';
                 isAtTop = true;
             }
-        });
+        };
 
-        // Button click hone par kya hoga?
+        // Scroll karte waqt master function ko bulate raho
+        chatHistory.addEventListener('scroll', checkScrollButton);
+
+        // Click aane par up/down bhej do
         window.handleScrollAction = function() {
             if (isAtTop) {
-                // Agar upar hain, toh smooth glide karke sabse neeche jao
-                chatHistory.scrollTo({
-                    top: chatHistory.scrollHeight,
-                    behavior: 'smooth'
-                });
+                chatHistory.scrollTo({ top: chatHistory.scrollHeight, behavior: 'smooth' });
             } else {
-                // Agar neeche hain, toh smooth glide karke sabse upar aao
-                chatHistory.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+                chatHistory.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
          </script>
