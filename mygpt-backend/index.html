@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&display=swap"
         rel="stylesheet">
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -541,14 +541,16 @@
         /* 🔥 THEEK KIYA HUA MAIN INPUT CONTAINER 🔥 */
         .input-container {
             width: 100%;
-            max-width: 100% !important; /* 🔥 FIX: Pehle 850px tha. Ab ye pura 100% width cover karega taaki text na jhaanke */
+            max-width: 100% !important;
+            /* 🔥 FIX: Pehle 850px tha. Ab ye pura 100% width cover karega taaki text na jhaanke */
             margin: 0 auto;
-            padding: 40px 20px 25px 20px; /* Upar se thodi padding badhai taaki text aaram se fade ho */
+            padding: 40px 20px 25px 20px;
+            /* Upar se thodi padding badhai taaki text aaram se fade ho */
             position: absolute;
             bottom: 0;
-            left: 0; 
-            right: 0; 
-            transform: none; 
+            left: 0;
+            right: 0;
+            transform: none;
             /* 🔥 NAYA PREMIUM BOTTOM FADE: Ab line nahi katega, smooth dhundhla hoga 🔥 */
             background: linear-gradient(to top, var(--bg-body) 40%, transparent 100%);
             z-index: 100;
@@ -556,10 +558,11 @@
             box-sizing: border-box;
         }
 
-       /* Nayi Chat - Beech me dikhane ke liye (Desktop) */
+        /* Nayi Chat - Beech me dikhane ke liye (Desktop) */
         .input-container.centered-state {
             position: absolute;
-            top: 35%; /* 🔥 FIX: 45% se 50% kar diya (True Center) */
+            top: 35%;
+            /* 🔥 FIX: 45% se 50% kar diya (True Center) */
             bottom: auto;
             left: 0;
             right: 0;
@@ -765,7 +768,8 @@
             color: var(--med-brown);
             letter-spacing: -0.5px;
             transition: color 0.3s ease;
-            margin-bottom: 20px !important; /* 🔥 FIX: Text aur Input ke beech ka gap chota kiya taaki ek block lage */
+            margin-bottom: 20px !important;
+            /* 🔥 FIX: Text aur Input ke beech ka gap chota kiya taaki ek block lage */
         }
 
         body.dark-theme h1#welcome-text {
@@ -890,6 +894,105 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        /* =========================================
+           🔥 12. SETTINGS MODAL & PROFILE UPLOAD 🔥
+        ========================================= */
+        .settings-pic-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px auto;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 3px solid var(--light-brown);
+            overflow: hidden;
+            background: var(--input-bg);
+        }
+
+        .settings-pic-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Hamesha 1:1 square me fit rahega */
+        }
+
+        .settings-pic-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 12px;
+            padding: 5px 0;
+            text-align: center;
+            opacity: 0;
+            transition: 0.3s ease;
+        }
+
+        .settings-pic-container:hover .settings-pic-overlay {
+            opacity: 1;
+        }
+
+        .loader-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 20px;
+            flex-direction: column;
+            color: white;
+        }
+
+        /* =========================================
+           🔥 13. GO TO TOP BUTTON 🔥
+        ========================================= */
+        .go-to-top-btn {
+            position: fixed;
+            bottom: 130px; /* Input box ke theek upar */
+            right: 30px;
+            width: 45px;
+            height: 45px;
+            background-color: var(--med-brown);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 105; /* Input box ke upar rahega */
+            
+            /* Hidden State */
+            opacity: 0;
+            transform: translateY(20px) scale(0.8);
+            pointer-events: none; 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .go-to-top-btn.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto; /* Clickable ho jayega */
+        }
+
+        .go-to-top-btn:hover {
+            background-color: var(--dark-brown);
+            transform: translateY(-5px) scale(1.1); /* Halka sa upar bounce karega */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
         @media (max-width: 768px) {
@@ -1021,9 +1124,11 @@
                 display: block;
                 background: transparent;
             }
+
             .input-container.centered-state {
                 position: absolute;
-                top: 35%; /* 🔥 FIX: Mobile pe bhi 50% kar diya */
+                top: 35%;
+                /* 🔥 FIX: Mobile pe bhi 50% kar diya */
                 bottom: auto;
                 left: 0;
                 right: 0;
@@ -1031,6 +1136,13 @@
                 transform: translateY(-50%);
                 width: 100%;
                 background: transparent;
+            }
+            .go-to-top-btn {
+                bottom: 100px; /* Phone pe input box chhota hota hai, isliye isko thoda neeche laya */
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
             }
         }
     </style>
@@ -1049,6 +1161,38 @@
                 onclick="saveNickname()">Shuru Karein 🚀</button>
         </div>
     </div>
+    <div id="settings-overlay" class="share-modal-backdrop" style="z-index: 3000;">
+        <div class="share-modal fade-in-smooth" style="max-width: 400px; position: relative;">
+
+            <div id="settings-loader" class="loader-overlay">
+                <div class="thinking-spinner mb-2" style="width: 30px; height: 30px; border-width: 3px;"></div>
+                <small>Save ho raha hai...</small>
+            </div>
+
+            <h4 style="color: var(--med-brown); font-weight: bold; margin-bottom: 20px;">Profile Settings ⚙️</h4>
+
+            <div class="settings-pic-container" onclick="document.getElementById('profile-upload-input').click()">
+                <img id="settings-pic-preview" class="settings-pic-preview" src="" alt="Profile">
+                <div class="settings-pic-overlay">📷</div>
+            </div>
+            <input type="file" id="profile-upload-input" accept="image/*" style="display: none;"
+                onchange="handleImageUpload(event)">
+
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="font-size: 13px; color: var(--text-main); font-weight: bold; margin-bottom: 5px;">Tumhara
+                    Nickname</label>
+                <input type="text" id="settings-name-input" class="form-control custom-input"
+                    style="padding: 12px 20px;" autocomplete="off">
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="send-btn w-100" style="padding: 10px; margin: 0;" onclick="saveSettings()">Save
+                    Changes</button>
+                <button class="btn btn-cancel w-100" style="border: 1px solid var(--input-border);"
+                    onclick="closeSettingsModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
     <div class="share-modal-backdrop" id="share-modal-backdrop" onclick="closeShareModal()">
         <div class="share-modal" onclick="event.stopPropagation()">
             <h4 style="color: var(--med-brown); font-weight: bold;">Share Chat 🚀</h4>
@@ -1063,7 +1207,7 @@
     <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
 
     <div class="auth-container">
-        <button id="login-btn" class="btn btn-custom-outline" onclick="signInWithGoogle()">Sign in with Google</button>
+        <button id="login-btn" class="btn btn-custom-outline" onclick="signInWithGoogle()"style="display: none;">Sign in with Google</button>
 
         <div id="profile-area" class="profile-area">
             <div id="profile-trigger" class="profile-trigger" onclick="toggleProfileDropdown(event)">
@@ -1080,6 +1224,8 @@
                             onchange="toggleDarkMode()">
                     </div>
                 </div>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item" onclick="openSettingsModal()">Settings</button>
                 <div class="dropdown-divider"></div>
                 <button class="dropdown-item btn-logout-item text-start w-100" onclick="signOut(event)">Logout</button>
             </div>
@@ -1119,6 +1265,7 @@
                 <button id="send-btn" class="btn send-btn" onclick="sendMessage()" disabled>Send</button>
             </div>
         </div>
+        <button id="scroll-action-btn" class="go-to-top-btn" onclick="handleScrollAction()" title="Scroll Chat">↓</button>
     </div>
 
     <script>
@@ -1138,6 +1285,7 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
         const database = firebase.database();
+        let selectedImageFileBase64 = null; // Temp variable image preview ke liye
 
         let currentUser = null;
         let currentChatId = null;
@@ -1157,6 +1305,7 @@
         const profileDropdown = document.getElementById('profile-dropdown');
         const profileTrigger = document.getElementById('profile-trigger');
         const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const goToTopBtn = document.getElementById('go-to-top-btn');
 
         function initTheme() {
             if (localStorage.getItem('theme') === 'dark') {
@@ -1209,12 +1358,11 @@
             if (user) {
                 currentUser = user;
                 loginBtn.style.display = 'none';
-                profileTrigger.style.display = 'flex';
-                userPic.src = user.photoURL;
-                // 🔥 NAYA FIX: Jab tak DB se naam na aaye, yahan "..." (Loading) dikhao
-                userName.innerText = "...";
-                // 🔥 NAYA FIX: Yahan se 'userName' hataya. Ab flash nahi hoga!
-                // Input aur Chat ko hide rakho jab tak loader chal raha hai
+                
+                // 🔥 NAYA FIX: Jab tak proper data na aaye, Profile Button ko chupa kar rakho
+                profileTrigger.style.display = 'none'; 
+
+                // Main screen par bas loader dikhao
                 document.getElementById('main-initial-loader').style.display = 'flex';
                 inputSection.style.display = 'none';
 
@@ -1226,14 +1374,30 @@
                     const profile = snapshot.val();
                     
                     if (profile && profile.nickname) {
-                        // User purana hai! Ab naam set karo
                         userNickname = profile.nickname;
-                        userName.innerText = userNickname; // Bina flash hue direct Kittu aayega!
+                        userName.innerText = userNickname; 
+                        
+                        // 🔥 NAYA FIX: Check karo custom photo hai ya nahi, tabhi set karo
+                        if (profile.customPhotoURL) {
+                            userPic.src = profile.customPhotoURL;
+                        } else {
+                            userPic.src = user.photoURL; // Custom nahi hai toh Google wali lagao
+                        }
+
+                        // Sab set hone ke baad Profile Button ko Fade-in ke sath dikhao!
+                        profileTrigger.style.display = 'flex';
+                        profileTrigger.classList.add('fade-in-smooth');
+
                         document.getElementById('onboarding-overlay').style.display = 'none';
                         loadMainApp(); 
                     } else {
-                        // Naya User hai! Modal dikhao.
-                        userName.innerText = user.displayName.split(" ")[0]; // Backup name
+                        // Naya User hai toh default details set karo
+                        userName.innerText = user.displayName.split(" ")[0]; 
+                        userPic.src = user.photoURL; 
+                        
+                        profileTrigger.style.display = 'flex';
+                        profileTrigger.classList.add('fade-in-smooth');
+
                         document.getElementById('main-initial-loader').style.display = 'none';
                         document.getElementById('onboarding-overlay').style.display = 'flex';
                     }
@@ -1248,19 +1412,19 @@
                 userInput.disabled = true;
                 sendBtn.disabled = true;
                 document.getElementById('onboarding-overlay').style.display = 'none';
-                
+
                 // Logout hone par loader chupao aur input box dikhao (disabled state me)
                 document.getElementById('main-initial-loader').style.display = 'none';
-                inputSection.style.display = ''; 
-                
+                inputSection.style.display = '';
+
                 welcomeText.innerText = "Dost, pehle login karlo!";
-                welcomeText.style.opacity = "1"; 
+                welcomeText.style.opacity = "1";
                 sidebarChatList.innerHTML = '';
                 resetToNewChat();
             }
         });
-
-          // 🔥 NAYA FUNCTION: Nickname save karne ke liye 🔥
+       
+        // 🔥 NAYA FUNCTION: Nickname save karne ke liye 🔥
         window.saveNickname = function () {
             const nameInput = document.getElementById('nickname-input').value.trim();
             if (!nameInput) return alert("Are naam toh bata do yaar! 😅");
@@ -1276,9 +1440,9 @@
             });
         }
 
-      // 🔥 MAIN APP LOAD FUNCTION 🔥
+        // 🔥 MAIN APP LOAD FUNCTION 🔥
         function loadMainApp() {
-            userName.innerText = userNickname; 
+            userName.innerText = userNickname;
 
             // 🔥 LOADER HATAO, INPUT BOX DIKHAO 🔥
             document.getElementById('main-initial-loader').style.display = 'none';
@@ -1290,7 +1454,7 @@
                 loadSpecificChat(savedChatId);
             } else {
                 welcomeText.innerText = `Hello ${userNickname}, Main hamesha tumhare sath hu...`;
-                welcomeText.style.opacity = "1"; 
+                welcomeText.style.opacity = "1";
                 resetToNewChat();
             }
         }
@@ -1785,7 +1949,155 @@
                 }, 2000);
             });
         }
-    </script>
+        // ==========================================
+        // 🔥 SETTINGS & PROFILE UPLOAD LOGIC 🔥
+        // ==========================================
+
+        function openSettingsModal() {
+            if (!currentUser) return;
+            closeAllMenus();
+            profileDropdown.classList.remove('active');
+            
+            // Current data set karo
+            document.getElementById('settings-name-input').value = userNickname || currentUser.displayName.split(" ")[0];
+            document.getElementById('settings-pic-preview').src = userPic.src;
+            selectedImageFileBase64 = null; // Reset
+            
+            document.getElementById('settings-overlay').style.display = 'flex';
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-overlay').style.display = 'none';
+        }
+
+        // 🔥 AUTO 1:1 CROP & 3MB LIMIT LOGIC 🔥
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 1. Check File Size (Max 3MB)
+            if (file.size > 3 * 1024 * 1024) {
+                alert("Bhai, photo 3MB se choti honi chahiye! 😅");
+                event.target.value = "";
+                return;
+            }
+
+            // 2. Auto Crop to 1:1 Square using Canvas
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Target size (High Quality)
+                    const size = 500; 
+                    canvas.width = size;
+                    canvas.height = size;
+                    
+                    // Center crop logic
+                    const minDim = Math.min(img.width, img.height);
+                    const startX = (img.width - minDim) / 2;
+                    const startY = (img.height - minDim) / 2;
+                    
+                    ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
+                    
+                    // Convert to base64 preview
+                    selectedImageFileBase64 = canvas.toDataURL('image/jpeg', 0.85); // 80% quality
+                    document.getElementById('settings-pic-preview').src = selectedImageFileBase64;
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // 🔥 ZERO RUPEE JUGAAD: BINA STORAGE KE PHOTO SAVE KARO 🔥
+        async function saveSettings() {
+            const newName = document.getElementById('settings-name-input').value.trim();
+            if (!newName) return alert("Naam khali nahi chhod sakte dost!");
+
+            document.getElementById('settings-loader').style.display = 'flex'; // Loader On
+            
+            try {
+                let finalPhotoURL = userPic.src; // Default purani wali
+
+                // Asli Jadoo: Agar nayi photo hai, toh directly uske Base64 text ko use karo!
+                if (selectedImageFileBase64) {
+                    finalPhotoURL = selectedImageFileBase64; 
+                }
+
+                // Database Update karo (Text format me photo chali jayegi)
+                await database.ref('users/' + currentUser.uid + '/profile').update({
+                    nickname: newName,
+                    customPhotoURL: finalPhotoURL,
+                    updatedAt: Date.now()
+                });
+
+                // UI Update karo instantly
+                userNickname = newName;
+                userName.innerText = newName;
+                userPic.src = finalPhotoURL;
+                
+                // Welcome text update karo
+                if (!currentChatId) {
+                    welcomeText.innerText = `Hello ${userNickname}, Main hamesha tumhare sath hu...`;
+                }
+
+                document.getElementById('settings-loader').style.display = 'none'; // Loader Off
+                closeSettingsModal();
+
+            } catch (error) {
+                console.error("Save Error: ", error);
+                alert("Kuch gadbad hui save karne me! Net check kar lo.");
+                document.getElementById('settings-loader').style.display = 'none';
+            }
+        }
+        // ==========================================
+        // 🔥 SMART SCROLL (UP & DOWN) LOGIC 🔥
+        // ==========================================
+        
+        const scrollBtn = document.getElementById('scroll-action-btn');
+        let isAtTop = true; // Ye yaad rakhega ki hum upar hain ya neeche
+
+        chatHistory.addEventListener('scroll', () => {
+            // 1. Agar chat me baatein kam hain (scroll ki zaroorat hi nahi), toh button chupa do
+            if (chatHistory.scrollHeight <= chatHistory.clientHeight + 50) {
+                scrollBtn.classList.remove('visible');
+                return;
+            }
+
+            // 2. Chat lambi hai, toh button dikhao!
+            scrollBtn.classList.add('visible');
+
+            // 3. Logic: Check karo hum kahan hain?
+            if (chatHistory.scrollTop > 300) {
+                // Hum neeche hain, toh UPAR jane ka teer (arrow) dikhao
+                scrollBtn.innerHTML = '↑';
+                isAtTop = false;
+            } else {
+                // Hum upar hain, toh NEECHE aane ka teer dikhao
+                scrollBtn.innerHTML = '↓';
+                isAtTop = true;
+            }
+        });
+
+        // Button click hone par kya hoga?
+        window.handleScrollAction = function() {
+            if (isAtTop) {
+                // Agar upar hain, toh smooth glide karke sabse neeche jao
+                chatHistory.scrollTo({
+                    top: chatHistory.scrollHeight,
+                    behavior: 'smooth'
+                });
+            } else {
+                // Agar neeche hain, toh smooth glide karke sabse upar aao
+                chatHistory.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+         </script>
 
 </body>
 
