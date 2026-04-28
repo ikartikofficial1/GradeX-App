@@ -535,6 +535,30 @@
             color: var(--text-main);
         }
 
+        /* =========================================
+           🔥 MODAL PRIMARY BUTTONS (Pill Shape) 🔥
+           (Save Changes, Shuru Karein etc. ke liye)
+        ========================================= */
+        .modal-primary-btn {
+            background-color: var(--med-brown);
+            color: white !important;
+            border: none;
+            border-radius: 50px; /* Lambe pill shape ke liye */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-primary-btn:hover {
+            background-color: var(--dark-brown);
+            transform: translateY(-2px); /* Halka sa upar uthega hover pe */
+            box-shadow: 0 6px 20px rgba(140, 90, 60, 0.3);
+        }
+
         .main-content {
             flex-grow: 1;
             display: flex;
@@ -1361,7 +1385,7 @@
                 hai, par main tumhe pyar se kis naam se bulaun?</p>
             <input type="text" id="nickname-input" class="form-control custom-input"
                 placeholder="Tumhara pyara sa naam..." autocomplete="off" style="margin-bottom: 20px;">
-            <button class="send-btn w-100" style="padding: 12px; font-size: 16px !important;"
+           <button class="modal-primary-btn w-100" style="padding: 12px; font-size: 16px;"
                 onclick="saveNickname()">Shuru Karein 🚀</button>
         </div>
     </div>
@@ -1389,8 +1413,8 @@
                     style="padding: 12px 20px;" autocomplete="off">
             </div>
 
-            <div class="d-flex gap-2">
-                <button class="send-btn w-100" style="padding: 10px; margin: 0;" onclick="saveSettings()">Save
+           <div class="d-flex gap-2">
+                <button class="modal-primary-btn w-100" style="padding: 10px; margin: 0;" onclick="saveSettings()">Save
                     Changes</button>
                 <button class="btn btn-cancel w-100" style="border: 1px solid var(--input-border);"
                     onclick="closeSettingsModal()">Cancel</button>
