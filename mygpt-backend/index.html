@@ -104,6 +104,7 @@
             z-index: 1000;
         }
 
+        /* 🔥 LOGIN BUTTON STYLING (Theek kiya hua) 🔥 */
         .btn-custom-outline {
             border: 2px solid var(--dark-brown);
             color: var(--dark-brown);
@@ -111,11 +112,24 @@
             font-weight: 600;
             padding: 8px 20px;
             transition: 0.3s;
-            background: var(--profile-bg);
+            background: transparent;
         }
 
         .btn-custom-outline:hover {
-            background-color: var(--dark-brown);
+            background-color: var(--med-brown);
+            border-color: var(--med-brown);
+            color: var(--white);
+        }
+
+        /* Dark Mode ke liye explicitly White border/text */
+        body.dark-theme .btn-custom-outline {
+            border-color: var(--white);
+            color: var(--white);
+        }
+        
+        body.dark-theme .btn-custom-outline:hover {
+            background-color: var(--med-brown);
+            border-color: var(--med-brown);
             color: var(--white);
         }
 
@@ -1421,6 +1435,14 @@
             </div>
         </div>
     </div>
+    <div id="login-warning-modal" class="share-modal-backdrop" style="z-index: 3000;">
+        <div class="share-modal fade-in-smooth" style="max-width: 350px;">
+            <h3 style="color: var(--med-brown); font-weight: bold; margin-bottom: 10px;">Ruko Zara! ✋</h3>
+            <p style="font-size: 14.5px; opacity: 0.9; margin-bottom: 20px;">Dil ki baat likhne se pehle, please Google se login kar lo dost! 🔐✨</p>
+            <button class="modal-primary-btn w-100 mb-2" style="padding: 12px; font-size: 15px;" onclick="signInWithGoogle(); closeLoginWarning();">Sign in with Google 🚀</button>
+            <button class="btn btn-cancel w-100" style="padding: 10px;" onclick="closeLoginWarning()">Baad me</button>
+        </div>
+    </div>
     <div class="share-modal-backdrop" id="share-modal-backdrop" onclick="closeShareModal()">
         <div class="share-modal" onclick="event.stopPropagation()">
             <h4 style="color: var(--med-brown); font-weight: bold;">Share Chat 🚀</h4>
@@ -1510,7 +1532,7 @@
             title="Scroll Chat">↓</button>
     </div>
 
- <script>
+    <script>
         // 🛑 FIREBASE CONFIG 🛑
         const firebaseConfig = {
             apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
@@ -1534,6 +1556,7 @@
         let currentChatId = null;
         let currentChatMessages = [];
         let userNickname = "";
+        let isUserLoggedIn = false; // 🔥 Login Tracking Variable
         
         // 🔥 STOP STREAMING VARIABLES
         let isGenerating = false; 
@@ -1610,6 +1633,11 @@
 
         auth.onAuthStateChanged(user => {
             if (user) {
+                isUserLoggedIn = true; 
+                userInput.readOnly = false; // Input khol do
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                
                 currentUser = user;
                 loginBtn.style.display = 'none';
                 profileTrigger.style.display = 'none'; 
@@ -1617,8 +1645,6 @@
                 document.getElementById('main-initial-loader').style.display = 'flex';
                 inputSection.style.display = 'none';
 
-                userInput.disabled = false;
-                sendBtn.disabled = false;
                 loadSidebarHistory();
 
                 database.ref('users/' + user.uid + '/profile').once('value').then((snapshot) => {
@@ -1655,12 +1681,17 @@
                 currentUser = null;
                 currentChatId = null;
                 userNickname = "";
+                isUserLoggedIn = false; 
+
                 loginBtn.style.display = 'block';
                 profileTrigger.style.display = 'none';
-                userInput.disabled = true;
-                sendBtn.disabled = true;
-                document.getElementById('onboarding-overlay').style.display = 'none';
+                
+                // 🔥 NAYA FIX: Disable ki jagah ReadOnly lagaya taaki UI normal dikhe par type na ho
+                userInput.disabled = false;
+                userInput.readOnly = true; 
+                sendBtn.disabled = false; 
 
+                document.getElementById('onboarding-overlay').style.display = 'none';
                 document.getElementById('main-initial-loader').style.display = 'none';
                 inputSection.style.display = '';
 
@@ -1668,6 +1699,19 @@
                 welcomeText.style.opacity = "1";
                 sidebarChatList.innerHTML = '';
                 resetToNewChat();
+            }
+        });
+
+        // 🔥 NAYA: Modal band karne ka function
+        window.closeLoginWarning = function() {
+            document.getElementById('login-warning-modal').style.display = 'none';
+        }
+
+        // 🔥 NAYA: Bina login agar koi input click kare toh popup lao
+        userInput.addEventListener('focus', function(e) {
+            if (!isUserLoggedIn) {
+                userInput.blur(); // Turant focus hatao taaki mobile me keyboard open na ho
+                document.getElementById('login-warning-modal').style.display = 'flex';
             }
         });
 
@@ -1813,7 +1857,8 @@
 
             inputSection.classList.remove('centered-state');
             inputSection.classList.add('bottom-state');
-            welcomeText.style.display = 'none';
+            welcomeText.style.opacity = '0';
+            setTimeout(() => { welcomeText.style.display = 'none'; }, 300);
             chatHistory.style.display = 'flex';
 
             chatHistory.innerHTML = `
@@ -1829,7 +1874,6 @@
 
                     currentChatMessages.forEach(msg => {
                         if (msg.role === 'user') {
-                            // 🔥 FIX: User chat me bhi position-relative aur copy button laga diya
                             htmlContent += `
                             <div class="d-flex justify-content-end w-100">
                                 <div class="message-bubble user-msg position-relative" data-raw="${encodeURIComponent(msg.text)}">
@@ -1842,13 +1886,12 @@
                                 </div>
                             </div>`;
                         } else {
-                            // 🔥 FIX 1: Purani chats me data-raw aur position-relative lagaya 🔥
                             htmlContent += `
                             <div class="d-flex justify-content-start w-100">
                                 <div class="message-bubble bot-msg position-relative" data-raw="${encodeURIComponent(msg.text)}">
                                     <strong>MyGPT:</strong> <br>${marked.parse(msg.text)}
                                     <div class="copy-action-wrapper">
-                                        <button class="copy-msg-btn" onclick="copyBotMessage(this)" title="Copy exact text">
+                                        <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy exact text">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
                                         </button>
                                     </div>
@@ -1912,6 +1955,11 @@
         // ==========================================
 
         window.handleSendClick = function() {
+            if (!isUserLoggedIn) {
+                document.getElementById('login-warning-modal').style.display = 'flex';
+                return;
+            }
+
             if (isGenerating) {
                 stopGeneration();
             } else {
@@ -1921,15 +1969,12 @@
 
         // 🔥 EXACT MESSAGE COPY KARNE KA JADOO (BOT + USER) 🔥
         window.copyMessageData = function(btn) {
-            // Button jis bhi bubble ke andar hai, usko dhoondho
             const bubble = btn.closest('.message-bubble');
             
-            // Raw text nikalo
             let rawText = "";
             if(bubble.hasAttribute('data-raw') && bubble.getAttribute('data-raw') !== "null" && bubble.getAttribute('data-raw') !== "") {
                 rawText = decodeURIComponent(bubble.getAttribute('data-raw'));
             } else {
-                // Fallback: Agar raw text nahi mila, toh screen se text utha lo (Name hata ke)
                 rawText = bubble.innerText.replace(/^.*:\n/, "").trim(); 
             }
             
@@ -1940,14 +1985,13 @@
                 
                 setTimeout(() => {
                     btn.innerHTML = originalSvg;
-                    btn.style.color = ""; // Color wapas default
+                    btn.style.color = ""; 
                 }, 2000);
             }).catch(err => {
                 console.log("Copy failed: ", err);
             });
         }
         
-        // Purane bot buttons break na ho isliye backward compatibility
         window.copyBotMessage = window.copyMessageData;
 
         window.stopGeneration = function() {
@@ -1965,13 +2009,12 @@
             const randomMsg = randomMessages[Math.floor(Math.random() * randomMessages.length)];
             
             setTimeout(() => {
-                // 🔥 FIX 2: Stop generation me data-raw aur position-relative lagaya 🔥
                 chatHistory.innerHTML += `
                 <div class="d-flex justify-content-start w-100 mb-2 fade-in-smooth">
                     <div class="message-bubble bot-msg position-relative" style="background-color: transparent; border: 1px dashed var(--light-brown); font-style: italic; opacity: 0.8;" data-raw="${encodeURIComponent(randomMsg)}">
                         ${randomMsg}
                         <div class="copy-action-wrapper">
-                            <button class="copy-msg-btn" onclick="copyBotMessage(this)" title="Copy text">
+                            <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy text">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
                             </button>
                         </div>
@@ -2007,13 +2050,9 @@
             
             inputSection.classList.remove('centered-state');
             inputSection.classList.add('bottom-state');
-            // 🔥 NAYA: Smooth fade-out
             welcomeText.style.opacity = '0';
             setTimeout(() => { welcomeText.style.display = 'none'; }, 300);
             chatHistory.style.display = 'flex';
-
-            // ... welcomeText.style.display = 'none';
-            // chatHistory.style.display = 'flex'; ke just niche:
 
             chatHistory.innerHTML += `
             <div class="d-flex justify-content-end w-100 mb-2 fade-in-smooth">
@@ -2067,7 +2106,6 @@
             const historyToSend = currentChatMessages.slice(0, -1);
             let msgId = "msg_" + Date.now();
 
-            // 🔥 FIX 3: Nayi generate hone wali chat me bhi data-raw aur position-relative add kiya 🔥
             chatHistory.innerHTML += `
             <div class="d-flex justify-content-start w-100 mb-2">
                 <div class="message-bubble bot-msg w-100 position-relative" id="${msgId}" data-raw="">
@@ -2078,7 +2116,7 @@
                     </div>
                     <div class="typing-content" style="display: none;"></div>
                     <div class="copy-action-wrapper">
-                        <button class="copy-msg-btn" onclick="copyBotMessage(this)" title="Copy exact text">
+                        <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy exact text">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
                         </button>
                     </div>
@@ -2140,7 +2178,6 @@
 
                         contentDiv.innerHTML = marked.parse(rawBotReply);
                         
-                        // 🔥 NAYI LINE YAHI HAI JO LIVE RAW TEXT KO SAVE KARTI HAI 🔥
                         document.getElementById(msgId).setAttribute('data-raw', encodeURIComponent(rawBotReply));
                         
                         chatHistory.scrollTop = chatHistory.scrollHeight;
@@ -2233,7 +2270,7 @@
             }
         }
 
-       function resetToNewChat() {
+        function resetToNewChat() {
             currentChatId = null;
             currentChatMessages = [];
             localStorage.removeItem('activeChatId');
@@ -2241,21 +2278,16 @@
 
             document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active-chat'));
 
-            // Chat history clear karo
             chatHistory.innerHTML = '';
             chatHistory.style.display = 'none';
             
-            // Input ko smoothly center lao
             inputSection.classList.remove('bottom-state');
             inputSection.classList.add('centered-state');
             
-            // 🔥 THE FIX: Welcome text ko wapas text aur opacity dekar smooth fade-in karao 🔥
             if (currentUser) {
                 const nameToShow = userNickname || currentUser.displayName.split(" ")[0];
                 welcomeText.innerText = `Hello ${nameToShow}, Main hamesha tumhare sath hu...`;
                 welcomeText.style.display = 'block';
-                
-                // 50ms delay taaki CSS transition trigger ho sake aur jhatka na lage
                 setTimeout(() => {
                     welcomeText.style.opacity = "1";
                 }, 50);
@@ -2419,6 +2451,7 @@
             }
         }
     </script>
+
 </body>
 
 </html>
