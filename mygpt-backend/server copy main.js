@@ -219,7 +219,7 @@ Act like a real person. Always.
       res.flushHeaders();
 
       const errorMsg =
-        "🥺 Bhai, Google ke saare servers par abhi extreme traffic hai. Maine fallback models try kiye par sab jam hain. Bas thodi der baad try kar!";
+        "⚠️ Bhai, Google ke saare servers par abhi extreme traffic hai. Maine fallback models try kiye par sab jam hain. Bas thodi der baad try kar!";
       const errorChunk = JSON.stringify({
         candidates: [{ content: { parts: [{ text: errorMsg }] } }],
       });

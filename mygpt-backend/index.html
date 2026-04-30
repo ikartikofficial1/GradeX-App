@@ -126,7 +126,7 @@
             border-color: var(--white);
             color: var(--white);
         }
-        
+
         body.dark-theme .btn-custom-outline:hover {
             background-color: var(--med-brown);
             border-color: var(--med-brown);
@@ -557,7 +557,8 @@
             background-color: var(--med-brown);
             color: white !important;
             border: none;
-            border-radius: 50px; /* Lambe pill shape ke liye */
+            border-radius: 50px;
+            /* Lambe pill shape ke liye */
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -569,7 +570,8 @@
 
         .modal-primary-btn:hover {
             background-color: var(--dark-brown);
-            transform: translateY(-2px); /* Halka sa upar uthega hover pe */
+            transform: translateY(-2px);
+            /* Halka sa upar uthega hover pe */
             box-shadow: 0 6px 20px rgba(140, 90, 60, 0.3);
         }
 
@@ -686,33 +688,34 @@
         }
 
 
-       
-/* =========================================
+
+        /* =========================================
            🔥 60FPS ULTRA SMOOTH PREMIUM BUTTON 🔥
         ========================================= */
         .send-btn {
-            background-color: var(--med-brown); 
-            color: white !important; 
+            background-color: var(--med-brown);
+            color: white !important;
             border: none !important;
-            border-radius: 50% !important; 
-            
+            border-radius: 50% !important;
+
             width: 55px !important;
             height: 55px !important;
-            min-width: 55px !important; 
-            
+            min-width: 55px !important;
+
             margin-left: 10px;
-            padding: 0 !important; 
+            padding: 0 !important;
             cursor: pointer;
-            
+
             display: flex !important;
             align-items: center;
             justify-content: center;
-            
+
             /* Basic button transitions */
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
-            
-            position: relative; /* Ring ko position karne ke liye zaroori */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+            position: relative;
+            /* Ring ko position karne ke liye zaroori */
         }
 
         .send-btn:disabled {
@@ -733,17 +736,23 @@
         .send-btn::after {
             content: '';
             position: absolute;
-            top: -6px; left: -6px; right: -6px; bottom: -6px; /* 4px Gap + 2px Border ki maths */
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            /* 4px Gap + 2px Border ki maths */
             border: 2px solid var(--med-brown);
             border-radius: 50%;
-            
+
             /* Hidden State */
             opacity: 0;
-            transform: scale(0.7); /* Andar chupa hoga */
-            
+            transform: scale(0.7);
+            /* Andar chupa hoga */
+
             /* 🔥 ULTRA SMOOTH ANIMATION (Halka sa Apple style bounce karega) 🔥 */
-            transition: opacity 0.25s ease-out, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1); 
-            pointer-events: none; /* Click ko block nahi karega */
+            transition: opacity 0.25s ease-out, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+            pointer-events: none;
+            /* Click ko block nahi karega */
         }
 
         /* Hover pe Ring ekdum smooth expand hogi */
@@ -783,13 +792,18 @@
                 min-width: 48px !important;
                 margin-left: 5px;
             }
+
             .send-btn svg {
                 width: 22px;
                 height: 22px;
             }
+
             /* Mobile me gap thoda kam rakhna padega */
             .send-btn::after {
-                top: -5px; left: -5px; right: -5px; bottom: -5px;
+                top: -5px;
+                left: -5px;
+                right: -5px;
+                bottom: -5px;
             }
         }
 
@@ -802,7 +816,7 @@
 
 
 
-        
+
 
         .message-bubble {
             padding: 16px 22px;
@@ -1142,23 +1156,38 @@
            🔥 STOP BUTTON STYLING & ANIMATION 🔥
         ========================================= */
         .send-btn.stop-mode {
-            background-color: rgba(255, 77, 77, 0.15) !important; /* Halka Red Background */
+            background-color: rgba(255, 77, 77, 0.15) !important;
+            /* Halka Red Background */
         }
-        
+
         .send-btn.stop-mode svg {
-            fill: #ff4d4d !important; /* Red Icon */
-            transform: none !important; /* Rotation band */
+            fill: #ff4d4d !important;
+            /* Red Icon */
+            transform: none !important;
+            /* Rotation band */
         }
-        
+
         .send-btn.stop-mode::after {
-            border-color: #ff4d4d !important; /* Ring ka color Red */
-            animation: pulse-red 1.5s infinite ease-out; /* Dhadkane wala effect */
+            border-color: #ff4d4d !important;
+            /* Ring ka color Red */
+            animation: pulse-red 1.5s infinite ease-out;
+            /* Dhadkane wala effect */
         }
 
         @keyframes pulse-red {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: scale(1.3); opacity: 0; }
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
         }
 
         /* =========================================
@@ -1166,15 +1195,18 @@
         ========================================= */
         .message-bubble.bot-msg,
         .message-bubble.user-msg {
-            position: relative; /* Button iske andar fix karne ke liye */
-            padding-bottom: 35px; /* Niche thodi jagah button ke liye */
+            position: relative;
+            /* Button iske andar fix karne ke liye */
+            padding-bottom: 35px;
+            /* Niche thodi jagah button ke liye */
         }
 
         .copy-action-wrapper {
             position: absolute;
             bottom: 5px;
             right: 12px;
-            opacity: 0; /* By default chupa hua */
+            opacity: 0;
+            /* By default chupa hua */
             transition: opacity 0.2s ease-in-out;
         }
 
@@ -1209,15 +1241,147 @@
         .user-msg .copy-msg-btn {
             color: rgba(255, 255, 255, 0.7);
         }
+
         .user-msg .copy-msg-btn:hover {
             opacity: 1;
             background: rgba(255, 255, 255, 0.15);
             color: #ffffff;
         }
 
-        /* Mobile pe hover nahi hota, isliye hamesha dikhao */
-        @media (max-width: 768px) {
-           
+        /* =========================================
+           🔥 WHATSAPP STYLE EMOJI REACTION 🔥
+        ========================================= */
+        .reaction-badge {
+            position: absolute;
+            bottom: -14px;
+            /* Bubble ke theek niche */
+            left: 20px;
+            /* Left side pe WhatsApp style */
+            background: var(--dropdown-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 50px;
+            padding: 3px 7px;
+            font-size: 16px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            line-height: 1;
+            animation: popInBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            /* Dark mode compatibility automatically var(--dropdown-bg) se ho jayegi */
+        }
+
+        @keyframes popInBounce {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* =========================================
+           🧘‍♂️ ZEN FOCUS MODE STYLES (THEME AWARE) 🧘‍♂️
+        ========================================= */
+        
+        /* OVERLAY (Background Parda - Dono themes me same rahega) */
+        .zen-modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6); 
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            z-index: 99999; display: none; justify-content: center;
+            align-items: center; padding: 20px; opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .zen-modal-overlay.active { display: flex; opacity: 1; }
+        
+        /* ☀️ LIGHT MODE (Default Look) ☀️ */
+        .zen-modal-content {
+            background: #ffffff; /* Safed background */
+            color: #333333; /* Dark text */
+            width: 100%; max-width: 850px; max-height: 85vh;
+            border-radius: 16px; padding: 40px; overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            font-size: 1.2rem; line-height: 1.8;
+            position: relative;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            scrollbar-width: thin; 
+            scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+        }
+        .zen-modal-overlay.active .zen-modal-content { transform: translateY(0) scale(1); }
+        
+        .close-zen-btn {
+            position: absolute; top: 15px; right: 15px;
+            background: rgba(0, 0, 0, 0.05); color: #333;
+            border: none; border-radius: 50%;
+            width: 35px; height: 35px; font-size: 18px;
+            cursor: pointer; display: flex; align-items: center;
+            justify-content: center; transition: 0.2s;
+        }
+        .close-zen-btn:hover { background: rgba(255, 0, 0, 0.8); color: white; transform: rotate(90deg); }
+
+        /* Light Mode Scrollbar */
+        .zen-modal-content::-webkit-scrollbar { width: 6px; }
+        .zen-modal-content::-webkit-scrollbar-track { background: transparent; }
+        .zen-modal-content::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.15); border-radius: 10px; }
+        .zen-modal-content::-webkit-scrollbar-thumb:hover { background-color: rgba(0, 0, 0, 0.35); }
+
+        /* 🌙 DARK MODE (Jab .dark-theme active ho) 🌙 */
+        body.dark-theme .zen-modal-content {
+            background: #222222; /* Dark background */
+            color: #ffffff; /* Safed text */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+        body.dark-theme .close-zen-btn {
+            background: rgba(255, 255, 255, 0.1); color: white;
+        }
+        body.dark-theme .close-zen-btn:hover {
+            background: rgba(255, 0, 0, 0.8); color: white;
+        }
+        body.dark-theme .zen-modal-content::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        body.dark-theme .zen-modal-content::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* =========================================
+           🎨 ZEN MODE TEXT HIGHLIGHTS (BROWN) 🎨
+        ========================================= */
+        
+        /* ☀️ Light Mode me Headings aur Bold text ka color ☀️ */
+        .zen-modal-content strong,
+        .zen-modal-content b,
+        .zen-modal-content h1, 
+        .zen-modal-content h2, 
+        .zen-modal-content h3, 
+        .zen-modal-content h4 {
+            color: var(--med-brown, #8B5A2B); /* Tera normal chat wala brown */
+        }
+
+        /* 🌙 Dark Mode me Headings aur Bold text ka color 🌙 */
+        body.dark-theme .zen-modal-content strong,
+        body.dark-theme .zen-modal-content b,
+        body.dark-theme .zen-modal-content h1, 
+        body.dark-theme .zen-modal-content h2, 
+        body.dark-theme .zen-modal-content h3, 
+        body.dark-theme .zen-modal-content h4 {
+            color: var(--light-brown, #EDC8A0); /* Dark mode me chamakta hua bright brown */
+        }
+
+        /* ☀️ Light Mode Background (Match with body) ☀️ */
+        .zen-modal-content {
+            background-color: var(--bg-color, #FFF8F0) !important;
+        }
+
+        /* 🌙 Dark Mode Background (Match with body) 🌙 */
+        body.dark-theme .zen-modal-content {
+            background-color: var(--bg-color, #1B1110) !important;
         }
 
         @media (max-width: 768px) {
@@ -1383,8 +1547,9 @@
                 height: 40px;
                 font-size: 20px;
             }
-              .copy-action-wrapper {
-                opacity: 0.7; 
+
+            .copy-action-wrapper {
+                opacity: 0.7;
             }
         }
     </style>
@@ -1399,7 +1564,7 @@
                 hai, par main tumhe pyar se kis naam se bulaun?</p>
             <input type="text" id="nickname-input" class="form-control custom-input"
                 placeholder="Tumhara pyara sa naam..." autocomplete="off" style="margin-bottom: 20px;">
-           <button class="modal-primary-btn w-100" style="padding: 12px; font-size: 16px;"
+            <button class="modal-primary-btn w-100" style="padding: 12px; font-size: 16px;"
                 onclick="saveNickname()">Shuru Karein 🚀</button>
         </div>
     </div>
@@ -1427,7 +1592,7 @@
                     style="padding: 12px 20px;" autocomplete="off">
             </div>
 
-           <div class="d-flex gap-2">
+            <div class="d-flex gap-2">
                 <button class="modal-primary-btn w-100" style="padding: 10px; margin: 0;" onclick="saveSettings()">Save
                     Changes</button>
                 <button class="btn btn-cancel w-100" style="border: 1px solid var(--input-border);"
@@ -1438,8 +1603,10 @@
     <div id="login-warning-modal" class="share-modal-backdrop" style="z-index: 3000;">
         <div class="share-modal fade-in-smooth" style="max-width: 350px;">
             <h3 style="color: var(--med-brown); font-weight: bold; margin-bottom: 10px;">Ruko Zara! ✋</h3>
-            <p style="font-size: 14.5px; opacity: 0.9; margin-bottom: 20px;">Dil ki baat likhne se pehle, please Google se login kar lo dost! 🔐✨</p>
-            <button class="modal-primary-btn w-100 mb-2" style="padding: 12px; font-size: 15px;" onclick="signInWithGoogle(); closeLoginWarning();">Sign in with Google 🚀</button>
+            <p style="font-size: 14.5px; opacity: 0.9; margin-bottom: 20px;">Dil ki baat likhne se pehle, please Google
+                se login kar lo dost! 🔐✨</p>
+            <button class="modal-primary-btn w-100 mb-2" style="padding: 12px; font-size: 15px;"
+                onclick="signInWithGoogle(); closeLoginWarning();">Sign in with Google 🚀</button>
             <button class="btn btn-cancel w-100" style="padding: 10px;" onclick="closeLoginWarning()">Baad me</button>
         </div>
     </div>
@@ -1506,7 +1673,7 @@
 
         <div id="chat-history" class="chat-history" style="display: none;"></div>
 
-       <div id="input-section" class="input-container centered-state" style="display: none;">
+        <div id="input-section" class="input-container centered-state" style="display: none;">
             <div class="input-history-line"></div>
             <h1 id="welcome-text" class="mb-4 fw-bold text-center" style="opacity: 0; transition: opacity 0.5s ease;">
             </h1>
@@ -1516,7 +1683,7 @@
 
                 <button id="send-btn" class="btn send-btn d-flex align-items-center justify-content-center"
                     onclick="handleSendClick()" disabled aria-label="Send message">
-                    
+
                     <svg id="send-icon" viewBox="0 0 24 24">
                         <path d="M12 5l7 7-1.4 1.4L13 8.8V19h-2V8.8l-4.6 4.6L5 12z" />
                     </svg>
@@ -1533,7 +1700,7 @@
     </div>
 
     <script>
-        // 🛑 FIREBASE CONFIG 🛑
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
             authDomain: "my-gemini-bot-gradex.firebaseapp.com",
@@ -1545,197 +1712,301 @@
             measurementId: "G-0GFKZBZ8M1"
         };
 
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
         const database = firebase.database();
-        let selectedImageFileBase64 = null; 
 
-        // 🧠 STATE VARIABLES
+        let selectedImageFileBase64 = null;
         let currentUser = null;
         let currentChatId = null;
         let currentChatMessages = [];
         let userNickname = "";
-        let isUserLoggedIn = false; // 🔥 Login Tracking Variable
-        
-        // 🔥 STOP STREAMING VARIABLES
-        let isGenerating = false; 
+        let isUserLoggedIn = false;
+        let isGenerating = false;
         let currentAbortController = null;
+        let isAtTop = true;
+        let sidebarChatsRef = null;
 
-        // DOM ELEMENTS
-        const inputSection = document.getElementById('input-section');
-        const chatHistory = document.getElementById('chat-history');
-        const welcomeText = document.getElementById('welcome-text');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        const sidebarChatList = document.getElementById('sidebar-chat-list');
-        const loginBtn = document.getElementById('login-btn');
-        const profileArea = document.getElementById('profile-area');
-        const userPic = document.getElementById('user-pic');
-        const userName = document.getElementById('user-name');
-        const profileDropdown = document.getElementById('profile-dropdown');
-        const profileTrigger = document.getElementById('profile-trigger');
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
-        const scrollBtn = document.getElementById('scroll-action-btn'); 
+        // DATABASE WRITE QUEUE
+        let cloudSaveQueue = Promise.resolve();
 
-        // ==========================================
-        // 🔥 UI & THEME LOGIC 🔥
-        // ==========================================
+        const inputSection = document.getElementById("input-section");
+        const chatHistory = document.getElementById("chat-history");
+        const welcomeText = document.getElementById("welcome-text");
+        const userInput = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send-btn");
+        const sidebarChatList = document.getElementById("sidebar-chat-list");
+        const loginBtn = document.getElementById("login-btn");
+        const profileArea = document.getElementById("profile-area");
+        const userPic = document.getElementById("user-pic");
+        const userName = document.getElementById("user-name");
+        const profileDropdown = document.getElementById("profile-dropdown");
+        const profileTrigger = document.getElementById("profile-trigger");
+        const darkModeToggle = document.getElementById("dark-mode-toggle");
+        const scrollBtn = document.getElementById("scroll-action-btn");
+
+        function escapeHTML(value) {
+            return String(value ?? "").replace(/[&<>"']/g, char => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[char]));
+        }
+
+        function escapeAttr(value) {
+            return escapeHTML(value).replace(/`/g, "&#096;");
+        }
+
+        function escapeJSString(value) {
+            return String(value ?? "")
+                .replace(/\\/g, "\\\\")
+                .replace(/'/g, "\\'")
+                .replace(/\n/g, "\\n")
+                .replace(/\r/g, "");
+        }
+
+        function rawAttr(value) {
+            return escapeAttr(encodeURIComponent(String(value ?? "")));
+        }
+
+        function formatPlainText(value) {
+            return escapeHTML(value).replace(/\n/g, "<br>");
+        }
+
+        function renderBotMarkdown(value) {
+            let html = "";
+            try {
+                html = window.marked ? marked.parse(String(value ?? "")) : formatPlainText(value);
+            } catch (e) {
+                html = formatPlainText(value);
+            }
+
+            if (window.DOMPurify) {
+                html = DOMPurify.sanitize(html);
+            }
+
+            return html;
+        }
+
+        function cleanBotText(value) {
+            return String(value ?? "").replace(/\[REACT:[^\]]*\]?/gi, "").trim();
+        }
+
+        function cloneMessages(messages = currentChatMessages) {
+            return JSON.parse(JSON.stringify(messages || []));
+        }
+
+        function copyIconSvg() {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>`;
+        }
+
+        function checkIconSvg() {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>`;
+        }
+
+        function ensureCurrentChatId() {
+            if (!currentChatId) {
+                currentChatId = "chat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+                localStorage.setItem("activeChatId", currentChatId);
+            }
+            return currentChatId;
+        }
+
+        function queueStateSave({ chatId = currentChatId, messages = currentChatMessages, title = null } = {}) {
+            if (!currentUser || !chatId) return Promise.resolve();
+
+            const uid = currentUser.uid;
+            const messagesSnapshot = cloneMessages(messages);
+            const titleSnapshot = title;
+
+            cloudSaveQueue = cloudSaveQueue
+                .then(() => saveStateToCloud({
+                    uid,
+                    chatId,
+                    messages: messagesSnapshot,
+                    title: titleSnapshot
+                }))
+                .catch(err => console.error("Cloud save failed:", err));
+
+            return cloudSaveQueue;
+        }
+
+        function saveStateToCloud({ uid, chatId, messages, title = null }) {
+            if (!uid || !chatId) return Promise.resolve();
+
+            const payload = {
+                messages: cloneMessages(messages),
+                updatedAt: Date.now()
+            };
+
+            if (title) {
+                payload.title = title.length > 30 ? title.substring(0, 30) + "..." : title;
+            }
+
+            return database.ref("userChats/" + uid + "/" + chatId).update(payload);
+        }
+
         function initTheme() {
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-theme');
-                darkModeToggle.checked = true;
+            if (localStorage.getItem("theme") === "dark") {
+                document.body.classList.add("dark-theme");
+                if (darkModeToggle) darkModeToggle.checked = true;
             }
         }
+
         function toggleDarkMode() {
-            document.body.classList.toggle('dark-theme', darkModeToggle.checked);
-            localStorage.setItem('theme', darkModeToggle.checked ? 'dark' : 'light');
+            document.body.classList.toggle("dark-theme", darkModeToggle.checked);
+            localStorage.setItem("theme", darkModeToggle.checked ? "dark" : "light");
         }
+
         initTheme();
 
         function toggleProfileDropdown(event) {
             if (!currentUser) return;
-            profileDropdown.classList.toggle('active');
-            profileTrigger.classList.toggle('active');
+            profileDropdown.classList.toggle("active");
+            profileTrigger.classList.toggle("active");
         }
 
         function closeAllMenus() {
-            document.querySelectorAll('.chat-options-menu.active').forEach(menu => menu.classList.remove('active'));
+            document.querySelectorAll(".chat-options-menu.active").forEach(menu => {
+                menu.classList.remove("active");
+            });
         }
 
-        window.addEventListener('click', function (e) {
-            if (!profileArea.contains(e.target)) {
-                profileDropdown.classList.remove('active');
-                profileTrigger.classList.remove('active');
+        window.addEventListener("click", function (e) {
+            if (profileArea && !profileArea.contains(e.target)) {
+                profileDropdown.classList.remove("active");
+                profileTrigger.classList.remove("active");
             }
             closeAllMenus();
         });
 
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('mobile-overlay').classList.toggle('active');
-        }
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('mobile-overlay').classList.remove('active');
+            document.getElementById("sidebar").classList.toggle("active");
+            document.getElementById("mobile-overlay").classList.toggle("active");
         }
 
-        // ==========================================
-        // 🔥 AUTHENTICATION LOGIC 🔥
-        // ==========================================
-        function signInWithGoogle() { auth.signInWithPopup(provider).catch(err => alert("Login failed")); }
+        function closeSidebar() {
+            document.getElementById("sidebar").classList.remove("active");
+            document.getElementById("mobile-overlay").classList.remove("active");
+        }
+
+        function signInWithGoogle() {
+            auth.signInWithPopup(provider).catch(() => alert("Login failed"));
+        }
+
         function signOut(event) {
-            profileDropdown.classList.remove('active');
-            profileTrigger.classList.remove('active');
-            localStorage.removeItem('activeChatId');
+            profileDropdown.classList.remove("active");
+            profileTrigger.classList.remove("active");
+            localStorage.removeItem("activeChatId");
+
+            if (sidebarChatsRef) {
+                sidebarChatsRef.off();
+                sidebarChatsRef = null;
+            }
+
             auth.signOut();
         }
 
         auth.onAuthStateChanged(user => {
             if (user) {
-                isUserLoggedIn = true; 
-                userInput.readOnly = false; // Input khol do
+                isUserLoggedIn = true;
+                currentUser = user;
+
+                userInput.readOnly = false;
                 userInput.disabled = false;
                 sendBtn.disabled = false;
-                
-                currentUser = user;
-                loginBtn.style.display = 'none';
-                profileTrigger.style.display = 'none'; 
 
-                document.getElementById('main-initial-loader').style.display = 'flex';
-                inputSection.style.display = 'none';
+                loginBtn.style.display = "none";
+                profileTrigger.style.display = "none";
+
+                document.getElementById("main-initial-loader").style.display = "flex";
+                inputSection.style.display = "none";
 
                 loadSidebarHistory();
 
-                database.ref('users/' + user.uid + '/profile').once('value').then((snapshot) => {
+                database.ref("users/" + user.uid + "/profile").once("value").then(snapshot => {
                     const profile = snapshot.val();
 
                     if (profile && profile.nickname) {
                         userNickname = profile.nickname;
                         userName.innerText = userNickname;
-
-                        if (profile.customPhotoURL) {
-                            userPic.src = profile.customPhotoURL;
-                        } else {
-                            userPic.src = user.photoURL; 
-                        }
-
-                        profileTrigger.style.display = 'flex';
-                        profileTrigger.classList.add('fade-in-smooth');
-
-                        document.getElementById('onboarding-overlay').style.display = 'none';
+                        userPic.src = profile.customPhotoURL || user.photoURL;
+                        profileTrigger.style.display = "flex";
+                        profileTrigger.classList.add("fade-in-smooth");
+                        document.getElementById("onboarding-overlay").style.display = "none";
                         loadMainApp();
                     } else {
                         userName.innerText = user.displayName.split(" ")[0];
                         userPic.src = user.photoURL;
-
-                        profileTrigger.style.display = 'flex';
-                        profileTrigger.classList.add('fade-in-smooth');
-
-                        document.getElementById('main-initial-loader').style.display = 'none';
-                        document.getElementById('onboarding-overlay').style.display = 'flex';
+                        profileTrigger.style.display = "flex";
+                        profileTrigger.classList.add("fade-in-smooth");
+                        document.getElementById("main-initial-loader").style.display = "none";
+                        document.getElementById("onboarding-overlay").style.display = "flex";
                     }
                 });
-
             } else {
                 currentUser = null;
                 currentChatId = null;
+                currentChatMessages = [];
                 userNickname = "";
-                isUserLoggedIn = false; 
+                isUserLoggedIn = false;
 
-                loginBtn.style.display = 'block';
-                profileTrigger.style.display = 'none';
-                
-                // 🔥 NAYA FIX: Disable ki jagah ReadOnly lagaya taaki UI normal dikhe par type na ho
+                loginBtn.style.display = "block";
+                profileTrigger.style.display = "none";
+
                 userInput.disabled = false;
-                userInput.readOnly = true; 
-                sendBtn.disabled = false; 
+                userInput.readOnly = true;
+                sendBtn.disabled = false;
 
-                document.getElementById('onboarding-overlay').style.display = 'none';
-                document.getElementById('main-initial-loader').style.display = 'none';
-                inputSection.style.display = '';
+                document.getElementById("onboarding-overlay").style.display = "none";
+                document.getElementById("main-initial-loader").style.display = "none";
+                inputSection.style.display = "";
 
                 welcomeText.innerText = "Dost, pehle login karlo!";
                 welcomeText.style.opacity = "1";
-                sidebarChatList.innerHTML = '';
+                sidebarChatList.innerHTML = "";
+
                 resetToNewChat();
             }
         });
 
-        // 🔥 NAYA: Modal band karne ka function
-        window.closeLoginWarning = function() {
-            document.getElementById('login-warning-modal').style.display = 'none';
-        }
+        window.closeLoginWarning = function () {
+            document.getElementById("login-warning-modal").style.display = "none";
+        };
 
-        // 🔥 NAYA: Bina login agar koi input click kare toh popup lao
-        userInput.addEventListener('focus', function(e) {
+        userInput.addEventListener("focus", function () {
             if (!isUserLoggedIn) {
-                userInput.blur(); // Turant focus hatao taaki mobile me keyboard open na ho
-                document.getElementById('login-warning-modal').style.display = 'flex';
+                userInput.blur();
+                document.getElementById("login-warning-modal").style.display = "flex";
             }
         });
 
         window.saveNickname = function () {
-            const nameInput = document.getElementById('nickname-input').value.trim();
+            const nameInput = document.getElementById("nickname-input").value.trim();
             if (!nameInput) return alert("Are naam toh bata do yaar! 😅");
 
-            database.ref('users/' + currentUser.uid + '/profile').set({
+            database.ref("users/" + currentUser.uid + "/profile").set({
                 nickname: nameInput,
                 joinedAt: Date.now()
             }).then(() => {
                 userNickname = nameInput;
-                document.getElementById('onboarding-overlay').style.display = 'none';
-                loadMainApp(); 
+                document.getElementById("onboarding-overlay").style.display = "none";
+                loadMainApp();
             });
-        }
+        };
 
         function loadMainApp() {
             userName.innerText = userNickname;
-            document.getElementById('main-initial-loader').style.display = 'none';
-            inputSection.style.display = ''; 
-            inputSection.classList.add('fade-in-smooth'); 
+            document.getElementById("main-initial-loader").style.display = "none";
+            inputSection.style.display = "";
+            inputSection.classList.add("fade-in-smooth");
 
-            const savedChatId = localStorage.getItem('activeChatId');
+            const savedChatId = localStorage.getItem("activeChatId");
+
             if (savedChatId) {
                 loadSpecificChat(savedChatId);
             } else {
@@ -1745,70 +2016,71 @@
             }
         }
 
-        // ==========================================
-        // 🔥 CHAT HISTORY & SIDEBAR LOGIC 🔥
-        // ==========================================
         function loadSidebarHistory() {
             if (!currentUser) return;
 
-            sidebarChatList.innerHTML = `
-                <div class="loader-center">
-                    <div class="thinking-spinner" style="width: 35px; height: 35px; border-width: 4px;"></div>
-                </div>`;
+            if (sidebarChatsRef) sidebarChatsRef.off();
 
-            database.ref('userChats/' + currentUser.uid).on('value', (snapshot) => {
+            sidebarChatList.innerHTML = `<div class="loader-center"><div class="thinking-spinner" style="width: 35px; height: 35px; border-width: 4px;"></div></div>`;
+
+            sidebarChatsRef = database.ref("userChats/" + currentUser.uid);
+            sidebarChatsRef.on("value", snapshot => {
                 const data = snapshot.val();
-                let htmlContent = '<div class="fade-in-smooth">';
-                htmlContent += '<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Your Chats</small>';
+                let htmlContent = `<div class="fade-in-smooth">`;
+                htmlContent += `<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Your Chats</small>`;
 
                 if (data) {
-                    const chatsArray = Object.keys(data).map(key => {
-                        return { id: key, ...data[key] };
-                    });
+                    const chatsArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
 
                     chatsArray.sort((a, b) => {
-                        let timeA = a.updatedAt || parseInt(a.id.split('_')[1]) || 0;
-                        let timeB = b.updatedAt || parseInt(b.id.split('_')[1]) || 0;
+                        const timeA = a.updatedAt || parseInt(String(a.id).split("_")[1]) || 0;
+                        const timeB = b.updatedAt || parseInt(String(b.id).split("_")[1]) || 0;
                         return timeB - timeA;
                     });
 
                     chatsArray.forEach(chat => {
-                        const id = chat.id;
+                        const id = String(chat.id);
+                        const idAttr = escapeAttr(id);
+                        const idJs = escapeJSString(id);
                         const title = chat.title || "Nayi Baat";
-                        const safeTitle = title.replace(/"/g, '&quot;');
-                        let isActive = (currentChatId === id) ? "active-chat" : "";
+                        const safeTitle = escapeHTML(title);
+                        const safeTitleAttr = escapeAttr(title);
+                        const isActive = currentChatId === id ? "active-chat" : "";
 
                         htmlContent += `
-                            <div class="chat-wrapper" id="wrapper-${id}">
-                                <div class="chat-item mt-2 ${isActive}" id="chat-item-${id}" onclick="loadSpecificChat('${id}')">
-                                     <span class="chat-icon">💬</span> 
-                                    <span class="chat-title-text">${title}</span>
-                                    <button class="chat-options-btn" onclick="event.stopPropagation(); toggleOptionsMenu('${id}')">⋮</button>
-                                    <div class="chat-options-menu" id="menu-${id}">
-                                        <button class="chat-option-item" onclick="event.stopPropagation(); shareChat('${id}')">🔗 Share</button>
-                                        <button class="chat-option-item" onclick="event.stopPropagation(); showRenameUI('${id}')">✏️ Rename</button>
-                                        <button class="chat-option-item chat-option-delete" onclick="event.stopPropagation(); showDeleteUI('${id}')">🗑️ Delete</button>
-                                    </div>
-                                </div>
-                                <div class="inline-action-box" id="rename-box-${id}">
-                                    <input type="text" class="rename-input-box" id="rename-input-${id}" value="${safeTitle}">
-                                    <div class="d-flex gap-2">
-                                        <button class="action-btn btn-confirm-save" onclick="saveRename('${id}')">Save</button>
-                                        <button class="action-btn btn-cancel" onclick="hideActionBox('${id}', 'rename')">Cancel</button>
-                                    </div>
-                                </div>
-                                <div class="inline-action-box" id="delete-box-${id}">
-                                    <div style="font-size: 13px; margin-bottom: 8px; color: var(--white); text-align: center;">Sach me delete karna hai?</div>
-                                    <div class="d-flex gap-2">
-                                        <button class="action-btn btn-confirm-del" onclick="confirmDelete('${id}')">Yes</button>
-                                        <button class="action-btn btn-cancel" onclick="hideActionBox('${id}', 'delete')">No</button>
-                                    </div>
+                        <div class="chat-wrapper" id="wrapper-${idAttr}">
+                            <div class="chat-item mt-2 ${isActive}" id="chat-item-${idAttr}" onclick="loadSpecificChat('${idJs}')">
+                                <span class="chat-icon">💬</span>
+                                <span class="chat-title-text">${safeTitle}</span>
+                                <button class="chat-options-btn" onclick="event.stopPropagation(); toggleOptionsMenu('${idJs}')">⋮</button>
+                                <div class="chat-options-menu" id="menu-${idAttr}">
+                                    <button class="chat-option-item" onclick="event.stopPropagation(); shareChat('${idJs}')">🔗 Share</button>
+                                    <button class="chat-option-item" onclick="event.stopPropagation(); showRenameUI('${idJs}')">✏️ Rename</button>
+                                    <button class="chat-option-item chat-option-delete" onclick="event.stopPropagation(); showDeleteUI('${idJs}')">🗑️ Delete</button>
                                 </div>
                             </div>
-                        `;
+
+                            <div class="inline-action-box" id="rename-box-${idAttr}">
+                                <input type="text" class="rename-input-box" id="rename-input-${idAttr}" value="${safeTitleAttr}">
+                                <div class="d-flex gap-2">
+                                    <button class="action-btn btn-confirm-save" onclick="saveRename('${idJs}')">Save</button>
+                                    <button class="action-btn btn-cancel" onclick="hideActionBox('${idJs}', 'rename')">Cancel</button>
+                                </div>
+                            </div>
+
+                            <div class="inline-action-box" id="delete-box-${idAttr}">
+                                <div style="font-size: 13px; margin-bottom: 8px; color: var(--white); text-align: center;">Sach me delete karna hai?</div>
+                                <div class="d-flex gap-2">
+                                    <button class="action-btn btn-confirm-del" onclick="confirmDelete('${idJs}')">Yes</button>
+                                    <button class="action-btn btn-cancel" onclick="hideActionBox('${idJs}', 'delete')">No</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                     });
                 }
-                htmlContent += '</div>';
+
+                htmlContent += "</div>";
                 sidebarChatList.innerHTML = htmlContent;
             });
         }
@@ -1816,189 +2088,228 @@
         window.toggleOptionsMenu = function (id) {
             closeAllMenus();
             const menu = document.getElementById(`menu-${id}`);
-            if (menu) menu.classList.toggle('active');
-        }
+            if (menu) menu.classList.toggle("active");
+        };
+
         window.showRenameUI = function (id) {
             closeAllMenus();
-            document.getElementById(`rename-box-${id}`).classList.add('active');
-            document.getElementById(`delete-box-${id}`).classList.remove('active');
-        }
+            document.getElementById(`rename-box-${id}`)?.classList.add("active");
+            document.getElementById(`delete-box-${id}`)?.classList.remove("active");
+        };
+
         window.showDeleteUI = function (id) {
             closeAllMenus();
-            document.getElementById(`delete-box-${id}`).classList.add('active');
-            document.getElementById(`rename-box-${id}`).classList.remove('active');
-        }
+            document.getElementById(`delete-box-${id}`)?.classList.add("active");
+            document.getElementById(`rename-box-${id}`)?.classList.remove("active");
+        };
+
         window.hideActionBox = function (id, type) {
-            if (type === 'rename') document.getElementById(`rename-box-${id}`).classList.remove('active');
-            if (type === 'delete') document.getElementById(`delete-box-${id}`).classList.remove('active');
-        }
+            if (type === "rename") document.getElementById(`rename-box-${id}`)?.classList.remove("active");
+            if (type === "delete") document.getElementById(`delete-box-${id}`)?.classList.remove("active");
+        };
+
         window.saveRename = function (id) {
-            const newTitle = document.getElementById(`rename-input-${id}`).value.trim();
-            if (newTitle) {
-                database.ref('userChats/' + currentUser.uid + '/' + id).update({ title: newTitle })
-                    .then(() => hideActionBox(id, 'rename'));
-            }
-        }
+            const newTitle = document.getElementById(`rename-input-${id}`)?.value.trim();
+            if (!newTitle || !currentUser) return;
+
+            database.ref("userChats/" + currentUser.uid + "/" + id).update({
+                title: newTitle
+            }).then(() => hideActionBox(id, "rename"));
+        };
+
         window.confirmDelete = function (id) {
-            database.ref('userChats/' + currentUser.uid + '/' + id).remove()
-                .then(() => {
-                    if (currentChatId === id) resetToNewChat();
-                });
-        }
+            if (!currentUser) return;
+
+            database.ref("userChats/" + currentUser.uid + "/" + id).remove().then(() => {
+                if (currentChatId === id) resetToNewChat();
+            });
+        };
 
         window.loadSpecificChat = function (id) {
+            if (!currentUser) return;
+
             currentChatId = id;
-            localStorage.setItem('activeChatId', id);
-            if (window.innerWidth <= 768) { closeSidebar(); }
+            localStorage.setItem("activeChatId", id);
 
-            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active-chat'));
-            let activeElement = document.getElementById(`chat-item-${id}`);
-            if (activeElement) activeElement.classList.add('active-chat');
+            if (window.innerWidth <= 768) closeSidebar();
 
-            inputSection.classList.remove('centered-state');
-            inputSection.classList.add('bottom-state');
-            welcomeText.style.opacity = '0';
-            setTimeout(() => { welcomeText.style.display = 'none'; }, 300);
-            chatHistory.style.display = 'flex';
+            document.querySelectorAll(".chat-item").forEach(item => item.classList.remove("active-chat"));
+            document.getElementById(`chat-item-${id}`)?.classList.add("active-chat");
+
+            inputSection.classList.remove("centered-state");
+            inputSection.classList.add("bottom-state");
+            welcomeText.style.opacity = "0";
+            welcomeText.style.display = "none";
+            chatHistory.style.display = "flex";
 
             chatHistory.innerHTML = `
-                <div class="loader-center" style="height: 60vh;">
-                    <div class="thinking-spinner" style="width: 50px; height: 50px; border-width: 5px;"></div>
-                </div>`;
+            <div class="loader-center" style="height: 60vh;">
+                <div class="thinking-spinner" style="width: 50px; height: 50px; border-width: 5px;"></div>
+            </div>`;
 
-            database.ref('userChats/' + currentUser.uid + '/' + id).once('value').then((snapshot) => {
+            const requestedChatId = id;
+
+            database.ref("userChats/" + currentUser.uid + "/" + id).once("value").then(snapshot => {
+                if (currentChatId !== requestedChatId) return;
+
                 const data = snapshot.val();
-                if (data) {
-                    currentChatMessages = data.messages || [];
-                    let htmlContent = '<div class="fade-in-smooth w-100 d-flex flex-column" style="gap: 15px;">';
 
-                    currentChatMessages.forEach(msg => {
-                        if (msg.role === 'user') {
-                            htmlContent += `
-                            <div class="d-flex justify-content-end w-100">
-                                <div class="message-bubble user-msg position-relative" data-raw="${encodeURIComponent(msg.text)}">
-                                    <strong>${currentUser.displayName.split(" ")[0]}:</strong> <br>${msg.text}
-                                    <div class="copy-action-wrapper">
-                                        <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy your text">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>`;
-                        } else {
-                            htmlContent += `
-                            <div class="d-flex justify-content-start w-100">
-                                <div class="message-bubble bot-msg position-relative" data-raw="${encodeURIComponent(msg.text)}">
-                                    <strong>MyGPT:</strong> <br>${marked.parse(msg.text)}
-                                    <div class="copy-action-wrapper">
-                                        <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy exact text">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>`;
-                        }
-                    });
-                    htmlContent += '</div>';
-                    chatHistory.innerHTML = htmlContent;
-
-                    setTimeout(() => {
-                        chatHistory.scrollTop = chatHistory.scrollHeight;
-                        checkScrollButton();
-                    }, 50);
+                if (!data) {
+                    resetToNewChat();
+                    return;
                 }
-            });
-        }
 
-        function saveStateToCloud(firstMessageText = "Nayi Baat") {
-            if (!currentUser) return;
-            let now = Date.now();
+                const savedMessages = data.messages || [];
+                currentChatMessages = Array.isArray(savedMessages)
+                    ? cloneMessages(savedMessages)
+                    : cloneMessages(Object.values(savedMessages));
 
-            if (!currentChatId) {
-                currentChatId = "chat_" + now;
-                localStorage.setItem('activeChatId', currentChatId);
-                let safeTitle = firstMessageText ? firstMessageText.substring(0, 30) : "Nayi Baat";
+                let htmlContent = `<div class="fade-in-smooth w-100 d-flex flex-column" style="gap: 15px;">`;
 
-                database.ref('userChats/' + currentUser.uid + '/' + currentChatId).set({
-                    title: safeTitle + "...",
-                    messages: currentChatMessages,
-                    updatedAt: now
+                currentChatMessages.forEach(msg => {
+                    const text = String(msg.text ?? "");
+                    const reactionHTML = msg.reaction ? `<div class="reaction-badge">${escapeHTML(msg.reaction)}</div>` : "";
+
+                    if (msg.role === "user") {
+                        htmlContent += `
+                        <div class="d-flex justify-content-end w-100 mb-3">
+                            <div class="message-bubble user-msg position-relative" data-raw="${rawAttr(text)}">
+                                <strong>${escapeHTML(currentUser.displayName.split(" ")[0])}:</strong> <br>${formatPlainText(text)}
+                                ${reactionHTML}
+                                <div class="copy-action-wrapper">
+                                    <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy your text">
+                                        ${copyIconSvg()}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                    } else {
+                        htmlContent += `
+                        <div class="d-flex justify-content-start w-100 mb-3">
+                            <div class="message-bubble bot-msg position-relative" data-raw="${rawAttr(text)}">
+                                <strong>MyGPT:</strong> <br>${renderBotMarkdown(text)}
+                                <div class="copy-action-wrapper" style="display: flex; gap: 8px;">
+                                    <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy exact text">
+                                        ${copyIconSvg()}
+                                    </button>
+                                    <button class="copy-msg-btn" onclick="openZenMode(this)" title="Zen Reading Mode">
+                                        ${zenIconSvg()}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                    
+                }
                 });
-            } else {
-                database.ref('userChats/' + currentUser.uid + '/' + currentChatId).update({
-                    messages: currentChatMessages,
-                    updatedAt: now
-                });
-            }
-        }
+
+            htmlContent += "</div>";
+            chatHistory.innerHTML = htmlContent;
+
+            setTimeout(() => {
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+                checkScrollButton();
+            }, 50);
+        });
+        };
 
         async function generateSmartTitle(firstMessage, chatId) {
+            if (!currentUser || !chatId) return;
+
             try {
-                const res = await fetch('/api/title', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const res = await fetch("/api/title", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ message: firstMessage })
                 });
+
                 const data = await res.json();
-                if (data.title && currentUser) {
-                    database.ref('userChats/' + currentUser.uid + '/' + chatId).update({
-                        title: data.title
+                let finalTitle = data.title;
+
+                // 🔥 THE FIX: Agar backend API clash ki wajah se default "Nayi Baat" de de...
+                if (!finalTitle || finalTitle === "Nayi Baat" || finalTitle === "MyGPT Chat") {
+                    // Toh user ke message ke pehle 4 words ko hi smart title bana lo!
+                    finalTitle = firstMessage.split(' ').slice(0, 4).join(' ') + "...";
+                }
+
+                if (finalTitle && currentUser) {
+                    await database.ref("userChats/" + currentUser.uid + "/" + chatId).update({
+                        title: finalTitle
                     });
                 }
             } catch (e) {
-                console.log("Title background sync failed.");
+                console.log("Title background sync failed.", e);
+                // Agar internet thoda hile ya network error aaye, toh bhi fallback use karo
+                let fallbackTitle = firstMessage.split(' ').slice(0, 4).join(' ') + "...";
+                database.ref("userChats/" + currentUser.uid + "/" + chatId).update({
+                    title: fallbackTitle
+                });
             }
         }
 
-        // ==========================================
-        // 🔥 STOP STREAMING, SEND & COPY LOGIC 🔥
-        // ==========================================
-
-        window.handleSendClick = function() {
+        window.handleSendClick = function () {
             if (!isUserLoggedIn) {
-                document.getElementById('login-warning-modal').style.display = 'flex';
+                document.getElementById("login-warning-modal").style.display = "flex";
                 return;
             }
 
-            if (isGenerating) {
-                stopGeneration();
-            } else {
-                sendMessage();
+            if (isGenerating) stopGeneration();
+            else sendMessage();
+        };
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text);
+            }
+
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand("copy");
+                return Promise.resolve();
+            } catch (e) {
+                return Promise.reject(e);
+            } finally {
+                document.body.removeChild(textarea);
             }
         }
 
-        // 🔥 EXACT MESSAGE COPY KARNE KA JADOO (BOT + USER) 🔥
-        window.copyMessageData = function(btn) {
-            const bubble = btn.closest('.message-bubble');
-            
+        window.copyMessageData = function (btn) {
+            const bubble = btn.closest(".message-bubble");
             let rawText = "";
-            if(bubble.hasAttribute('data-raw') && bubble.getAttribute('data-raw') !== "null" && bubble.getAttribute('data-raw') !== "") {
-                rawText = decodeURIComponent(bubble.getAttribute('data-raw'));
-            } else {
-                rawText = bubble.innerText.replace(/^.*:\n/, "").trim(); 
+
+            try {
+                const raw = bubble.getAttribute("data-raw");
+                if (raw && raw !== "null") rawText = decodeURIComponent(raw);
+            } catch (e) {
+                rawText = "";
             }
-            
-            navigator.clipboard.writeText(rawText).then(() => {
+
+            if (!rawText) {
+                rawText = bubble.innerText.replace(/^.*:\n/, "").trim();
+            }
+
+            copyToClipboard(rawText).then(() => {
                 const originalSvg = btn.innerHTML;
-                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>`;
+                btn.innerHTML = checkIconSvg();
                 btn.style.color = "var(--safe-green, #27ae60)";
-                
+
                 setTimeout(() => {
                     btn.innerHTML = originalSvg;
-                    btn.style.color = ""; 
+                    btn.style.color = "";
                 }, 2000);
-            }).catch(err => {
-                console.log("Copy failed: ", err);
             });
-        }
-        
+        };
+
         window.copyBotMessage = window.copyMessageData;
 
-        window.stopGeneration = function() {
-            if (currentAbortController) {
-                currentAbortController.abort(); 
-            }
-            
+        window.stopGeneration = function () {
+            if (currentAbortController) currentAbortController.abort();
+
             const randomMessages = [
                 "Kya hua bhai, aage nahi sunna? 😂",
                 "Arre rukk kyu gaye? Chalo theek hai!",
@@ -2006,118 +2317,166 @@
                 "Arey stop kar diya? Lagta hai answer pehle hi mil gaya! 😎",
                 "Chalo chhodo, topic hi boring tha. Nayi baat karte hain! 🚀"
             ];
+
             const randomMsg = randomMessages[Math.floor(Math.random() * randomMessages.length)];
-            
+            const msgId = "msg_" + Date.now();
+
             setTimeout(() => {
+                if (!currentChatId) return;
+
                 chatHistory.innerHTML += `
-                <div class="d-flex justify-content-start w-100 mb-2 fade-in-smooth">
-                    <div class="message-bubble bot-msg position-relative" style="background-color: transparent; border: 1px dashed var(--light-brown); font-style: italic; opacity: 0.8;" data-raw="${encodeURIComponent(randomMsg)}">
-                        ${randomMsg}
+                <div class="d-flex justify-content-start w-100 mb-3 fade-in-smooth">
+                    <div class="message-bubble bot-msg position-relative" style="background-color: transparent; border: 1px dashed var(--light-brown); font-style: italic; opacity: 0.8;" data-raw="${rawAttr(randomMsg)}">
+                        ${formatPlainText(randomMsg)}
                         <div class="copy-action-wrapper">
                             <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy text">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
+                                ${copyIconSvg()}
                             </button>
                         </div>
                     </div>
                 </div>`;
+
                 chatHistory.scrollTop = chatHistory.scrollHeight;
-                
-                currentChatMessages.push({ role: 'bot', text: `*${randomMsg}*` });
-                saveStateToCloud();
-                
-                resetInputUI(); 
+
+                currentChatMessages.push({
+                    id: msgId,
+                    role: "bot",
+                    text: `*${randomMsg}*`,
+                    reaction: ""
+                });
+
+                queueStateSave({
+                    chatId: currentChatId,
+                    messages: currentChatMessages
+                });
+
+                resetInputUI();
             }, 300);
-        }
+        };
 
         function resetInputUI() {
             isGenerating = false;
-            document.getElementById('send-icon').style.display = 'block';
-            document.getElementById('stop-icon').style.display = 'none';
-            sendBtn.classList.remove('stop-mode');
+            currentAbortController = null;
+
+            document.getElementById("send-icon").style.display = "block";
+            document.getElementById("stop-icon").style.display = "none";
+            sendBtn.classList.remove("stop-mode");
+
             setTimeout(() => userInput.focus(), 100);
         }
 
-        window.sendMessage = function() {
+        window.sendMessage = function () {
             if (!currentUser || isGenerating) return;
+
             const text = userInput.value.trim();
-            if (text === '') return;
+            if (text === "") return;
 
             isGenerating = true;
-            
-            document.getElementById('send-icon').style.display = 'none';
-            document.getElementById('stop-icon').style.display = 'block';
-            sendBtn.classList.add('stop-mode');
-            
-            inputSection.classList.remove('centered-state');
-            inputSection.classList.add('bottom-state');
-            welcomeText.style.opacity = '0';
-            setTimeout(() => { welcomeText.style.display = 'none'; }, 300);
-            chatHistory.style.display = 'flex';
+
+            document.getElementById("send-icon").style.display = "none";
+            document.getElementById("stop-icon").style.display = "block";
+            sendBtn.classList.add("stop-mode");
+
+            inputSection.classList.remove("centered-state");
+            inputSection.classList.add("bottom-state");
+            welcomeText.style.opacity = "0";
+            welcomeText.style.display = "none";
+            chatHistory.style.display = "flex";
+
+            const isNewChat = !currentChatId;
+            const chatRoomIdAtTimeOfSend = ensureCurrentChatId();
+            const userMsgId = "user_msg_" + Date.now();
 
             chatHistory.innerHTML += `
-            <div class="d-flex justify-content-end w-100 mb-2 fade-in-smooth">
-                <div class="message-bubble user-msg position-relative" data-raw="${encodeURIComponent(text)}">
-                    <strong>${currentUser.displayName.split(" ")[0]}:</strong> <br>${text}
+            <div class="d-flex justify-content-end w-100 mb-3 fade-in-smooth">
+                <div class="message-bubble user-msg position-relative" id="${escapeAttr(userMsgId)}" data-raw="${rawAttr(text)}">
+                    <strong>${escapeHTML(currentUser.displayName.split(" ")[0])}:</strong> <br>${formatPlainText(text)}
                     <div class="copy-action-wrapper">
                         <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy your text">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
+                            ${copyIconSvg()}
                         </button>
                     </div>
                 </div>
             </div>`;
-            userInput.value = '';
 
-            const isNewChat = !currentChatId;
-            currentChatMessages.push({ role: 'user', text: text });
-            
-            if (isNewChat) saveStateToCloud("⏳ Title soch raha hu"); 
-            else saveStateToCloud();
+            userInput.value = "";
+            chatHistory.scrollTop = chatHistory.scrollHeight;
 
-            const chatRoomIdAtTimeOfSend = currentChatId;
-            if (isNewChat) generateSmartTitle(text, chatRoomIdAtTimeOfSend);
+            currentChatMessages.push({
+                id: userMsgId,
+                role: "user",
+                text,
+                reaction: ""
+            });
+
+            const messagesForThisChat = currentChatMessages;
+
+            const firstSavePromise = queueStateSave({
+                chatId: chatRoomIdAtTimeOfSend,
+                messages: messagesForThisChat,
+                title: isNewChat ? "⏳ Title soch raha hu" : null
+            });
+
+            // 🔥 THE FIX: Chat API aur Title API ke beech 2.5 sec ka gap do
+            if (isNewChat) {
+                firstSavePromise.then(() => {
+                    setTimeout(() => {
+                        generateSmartTitle(text, chatRoomIdAtTimeOfSend);
+                    }, 2500);
+                });
+            }
 
             currentAbortController = new AbortController();
 
             setTimeout(() => {
-                fetchGeminiResponse(text, chatRoomIdAtTimeOfSend, currentAbortController.signal)
-                .then(() => {
-                    if(isGenerating) resetInputUI(); 
-                })
-                .catch(err => {
-                    if (err.name === 'AbortError') {
+                fetchGeminiResponse(
+                    text,
+                    chatRoomIdAtTimeOfSend,
+                    currentAbortController.signal,
+                    userMsgId,
+                    messagesForThisChat
+                ).then(() => {
+                    if (isGenerating) resetInputUI();
+                }).catch(err => {
+                    if (err.name === "AbortError") {
                         console.log("Stream ruk gayi bhai!");
                     } else {
-                        if(isGenerating) resetInputUI();
+                        console.error(err);
                     }
+
+                    if (isGenerating) resetInputUI();
                 });
             }, 100);
-        }
+        };
 
-        userInput.addEventListener('keypress', function (e) { 
-            if (e.key === 'Enter' && !isGenerating) handleSendClick(); 
+        userInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" && !e.shiftKey && !isGenerating) {
+                e.preventDefault();
+                handleSendClick();
+            }
         });
 
-        // ==========================================
-        // 🔥 THE ULTIMATE FETCH FUNCTION 🔥
-        // ==========================================
-        async function fetchGeminiResponse(message, expectedChatId, signal) {
-            const url = `/api/chat`;
+        async function fetchGeminiResponse(message, expectedChatId, signal, userMsgId, messagesForThisChat = currentChatMessages) {
+            const url = "/api/chat";
             const userNameForPrompt = userNickname || (currentUser ? currentUser.displayName.split(" ")[0] : "Dost");
-            const historyToSend = currentChatMessages.slice(0, -1);
-            let msgId = "msg_" + Date.now();
+            const historyToSend = messagesForThisChat.slice(0, -1);
+            const msgId = "msg_" + Date.now();
 
             chatHistory.innerHTML += `
-            <div class="d-flex justify-content-start w-100 mb-2">
-                <div class="message-bubble bot-msg w-100 position-relative" id="${msgId}" data-raw="">
+            <div class="d-flex justify-content-start w-100 mb-3">
+                <div class="message-bubble bot-msg w-100 position-relative" id="${escapeAttr(msgId)}" data-raw="">
                     <strong>MyGPT:</strong> <br>
-                    <div id="thinking-box-${msgId}" class="d-flex align-items-center mt-2" style="color: var(--light-brown); font-style: italic;">
+                    <div id="thinking-box-${escapeAttr(msgId)}" class="d-flex align-items-center mt-2" style="color: var(--light-brown); font-style: italic;">
                         <div class="thinking-spinner"></div>
-                        <div id="thinking-text-${msgId}" class="thinking-text-phrase ms-2">⏳ Dimaag laga raha hu...</div>
+                        <div id="thinking-text-${escapeAttr(msgId)}" class="thinking-text-phrase ms-2">⏳ Dimaag laga raha hu...</div>
                     </div>
                     <div class="typing-content" style="display: none;"></div>
-                    <div class="copy-action-wrapper">
+                    <div class="copy-action-wrapper" style="display: flex; gap: 8px;">
                         <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy exact text">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">  <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>
+                            ${copyIconSvg()}
+                        </button>
+                        <button class="copy-msg-btn" onclick="openZenMode(this)" title="Zen Reading Mode">
+                            ${zenIconSvg()}
                         </button>
                     </div>
                 </div>
@@ -2125,21 +2484,23 @@
 
             let thinkingBox = document.getElementById(`thinking-box-${msgId}`);
             let thinkingText = document.getElementById(`thinking-text-${msgId}`);
-            let contentDiv = document.querySelector(`#${msgId} .typing-content`);
+            let contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
+
             chatHistory.scrollTop = chatHistory.scrollHeight;
 
             const thinkingPhrases = [
                 "🤔 Tumhari baat samajh raha hu...",
                 "💡 Bas ek second dena...",
-                "🧠 Gehraai mein jaa raha hu...",
-                "✨ Type karne ki tayari ho rahi hai...",
-                "⏳ Dimaag laga raha hu..."
+                "🧠 Gehraai mein jaa raha hu..."
             ];
+
             let phraseIndex = 0;
             let phraseInterval = setInterval(() => {
                 phraseIndex = (phraseIndex + 1) % thinkingPhrases.length;
+
                 if (thinkingText) {
                     thinkingText.style.opacity = 0;
+
                     setTimeout(() => {
                         if (thinkingText) {
                             thinkingText.innerText = thinkingPhrases[phraseIndex];
@@ -2149,145 +2510,307 @@
                 }
             }, 2500);
 
+            let rawBotReply = "";
+            let fullServerResponse = "";
+            let charQueue = "";
+            let isTyping = false;
+            let isFirstChunk = true;
+            let reactionProcessed = false;
+            let botMsgIndex = -1;
+            let lastPartialSaveAt = 0;
+
+            function processReaction(sourceText) {
+                if (reactionProcessed || !userMsgId) return null;
+
+                // 1. Purane '[REACT: ]' tag check karo (For backwards compatibility)
+                const oldTagMatch = String(sourceText).match(/\[REACT:\s*(.*?)\s*\]/i);
+
+                // 2. Naya Logic: Text me aane wala sabse PEHLA normal emoji pakdo (😂, 🥺, 😡 etc.)
+                const emojiMatch = String(sourceText).match(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u);
+
+                let emoji = null;
+                let tagToRemove = null;
+
+                if (oldTagMatch) {
+                    emoji = oldTagMatch[1].trim();
+                    tagToRemove = oldTagMatch[0]; // Isko text se gayab karna padega
+                } else if (emojiMatch) {
+                    emoji = emojiMatch[0];
+                    // Yahan tagToRemove null rahega, kyunki hume emoji AI ke text me rakhna hai!
+                }
+
+                if (!emoji) return null;
+
+                const userBubble = document.getElementById(userMsgId);
+
+                if (userBubble && !userBubble.querySelector(".reaction-badge")) {
+                    userBubble.innerHTML += `<div class="reaction-badge">${escapeHTML(emoji)}</div>`;
+                }
+
+                const userIndex = messagesForThisChat.findIndex(m => m.id === userMsgId);
+                if (userIndex !== -1) {
+                    messagesForThisChat[userIndex].reaction = emoji;
+                }
+
+                reactionProcessed = true;
+                return { didReact: true, tagToRemove: tagToRemove };
+            }
+
+            function queueBotSnapshotSave() {
+                if (botMsgIndex === -1) return Promise.resolve();
+
+                const finalCleanReply = cleanBotText(fullServerResponse);
+                if (!finalCleanReply) return Promise.resolve();
+
+                processReaction(fullServerResponse);
+                messagesForThisChat[botMsgIndex].text = finalCleanReply;
+
+                return queueStateSave({
+                    chatId: expectedChatId,
+                    messages: messagesForThisChat
+                });
+            }
+
+            function maybeQueuePartialSave() {
+                const now = Date.now();
+                if (now - lastPartialSaveAt < 1200) return;
+
+                lastPartialSaveAt = now;
+                queueBotSnapshotSave();
+            }
+
+            function processQueue() {
+                if (charQueue.length === 0) {
+                    isTyping = false;
+                    return;
+                }
+
+                isTyping = true;
+
+                const charArray = Array.from(charQueue);
+                const charsToTake = Math.max(1, Math.ceil(charArray.length / 15));
+                const currentRender = charArray.slice(0, charsToTake).join("");
+
+                rawBotReply += currentRender;
+                charQueue = charArray.slice(charsToTake).join("");
+
+                // 🔥 THE NEW REACTION LOGIC 🔥
+                const reactionData = processReaction(rawBotReply);
+
+                if (reactionData && reactionData.didReact) {
+                    // Agar purana [REACT: ] tag mila hai, toh usko remove karo
+                    if (reactionData.tagToRemove) {
+                        rawBotReply = rawBotReply.replace(reactionData.tagToRemove, "").trimLeft();
+                    }
+                    // Naya natural emoji mila hai toh remove NAHI hoga, seedha Firebase me save marenge
+                    queueStateSave({
+                        chatId: expectedChatId,
+                        messages: messagesForThisChat
+                    });
+                }
+
+                const displayReply = cleanBotText(rawBotReply);
+
+                contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
+                if (contentDiv) contentDiv.innerHTML = renderBotMarkdown(displayReply);
+
+                const botBubble = document.getElementById(msgId);
+                if (botBubble) botBubble.setAttribute("data-raw", encodeURIComponent(displayReply));
+
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+                setTimeout(processQueue, 15);
+            }
+
+            function waitForTypingComplete() {
+                return new Promise(resolve => {
+                    const interval = setInterval(() => {
+                        if (charQueue.length === 0 && !isTyping) {
+                            clearInterval(interval);
+                            resolve();
+                        }
+                    }, 50);
+                });
+            }
+
+            function startBotMessageIfNeeded() {
+                if (!isFirstChunk) return;
+
+                clearInterval(phraseInterval);
+
+                thinkingBox = document.getElementById(`thinking-box-${msgId}`);
+                contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
+
+                if (thinkingBox) thinkingBox.remove();
+                if (contentDiv) contentDiv.style.display = "block";
+
+                messagesForThisChat.push({
+                    id: msgId,
+                    role: "bot",
+                    text: "",
+                    reaction: ""
+                });
+
+                botMsgIndex = messagesForThisChat.length - 1;
+                isFirstChunk = false;
+            }
+
+            function handleStreamLine(line) {
+                if (!line.trim() || !line.startsWith("data: ")) return;
+
+                try {
+                    const json = JSON.parse(line.substring(6));
+
+                    if (json.error) {
+                        startBotMessageIfNeeded();
+
+                        charQueue += `\n\n<span class="text-danger fw-bold">⚠️ ${escapeHTML(json.error)}</span>`;
+                        fullServerResponse += `\n\n⚠️ ${json.error}`;
+
+                        if (!isTyping) processQueue();
+                        maybeQueuePartialSave();
+                        return;
+                    }
+
+                    const text =
+                        json?.candidates?.[0]?.content?.parts?.[0]?.text ||
+                        json?.text ||
+                        json?.delta ||
+                        "";
+
+                    if (!text) return;
+
+                    startBotMessageIfNeeded();
+
+                    charQueue += text;
+                    fullServerResponse += text;
+
+                    if (!isTyping) processQueue();
+                    maybeQueuePartialSave();
+                } catch (e) { }
+            }
+
             try {
                 const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        message: message,
+                        message,
                         userName: userNameForPrompt,
                         history: historyToSend
                     }),
-                    signal: signal 
+                    signal
                 });
+
+                if (!response.ok) {
+                    throw new Error("Server error: " + response.status);
+                }
+
+                if (!response.body) {
+                    throw new Error("Server se stream body nahi aayi.");
+                }
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
-                let rawBotReply = "";
-                let isFirstChunk = true;
-
-                let charQueue = "";
-                let isTyping = false;
-
-                function processQueue() {
-                    if (charQueue.length > 0) {
-                        isTyping = true;
-                        let charsToTake = Math.max(1, Math.ceil(charQueue.length / 15));
-                        rawBotReply += charQueue.substring(0, charsToTake);
-                        charQueue = charQueue.substring(charsToTake);
-
-                        contentDiv.innerHTML = marked.parse(rawBotReply);
-                        
-                        document.getElementById(msgId).setAttribute('data-raw', encodeURIComponent(rawBotReply));
-                        
-                        chatHistory.scrollTop = chatHistory.scrollHeight;
-
-                        setTimeout(processQueue, 15);
-                    } else {
-                        isTyping = false;
-                    }
-                }
+                let streamBuffer = "";
 
                 while (true) {
                     const { done, value } = await reader.read();
+
                     if (done) break;
 
-                    const chunk = decoder.decode(value, { stream: true });
-                    const lines = chunk.split("\n");
+                    streamBuffer += decoder.decode(value, { stream: true });
+
+                    const lines = streamBuffer.split("\n");
+                    streamBuffer = lines.pop();
 
                     for (const line of lines) {
-                        if (line.startsWith("data: ")) {
-                            try {
-                                const json = JSON.parse(line.substring(6));
-
-                                if (json.error) {
-                                    if (isFirstChunk) {
-                                        clearInterval(phraseInterval);
-                                        if (thinkingBox) thinkingBox.remove();
-                                        if (contentDiv) contentDiv.style.display = 'block';
-                                        isFirstChunk = false;
-                                    }
-                                    charQueue += `\n\n<span class="text-danger fw-bold">⚠️ ${json.error}</span>`;
-                                    if (!isTyping) processQueue();
-                                    continue; 
-                                }
-
-                                if (json.candidates && json.candidates[0].content && json.candidates[0].content.parts && json.candidates[0].content.parts[0].text) {
-                                    if (isFirstChunk) {
-                                        clearInterval(phraseInterval);
-                                        if (thinkingBox) thinkingBox.remove();
-                                        if (contentDiv) contentDiv.style.display = 'block';
-                                        isFirstChunk = false;
-                                    }
-
-                                    const text = json.candidates[0].content.parts[0].text;
-                                    charQueue += text;
-
-                                    if (!isTyping) {
-                                        processQueue();
-                                    }
-                                }
-                            } catch (e) {
-                            }
-                        }
+                        handleStreamLine(line);
                     }
+                }
+
+                streamBuffer += decoder.decode();
+
+                if (streamBuffer.trim()) {
+                    streamBuffer.split("\n").forEach(handleStreamLine);
                 }
 
                 if (isFirstChunk) {
                     clearInterval(phraseInterval);
+
+                    thinkingBox = document.getElementById(`thinking-box-${msgId}`);
+                    contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
+
                     if (thinkingBox) thinkingBox.remove();
+
                     if (contentDiv) {
-                        contentDiv.style.display = 'block';
+                        contentDiv.style.display = "block";
                         contentDiv.innerHTML = `<span class="text-danger fw-bold">⚠️ Oops! Server se proper jawab nahi aaya. Backend terminal check karo!</span>`;
                     }
+
+                    return;
                 }
 
-                const finishTypingInterval = setInterval(() => {
-                    if (charQueue.length === 0 && !isTyping) {
-                        clearInterval(finishTypingInterval);
-                        if (rawBotReply && !isFirstChunk) {
-                            currentChatMessages.push({ role: 'bot', text: rawBotReply });
-                            saveStateToCloud();
-                        }
-                    }
-                }, 50);
+                await queueBotSnapshotSave();
+                await waitForTypingComplete();
 
             } catch (error) {
-                if (error.name === 'AbortError') {
-                    clearInterval(phraseInterval);
-                    if (thinkingBox) thinkingBox.remove();
-                    return; 
-                }
-                
-                console.error("Streaming Error:", error);
                 clearInterval(phraseInterval);
+
+                if (error.name === "AbortError") {
+                    thinkingBox = document.getElementById(`thinking-box-${msgId}`);
+                    if (thinkingBox) thinkingBox.remove();
+
+                    if (botMsgIndex !== -1) {
+                        const partialCleanReply = cleanBotText(fullServerResponse);
+
+                        if (partialCleanReply) {
+                            messagesForThisChat[botMsgIndex].text = partialCleanReply;
+                            await queueStateSave({
+                                chatId: expectedChatId,
+                                messages: messagesForThisChat
+                            });
+                        } else {
+                            messagesForThisChat.splice(botMsgIndex, 1);
+                        }
+                    }
+
+                    return;
+                }
+
+                console.error("Streaming Error:", error);
+
+                thinkingBox = document.getElementById(`thinking-box-${msgId}`);
                 if (thinkingBox) thinkingBox.remove();
+
                 if (currentChatId === expectedChatId) {
                     chatHistory.innerHTML += `<div class="text-danger p-2">Dost, connection toot gaya ya bot atak gaya...</div>`;
                     chatHistory.scrollTop = chatHistory.scrollHeight;
                 }
-                throw error; 
+
+                throw error;
             }
         }
 
         function resetToNewChat() {
             currentChatId = null;
             currentChatMessages = [];
-            localStorage.removeItem('activeChatId');
-            if (window.innerWidth <= 768) { closeSidebar(); }
+            localStorage.removeItem("activeChatId");
 
-            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active-chat'));
+            if (window.innerWidth <= 768) closeSidebar();
 
-            chatHistory.innerHTML = '';
-            chatHistory.style.display = 'none';
-            
-            inputSection.classList.remove('bottom-state');
-            inputSection.classList.add('centered-state');
-            
+            document.querySelectorAll(".chat-item").forEach(item => item.classList.remove("active-chat"));
+
+            chatHistory.innerHTML = "";
+            chatHistory.style.display = "none";
+
+            inputSection.classList.remove("bottom-state");
+            inputSection.classList.add("centered-state");
+
             if (currentUser) {
                 const nameToShow = userNickname || currentUser.displayName.split(" ")[0];
                 welcomeText.innerText = `Hello ${nameToShow}, Main hamesha tumhare sath hu...`;
-                welcomeText.style.display = 'block';
+                welcomeText.style.display = "block";
+
                 setTimeout(() => {
                     welcomeText.style.opacity = "1";
                 }, 50);
@@ -2296,66 +2819,77 @@
             checkScrollButton();
         }
 
-        // ==========================================
-        // 🔥 SHARE CHAT & PROFILE UPLOAD 🔥
-        // ==========================================
         window.shareChat = function (id) {
-            closeAllMenus();
-            database.ref('userChats/' + currentUser.uid + '/' + id).once('value').then((snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    const shareId = "share_" + Date.now();
-                    database.ref('sharedChats/' + shareId).set({
-                        title: data.title || "Shared Chat",
-                        messages: data.messages,
-                        sharedBy: currentUser.displayName.split(" ")[0],
-                        sharedAt: Date.now()
-                    }).then(() => {
-                        let baseUrl = window.location.href.split('index.html')[0];
-                        if (!baseUrl.endsWith('/')) baseUrl += '/';
-                        const finalLink = baseUrl + 'share.html?id=' + shareId;
+            if (!currentUser) return;
 
-                        document.getElementById('share-link-text').innerText = finalLink;
-                        document.getElementById('share-modal-backdrop').classList.add('active');
-                        document.getElementById('copy-link-btn').innerText = "📋 Copy Link";
-                    });
-                }
+            closeAllMenus();
+
+            database.ref("userChats/" + currentUser.uid + "/" + id).once("value").then(snapshot => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                const shareId = "share_" + Date.now();
+
+                database.ref("sharedChats/" + shareId).set({
+                    title: data.title || "Shared Chat",
+                    messages: data.messages || [],
+                    sharedBy: currentUser.displayName.split(" ")[0],
+                    sharedAt: Date.now()
+                }).then(() => {
+                    let baseUrl = window.location.href.split("index.html")[0];
+                    if (!baseUrl.endsWith("/")) baseUrl += "/";
+
+                    const finalLink = baseUrl + "share.html?id=" + shareId;
+
+                    document.getElementById("share-link-text").innerText = finalLink;
+                    document.getElementById("share-modal-backdrop").classList.add("active");
+                    document.getElementById("copy-link-btn").innerText = "📋 Copy Link";
+                });
             });
-        }
+        };
+
         window.closeShareModal = function () {
-            document.getElementById('share-modal-backdrop').classList.remove('active');
-        }
+            document.getElementById("share-modal-backdrop").classList.remove("active");
+        };
+
         window.copyShareLink = function () {
-            const linkText = document.getElementById('share-link-text').innerText;
-            navigator.clipboard.writeText(linkText).then(() => {
-                const btn = document.getElementById('copy-link-btn');
+            const linkText = document.getElementById("share-link-text").innerText;
+
+            copyToClipboard(linkText).then(() => {
+                const btn = document.getElementById("copy-link-btn");
                 btn.innerText = "✅ Copied!";
                 btn.style.background = "var(--safe-green, #27ae60)";
+
                 setTimeout(() => {
                     btn.innerText = "📋 Copy Link";
                     btn.style.background = "var(--med-brown)";
                 }, 2000);
             });
-        }
+        };
 
         function openSettingsModal() {
             if (!currentUser) return;
+
             closeAllMenus();
-            profileDropdown.classList.remove('active');
-            document.getElementById('settings-name-input').value = userNickname || currentUser.displayName.split(" ")[0];
-            document.getElementById('settings-pic-preview').src = userPic.src;
-            selectedImageFileBase64 = null; 
-            document.getElementById('settings-overlay').style.display = 'flex';
-            
-            if (scrollBtn) scrollBtn.classList.remove('visible');
+            profileDropdown.classList.remove("active");
+
+            document.getElementById("settings-name-input").value = userNickname || currentUser.displayName.split(" ")[0];
+            document.getElementById("settings-pic-preview").src = userPic.src;
+
+            selectedImageFileBase64 = null;
+            document.getElementById("settings-overlay").style.display = "flex";
+
+            if (scrollBtn) scrollBtn.classList.remove("visible");
         }
+
         function closeSettingsModal() {
-            document.getElementById('settings-overlay').style.display = 'none';
+            document.getElementById("settings-overlay").style.display = "none";
         }
 
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
+
             if (file.size > 3 * 1024 * 1024) {
                 alert("Bhai, photo 3MB se choti honi chahiye! 😅");
                 event.target.value = "";
@@ -2363,38 +2897,48 @@
             }
 
             const reader = new FileReader();
+
             reader.onload = function (e) {
                 const img = new Image();
+
                 img.onload = function () {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
                     const size = 500;
+
                     canvas.width = size;
                     canvas.height = size;
+
                     const minDim = Math.min(img.width, img.height);
                     const startX = (img.width - minDim) / 2;
                     const startY = (img.height - minDim) / 2;
+
                     ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
 
-                    selectedImageFileBase64 = canvas.toDataURL('image/jpeg', 0.85); 
-                    document.getElementById('settings-pic-preview').src = selectedImageFileBase64;
-                }
+                    selectedImageFileBase64 = canvas.toDataURL("image/jpeg", 0.85);
+                    document.getElementById("settings-pic-preview").src = selectedImageFileBase64;
+                };
+
                 img.src = e.target.result;
-            }
+            };
+
             reader.readAsDataURL(file);
         }
 
         async function saveSettings() {
-            const newName = document.getElementById('settings-name-input').value.trim();
+            const newName = document.getElementById("settings-name-input").value.trim();
             if (!newName) return alert("Naam khali nahi chhod sakte dost!");
-            document.getElementById('settings-loader').style.display = 'flex'; 
+
+            document.getElementById("settings-loader").style.display = "flex";
 
             try {
-                let finalPhotoURL = userPic.src; 
+                let finalPhotoURL = userPic.src;
+
                 if (selectedImageFileBase64) {
                     finalPhotoURL = selectedImageFileBase64;
                 }
-                await database.ref('users/' + currentUser.uid + '/profile').update({
+
+                await database.ref("users/" + currentUser.uid + "/profile").update({
                     nickname: newName,
                     customPhotoURL: finalPhotoURL,
                     updatedAt: Date.now()
@@ -2407,49 +2951,110 @@
                 if (!currentChatId) {
                     welcomeText.innerText = `Hello ${userNickname}, Main hamesha tumhare sath hu...`;
                 }
-                document.getElementById('settings-loader').style.display = 'none'; 
+
+                document.getElementById("settings-loader").style.display = "none";
                 closeSettingsModal();
 
             } catch (error) {
                 console.error("Save Error: ", error);
                 alert("Kuch gadbad hui save karne me! Net check kar lo.");
-                document.getElementById('settings-loader').style.display = 'none';
+                document.getElementById("settings-loader").style.display = "none";
             }
         }
 
-        // ==========================================
-        // 🔥 ULTIMATE SMART SCROLL LOGIC 🔥
-        // ==========================================
-        window.checkScrollButton = function () {
+        function checkScrollButton() {
             if (!scrollBtn) return;
-            if (chatHistory.style.display === 'none' || !currentChatId) {
-                scrollBtn.classList.remove('visible');
+
+            if (chatHistory.style.display === "none" || !currentChatId) {
+                scrollBtn.classList.remove("visible");
                 return;
             }
+
             if (chatHistory.scrollHeight <= chatHistory.clientHeight + 50) {
-                scrollBtn.classList.remove('visible');
+                scrollBtn.classList.remove("visible");
                 return;
             }
-            
-            scrollBtn.classList.add('visible');
+
+            scrollBtn.classList.add("visible");
+
             if (chatHistory.scrollTop > 300) {
-                scrollBtn.innerHTML = '↑';
+                scrollBtn.innerHTML = "↑";
                 isAtTop = false;
             } else {
-                scrollBtn.innerHTML = '↓';
+                scrollBtn.innerHTML = "↓";
                 isAtTop = true;
             }
-        };
+        }
 
-        chatHistory.addEventListener('scroll', checkScrollButton);
+        window.checkScrollButton = checkScrollButton;
+
+        chatHistory.addEventListener("scroll", checkScrollButton);
 
         window.handleScrollAction = function () {
             if (isAtTop) {
-                chatHistory.scrollTo({ top: chatHistory.scrollHeight, behavior: 'smooth' });
+                chatHistory.scrollTo({ top: chatHistory.scrollHeight, behavior: "smooth" });
             } else {
-                chatHistory.scrollTo({ top: 0, behavior: 'smooth' });
+                chatHistory.scrollTo({ top: 0, behavior: "smooth" });
             }
+        };
+
+        // Zen Mode ka Icon (Expand jaisa)
+        function zenIconSvg() {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>`;
         }
+
+        window.openZenMode = function (btn) {
+            const bubble = btn.closest(".message-bubble");
+            let rawText = "";
+
+            // Live ho ya purani chat, 'data-raw' me hamesha latest pure markdown hota hai!
+            try {
+                const raw = bubble.getAttribute("data-raw");
+                if (raw && raw !== "null") rawText = decodeURIComponent(raw);
+            } catch (e) { rawText = ""; }
+
+            if (!rawText) rawText = bubble.innerText.replace(/^.*:\n/, "").trim();
+
+            // Markdown me format karo
+            let htmlContent = renderBotMarkdown(rawText);
+
+            // Zen Modal Inject karo agar pehle se nahi hai
+            let zenModal = document.getElementById('zen-mode-modal');
+            if (!zenModal) {
+                zenModal = document.createElement('div');
+                zenModal.id = 'zen-mode-modal';
+                zenModal.className = 'zen-modal-overlay';
+                zenModal.innerHTML = `
+                <div class="zen-modal-content">
+                    <button class="close-zen-btn" onclick="closeZenMode()">✖</button>
+                    <div id="zen-text-container" style="margin-top: 5px;"></div>
+                </div>
+                `;
+                document.body.appendChild(zenModal);
+
+                // Background pe click karne se band
+                zenModal.addEventListener('click', (e) => {
+                    if (e.target === zenModal) closeZenMode();
+                });
+                // Esc dabane se band
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') closeZenMode();
+                });
+            }
+
+            // Data daalo aur Show karo
+            document.getElementById('zen-text-container').innerHTML = htmlContent;
+            zenModal.style.display = 'flex';
+            setTimeout(() => zenModal.classList.add('active'), 10);
+        };
+
+        window.closeZenMode = function () {
+            const zenModal = document.getElementById('zen-mode-modal');
+            if (zenModal) {
+                zenModal.classList.remove('active');
+                setTimeout(() => zenModal.style.display = 'none', 300);
+            }
+        };
     </script>
 
 </body>
