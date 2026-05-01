@@ -631,11 +631,12 @@
         /* =========================================
            ✨ SPACING FIX FOR INPUT & WELCOME TEXT ✨
         ========================================= */
-        
+
         #input-section {
             padding-left: 24px !important;
             padding-right: 24px !important;
-            box-sizing: border-box !important; /* Ye lagana zaroori hai taaki padding se width bahar na bhage */
+            box-sizing: border-box !important;
+            /* Ye lagana zaroori hai taaki padding se width bahar na bhage */
         }
 
         #welcome-text {
@@ -1121,6 +1122,101 @@
             color: white;
         }
 
+
+
+        .desktop-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            color: #aaa;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .desktop-close-btn:hover {
+            color: #fff;
+        }
+
+        .setting-tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .setting-tab-content.active-tab {
+            display: block;
+        }
+
+        .setting-tab-content h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        /* CARDS & INPUTS */
+        .setting-card {
+            background: #2a2a2a;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .setting-info strong {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+
+        .setting-info p {
+            margin: 0;
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .premium-input {
+            width: 100%;
+        }
+
+        /* MOBILE HEADER (Hidden on Desktop) */
+        .mobile-settings-header {
+            display: none;
+            background: #171717;
+            padding: 15px 20px;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #333;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #fff;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* =========================================
            🔥 13. GO TO TOP BUTTON 🔥
         ========================================= */
@@ -1300,68 +1396,125 @@
         /* =========================================
            🧘‍♂️ ZEN FOCUS MODE STYLES (THEME AWARE) 🧘‍♂️
         ========================================= */
-        
+
         /* OVERLAY (Background Parda - Dono themes me same rahega) */
         .zen-modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.6); 
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            z-index: 99999; display: none; justify-content: center;
-            align-items: center; padding: 20px; opacity: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
             transition: opacity 0.3s ease;
         }
-        .zen-modal-overlay.active { display: flex; opacity: 1; }
-        
+
+        .zen-modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
         /* ☀️ LIGHT MODE (Default Look) ☀️ */
         .zen-modal-content {
-            background: #ffffff; /* Safed background */
-            color: #333333; /* Dark text */
-            width: 100%; max-width: 850px; max-height: 85vh;
-            border-radius: 16px; padding: 40px; overflow-y: auto;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-            font-size: 1.2rem; line-height: 1.8;
+            background: #ffffff;
+            /* Safed background */
+            color: #333333;
+            /* Dark text */
+            width: 100%;
+            max-width: 850px;
+            max-height: 85vh;
+            border-radius: 16px;
+            padding: 40px;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            font-size: 1.2rem;
+            line-height: 1.8;
             position: relative;
             transform: translateY(30px) scale(0.95);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid rgba(0, 0, 0, 0.1);
-            scrollbar-width: thin; 
+            scrollbar-width: thin;
             scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
         }
-        .zen-modal-overlay.active .zen-modal-content { transform: translateY(0) scale(1); }
-        
-        .close-zen-btn {
-            position: absolute; top: 15px; right: 15px;
-            background: rgba(0, 0, 0, 0.05); color: #333;
-            border: none; border-radius: 50%;
-            width: 35px; height: 35px; font-size: 18px;
-            cursor: pointer; display: flex; align-items: center;
-            justify-content: center; transition: 0.2s;
+
+        .zen-modal-overlay.active .zen-modal-content {
+            transform: translateY(0) scale(1);
         }
-        .close-zen-btn:hover { background: rgba(255, 0, 0, 0.8); color: white; transform: rotate(90deg); }
+
+        .close-zen-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .close-zen-btn:hover {
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            transform: rotate(90deg);
+        }
 
         /* Light Mode Scrollbar */
-        .zen-modal-content::-webkit-scrollbar { width: 6px; }
-        .zen-modal-content::-webkit-scrollbar-track { background: transparent; }
-        .zen-modal-content::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.15); border-radius: 10px; }
-        .zen-modal-content::-webkit-scrollbar-thumb:hover { background-color: rgba(0, 0, 0, 0.35); }
+        .zen-modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .zen-modal-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .zen-modal-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+        }
+
+        .zen-modal-content::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.35);
+        }
 
         /* 🌙 DARK MODE (Jab .dark-theme active ho) 🌙 */
         body.dark-theme .zen-modal-content {
-            background: #222222; /* Dark background */
-            color: #ffffff; /* Safed text */
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: #222222;
+            /* Dark background */
+            color: #ffffff;
+            /* Safed text */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.05);
             scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
         }
+
         body.dark-theme .close-zen-btn {
-            background: rgba(255, 255, 255, 0.1); color: white;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
         }
+
         body.dark-theme .close-zen-btn:hover {
-            background: rgba(255, 0, 0, 0.8); color: white;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
         }
+
         body.dark-theme .zen-modal-content::-webkit-scrollbar-thumb {
             background-color: rgba(255, 255, 255, 0.15);
         }
+
         body.dark-theme .zen-modal-content::-webkit-scrollbar-thumb:hover {
             background-color: rgba(255, 255, 255, 0.35);
         }
@@ -1369,25 +1522,27 @@
         /* =========================================
            🎨 ZEN MODE TEXT HIGHLIGHTS (BROWN) 🎨
         ========================================= */
-        
+
         /* ☀️ Light Mode me Headings aur Bold text ka color ☀️ */
         .zen-modal-content strong,
         .zen-modal-content b,
-        .zen-modal-content h1, 
-        .zen-modal-content h2, 
-        .zen-modal-content h3, 
+        .zen-modal-content h1,
+        .zen-modal-content h2,
+        .zen-modal-content h3,
         .zen-modal-content h4 {
-            color: var(--med-brown, #8B5A2B); /* Tera normal chat wala brown */
+            color: var(--med-brown, #8B5A2B);
+            /* Tera normal chat wala brown */
         }
 
         /* 🌙 Dark Mode me Headings aur Bold text ka color 🌙 */
         body.dark-theme .zen-modal-content strong,
         body.dark-theme .zen-modal-content b,
-        body.dark-theme .zen-modal-content h1, 
-        body.dark-theme .zen-modal-content h2, 
-        body.dark-theme .zen-modal-content h3, 
+        body.dark-theme .zen-modal-content h1,
+        body.dark-theme .zen-modal-content h2,
+        body.dark-theme .zen-modal-content h3,
         body.dark-theme .zen-modal-content h4 {
-            color: var(--light-brown, #EDC8A0); /* Dark mode me chamakta hua bright brown */
+            color: var(--light-brown, #EDC8A0);
+            /* Dark mode me chamakta hua bright brown */
         }
 
         /* ☀️ Light Mode Background (Match with body) ☀️ */
@@ -1398,6 +1553,500 @@
         /* 🌙 Dark Mode Background (Match with body) 🌙 */
         body.dark-theme .zen-modal-content {
             background-color: var(--bg-color, #1B1110) !important;
+        }
+
+        /* =========================================
+           🎨 DYNAMIC THEME VARIABLES 🎨
+           (Kal ko theme change karni ho, toh bas yahan change karna!)
+        ========================================= */
+        :root {
+            /* ☀️ LIGHT THEME COLORS */
+            --modal-bg: #FCF8F5;
+            --modal-text-main: #4A3B2C;
+            --modal-text-muted: #8C7B6A;
+            --modal-card-bg: #FFFFFF;
+            --modal-sidebar-bg: rgba(139, 90, 43, 0.04);
+            --modal-border: rgba(139, 90, 43, 0.15);
+            --modal-accent: #8B5A2B;
+            --modal-accent-hover: rgba(139, 90, 43, 0.1);
+            --modal-shadow: rgba(139, 90, 43, 0.15);
+            --modal-input-bg: #FCF8F5;
+            --modal-btn-grad-1: #A87C51;
+            --modal-btn-grad-2: #8B5A2B;
+            --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234A3B2C' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        }
+
+        body.dark-theme {
+            /* 🌙 DARK THEME COLORS */
+            --modal-bg: #181512;
+            --modal-text-main: #F0E6DA;
+            --modal-text-muted: #A69B8F;
+            --modal-card-bg: #221C16;
+            --modal-sidebar-bg: #1C1814;
+            --modal-border: rgba(255, 255, 255, 0.08);
+            --modal-accent: #A87C51;
+            --modal-accent-hover: rgba(255, 255, 255, 0.05);
+            --modal-shadow: rgba(0, 0, 0, 0.6);
+            --modal-input-bg: #181512;
+            --modal-btn-grad-1: #8B5A2B;
+            --modal-btn-grad-2: #5A3D23;
+            --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F0E6DA' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        }
+
+        /* =========================================
+           ✨ THE PREMIUM SETTINGS UI ✨
+        ========================================= */
+        .settings-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 8, 5, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 100000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .settings-modal-box {
+            background: var(--modal-bg);
+            color: var(--modal-text-main);
+            width: 900px;
+            height: 80vh;
+            max-height: 700px;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 60px var(--modal-shadow);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .settings-layout {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* --- LEFT SIDEBAR --- */
+        .settings-sidebar {
+            width: 280px;
+            background: var(--modal-sidebar-bg);
+            border-right: 1px solid var(--modal-border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 25px 15px;
+        }
+
+        .settings-profile-header {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 10px;
+        }
+
+        .settings-profile-header img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid var(--modal-accent);
+            margin-bottom: 10px;
+            object-fit: cover;
+        }
+
+        .setting-nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-nav-item {
+            width: 100%;
+            background: transparent;
+            color: var(--modal-text-muted);
+            border: none;
+            padding: 14px 20px;
+            text-align: left;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .setting-nav-item:hover {
+            background: var(--modal-accent-hover);
+            color: var(--modal-text-main);
+        }
+
+        .setting-nav-item.active {
+            background: var(--modal-accent);
+            color: #fff;
+            box-shadow: 0 4px 15px var(--modal-shadow);
+        }
+
+        /* --- RIGHT CONTENT --- */
+        .settings-content-area {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            position: relative;
+            background: transparent;
+        }
+
+        .desktop-close-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: var(--modal-accent-hover);
+            color: var(--modal-accent);
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .desktop-close-btn:hover {
+            background: #E74C3C;
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        .setting-tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .setting-tab-content.active-tab {
+            display: block;
+        }
+
+        .setting-tab-content h2 {
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--modal-text-main);
+        }
+
+        /* --- CARDS & INPUTS --- */
+        .setting-card {
+            background: var(--modal-card-bg);
+            padding: 20px 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--modal-border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .setting-info strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: var(--modal-text-main);
+        }
+
+        .setting-info p {
+            margin: 0;
+            font-size: 13.5px;
+            color: var(--modal-text-muted);
+        }
+
+        /* THE CUSTOM SELECT DROPDOWN */
+        .premium-input {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: var(--modal-input-bg);
+            color: var(--modal-text-main);
+            border: 1.5px solid var(--modal-border);
+            padding: 12px 40px 12px 16px;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 14.5px;
+            font-weight: 600;
+        }
+
+        .premium-input:hover {
+            border-color: var(--modal-accent);
+        }
+
+        .premium-input:focus {
+            border-color: var(--modal-accent);
+            box-shadow: 0 0 0 4px var(--modal-accent-hover);
+        }
+
+        /* --- NEW ACCOUNT PAGE UI --- */
+        .profile-pic-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .profile-pic-wrapper img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--modal-accent);
+            box-shadow: 0 8px 20px var(--modal-shadow);
+        }
+
+        .custom-file-upload {
+            background: var(--modal-accent-hover);
+            color: var(--modal-accent);
+            padding: 8px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .custom-file-upload:hover {
+            background: var(--modal-border);
+            transform: translateY(-1px);
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--modal-text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group .premium-input {
+            width: 100%;
+            margin-bottom: 25px;
+            padding-right: 16px;
+            /* Reset padding for text input */
+        }
+
+        /* =========================================
+           🔽 CUSTOM PREMIUM DROPDOWN (NO OS DEFAULTS) 🔽
+        ========================================= */
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 240px;
+        }
+
+        .custom-select-trigger {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--modal-input-bg);
+            color: var(--modal-text-main);
+            border: 1.5px solid var(--modal-border);
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14.5px;
+            font-weight: 600;
+        }
+
+        .custom-select-trigger:hover {
+            border-color: var(--modal-accent);
+            background: var(--modal-accent-hover);
+        }
+
+        /* The custom arrow */
+        .custom-select-arrow {
+            width: 14px;
+            height: 14px;
+            background-image: var(--select-arrow);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            transition: transform 0.3s ease;
+        }
+
+        /* Dropdown OPEN state */
+        .custom-select-wrapper.open .custom-select-arrow {
+            transform: rotate(180deg);
+        }
+
+        .custom-select-wrapper.open .custom-select-trigger {
+            border-color: var(--modal-accent);
+            box-shadow: 0 0 0 4px var(--modal-accent-hover);
+        }
+
+        /* The Floating Pop-out List */
+        .custom-select-options {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            width: 100%;
+            background: var(--modal-card-bg);
+            border: 1px solid var(--modal-border);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px var(--modal-shadow);
+            overflow: hidden;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .custom-select-wrapper.open .custom-select-options {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* The List Items (Hover effects!) */
+        .custom-option {
+            padding: 12px 16px;
+            color: var(--modal-text-main);
+            font-size: 14.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .custom-option:hover {
+            background: var(--modal-accent-hover);
+            color: var(--modal-accent);
+        }
+
+
+        /* The Ultimate Save Button */
+        .modern-save-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--modal-btn-grad-1), var(--modal-btn-grad-2));
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px var(--modal-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .modern-save-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px var(--modal-shadow);
+            filter: brightness(1.1);
+        }
+
+        .modern-save-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* 📱 MOBILE RESPONSIVENESS 📱 */
+        .mobile-settings-header {
+            display: none;
+            background: transparent;
+            padding: 20px 25px;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--modal-border);
+            font-size: 18px;
+            font-weight: 700;
+            color: inherit;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: inherit;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =========================================
+           🍞 CUSTOM TOAST NOTIFICATIONS 🍞
+        ========================================= */
+        .custom-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14.5px;
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .custom-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* 🔴 Error Toast (Light Mode) */
+        .custom-toast.error {
+            background-color: #FDF3F2;
+            color: #E74C3C;
+            border: 1.5px solid rgba(231, 76, 60, 0.2);
+        }
+
+        /* 🟢 Success Toast (Light Mode) */
+        .custom-toast.success {
+            background-color: #F0FDF4;
+            color: #27AE60;
+            border: 1.5px solid rgba(39, 174, 96, 0.2);
+        }
+
+        /* 🌙 Dark Mode Adjustments */
+        body.dark-theme .custom-toast.error {
+            background-color: #2C1A1A;
+            color: #FF6B6B;
+            border-color: rgba(255, 107, 107, 0.2);
+        }
+
+        body.dark-theme .custom-toast.success {
+            background-color: #1A2C20;
+            color: #2ECC71;
+            border-color: rgba(46, 204, 113, 0.2);
         }
 
         @media (max-width: 768px) {
@@ -1567,6 +2216,54 @@
             .copy-action-wrapper {
                 opacity: 0.7;
             }
+
+
+            .settings-modal-box {
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+                max-height: 100%;
+                transform: scale(1) !important;
+            }
+
+            .desktop-close-btn {
+                display: none;
+            }
+
+            .settings-sidebar {
+                width: 100%;
+                border-right: none;
+                padding: 20px;
+            }
+
+            .settings-content-area {
+                display: none;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .settings-layout.mobile-view-active .settings-sidebar {
+                display: none;
+            }
+
+            .settings-layout.mobile-view-active .settings-content-area {
+                display: block;
+            }
+
+            .mobile-settings-header {
+                display: flex;
+            }
+
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .custom-select-wrapper {
+                max-width: 100%;
+            }
+
         }
     </style>
 </head>
@@ -1584,38 +2281,143 @@
                 onclick="saveNickname()">Shuru Karein 🚀</button>
         </div>
     </div>
-    <div id="settings-overlay" class="share-modal-backdrop" style="z-index: 3000;">
-        <div class="share-modal fade-in-smooth" style="max-width: 400px; position: relative;">
 
-            <div id="settings-loader" class="loader-overlay">
-                <div class="thinking-spinner mb-2" style="width: 30px; height: 30px; border-width: 3px;"></div>
-                <small>Save ho raha hai...</small>
+    <!-- ⚙️ FULLY DYNAMIC PREMIUM SETTINGS MODAL ⚙️ -->
+    <div id="settings-overlay" class="settings-modal-overlay">
+        <div class="settings-modal-box">
+
+            <!-- MOBILE HEADER -->
+            <div class="mobile-settings-header" id="mobile-settings-header">
+                <button class="back-btn" onclick="goBackToSettingsMenu()">←</button>
+                <span id="mobile-active-setting-title">Settings</span>
             </div>
 
-            <h4 style="color: var(--med-brown); font-weight: bold; margin-bottom: 20px;">Profile Settings ⚙️</h4>
+            <div class="settings-layout">
+                <!-- LEFT SIDEBAR -->
+                <div class="settings-sidebar" id="settings-sidebar">
+                    <div class="settings-profile-header">
+                        <img id="setting-modal-pic" src="" alt="User">
+                        <h3 id="setting-modal-name">Kartik</h3>
+                    </div>
 
-            <div class="settings-pic-container" onclick="document.getElementById('profile-upload-input').click()">
-                <img id="settings-pic-preview" class="settings-pic-preview" src="" alt="Profile">
-                <div class="settings-pic-overlay">📷</div>
-            </div>
-            <input type="file" id="profile-upload-input" accept="image/*" style="display: none;"
-                onchange="handleImageUpload(event)">
+                    <div class="setting-nav-list">
+                        <button class="setting-nav-item active" onclick="switchSettingTab('general', this)">
+                            <span>⚙️</span> General
+                        </button>
+                        <button class="setting-nav-item" onclick="switchSettingTab('personalization', this)">
+                            <span>💖</span> Personalization
+                        </button>
+                        <button class="setting-nav-item" onclick="switchSettingTab('account', this)">
+                            <span>👤</span> Account
+                        </button>
+                    </div>
+                </div>
 
-            <div style="text-align: left; margin-bottom: 20px;">
-                <label style="font-size: 13px; color: var(--text-main); font-weight: bold; margin-bottom: 5px;">Tumhara
-                    Nickname</label>
-                <input type="text" id="settings-name-input" class="form-control custom-input"
-                    style="padding: 12px 20px;" autocomplete="off">
-            </div>
+                <!-- RIGHT CONTENT AREA -->
+                <div class="settings-content-area" id="settings-content-area">
+                    <button class="desktop-close-btn" onclick="closeSettingsModal()">✖</button>
 
-            <div class="d-flex gap-2">
-                <button class="modal-primary-btn w-100" style="padding: 10px; margin: 0;" onclick="saveSettings()">Save
-                    Changes</button>
-                <button class="btn btn-cancel w-100" style="border: 1px solid var(--input-border);"
-                    onclick="closeSettingsModal()">Cancel</button>
+                    <!-- 1. GENERAL SETTINGS -->
+                    <div id="tab-general" class="setting-tab-content active-tab">
+                        <h2>General Settings</h2>
+                        <div class="setting-card">
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <strong>Theme</strong>
+                                    <p>Choose light or dark mode</p>
+                                </div>
+                                <div class="custom-select-wrapper" id="theme-wrapper">
+                                    <div class="custom-select-trigger" onclick="toggleCustomDropdown('theme-wrapper')">
+                                        <span id="theme-selected-text">System Default</span>
+                                        <span class="custom-select-arrow"></span>
+                                    </div>
+                                    <div class="custom-select-options">
+                                        <div class="custom-option"
+                                            onclick="selectCustomOption('theme', 'system', 'System Default')">System
+                                            Default</div>
+                                        <div class="custom-option"
+                                            onclick="selectCustomOption('theme', 'dark', 'Dark Mode')">Dark Mode</div>
+                                        <div class="custom-option"
+                                            onclick="selectCustomOption('theme', 'light', 'Light Mode')">Light Mode
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. PERSONALIZATION -->
+                    <div id="tab-personalization" class="setting-tab-content">
+                        <h2>Personalization</h2>
+                        <div class="setting-card">
+                            <div class="setting-row">
+                                <!-- 2. PERSONALIZATION DROPDOWN -->
+                                <div class="setting-info">
+                                    <strong>Bot Persona</strong>
+                                    <p>How should the AI talk to you?</p>
+                                </div>
+                                <!-- NEW CUSTOM DROPDOWN -->
+                                <div class="custom-select-wrapper" id="persona-wrapper">
+                                    <div class="custom-select-trigger"
+                                        onclick="toggleCustomDropdown('persona-wrapper')">
+                                        <span id="persona-selected-text">Default (Original)</span>
+                                        <span class="custom-select-arrow"></span>
+                                    </div>
+                                    <div class="custom-select-options">
+                                        <!-- NAYA OPTION -->
+                                        <div class="custom-option"
+                                            onclick="selectCustomOption('persona', 'default', 'Default (Original)')">
+                                            Default (Original)</div>
+                                        <div class="custom-option"
+                                            onclick="selectCustomOption('persona', 'friendly', 'Friendly & Casual')">
+                                            Friendly & Casual</div>
+                                        <div class="custom-option"
+                                            onclick="selectCustomOption('persona', 'professional', 'Professional')">
+                                            Professional</div>
+                                        <div class="custom-option"
+                                            onclick="selectCustomOption('persona', 'sarcastic', 'Funny & Sarcastic')">
+                                            Funny & Sarcastic</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. NEW MODERN ACCOUNT TAB -->
+                    <div id="tab-account" class="setting-tab-content">
+                        <h2>Account Details</h2>
+                        <div class="setting-card profile-setting-card">
+                            <div class="profile-pic-wrapper">
+                                <img id="settings-pic-preview" src="" alt="Profile">
+                                <label for="profile-upload-input" class="custom-file-upload">
+                                    📷 Set Your DP
+                                </label>
+                                <input type="file" id="profile-upload-input" accept="image/*"
+                                    onchange="handleImageUpload(event)" hidden>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Your Nickname</label>
+                                <input type="text" id="settings-name-input" placeholder="e.g., Kittu"
+                                    class="premium-input">
+                            </div>
+
+                            <button class="action-btn modern-save-btn" onclick="saveProfileDetails()">Save
+                                Profile</button>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- 🍞 CUSTOM TOAST NOTIFICATION 🍞 -->
+    <div id="custom-toast" class="custom-toast">
+        <span id="toast-message"></span>
+    </div>
+
+
     <div id="login-warning-modal" class="share-modal-backdrop" style="z-index: 3000;">
         <div class="share-modal fade-in-smooth" style="max-width: 350px;">
             <h3 style="color: var(--med-brown); font-weight: bold; margin-bottom: 10px;">Ruko Zara! ✋</h3>
@@ -1866,16 +2668,74 @@
             return database.ref("userChats/" + uid + "/" + chatId).update(payload);
         }
 
-        function initTheme() {
-            if (localStorage.getItem("theme") === "dark") {
+        // =========================================
+        // 🌓 SMART THEME ENGINE (System Detection)
+        // =========================================
+
+        function applyTheme(themeValue) {
+            // Check user's OS / Device theme
+            const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            let isDark = false;
+
+            if (themeValue === 'dark') {
+                isDark = true;
+            } else if (themeValue === 'light') {
+                isDark = false;
+            } else {
+                // Agar 'system' hai, toh device ka theme dekho!
+                isDark = prefersDarkOS;
+            }
+
+            if (isDark) {
                 document.body.classList.add("dark-theme");
                 if (darkModeToggle) darkModeToggle.checked = true;
+            } else {
+                document.body.classList.remove("dark-theme");
+                if (darkModeToggle) darkModeToggle.checked = false;
             }
         }
 
+        function initTheme() {
+            let savedTheme = localStorage.getItem("theme") || "system";
+            applyTheme(savedTheme);
+
+            // 🔥 REAL-TIME OS TRACKER: Agar user laptop ki setting dark se light kare, 
+            // toh website usi second bina refresh kare light ho jayegi!
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (localStorage.getItem("theme") === "system") {
+                    applyTheme("system");
+                }
+            });
+        }
+        // Init the theme engine when script loads
+        initTheme();
+
         function toggleDarkMode() {
+            // 1. Toggle switch ka naya status check karo
+            const newTheme = darkModeToggle.checked ? "dark" : "light";
+
+            // 2. Screen par turant apply karo
             document.body.classList.toggle("dark-theme", darkModeToggle.checked);
-            localStorage.setItem("theme", darkModeToggle.checked ? "dark" : "light");
+
+            // 3. Local Storage me save karo
+            localStorage.setItem("theme", newTheme);
+
+            // 4. 🔥 THE MAGIC: Naye Custom Dropdown ka text update karo!
+            const themeNames = { 'light': 'Light Mode', 'dark': 'Dark Mode', 'system': 'System Default' };
+            const themeText = document.getElementById("theme-selected-text");
+            if (themeText) {
+                themeText.innerText = themeNames[newTheme];
+            }
+
+            // 5. 🔥 Firebase Database me bhi save kar do (Agar user logged in hai)
+            if (typeof currentUser !== 'undefined' && currentUser) {
+                database.ref("users/" + currentUser.uid + "/settings").update({
+                    theme: newTheme,
+                    updatedAt: Date.now()
+                }).catch(err => {
+                    console.error("Theme sync failed:", err);
+                });
+            }
         }
 
         initTheme();
@@ -1911,7 +2771,7 @@
         }
 
         function signInWithGoogle() {
-            auth.signInWithPopup(provider).catch(() => alert("Login failed"));
+            auth.signInWithPopup(provider).catch(() => showToast("Login failed"));
         }
 
         function signOut(event) {
@@ -2003,7 +2863,7 @@
 
         window.saveNickname = function () {
             const nameInput = document.getElementById("nickname-input").value.trim();
-            if (!nameInput) return alert("Are naam toh bata do yaar! 😅");
+            if (!nameInput) return showToast("Are naam toh bata do yaar! 😅");
 
             database.ref("users/" + currentUser.uid + "/profile").set({
                 nickname: nameInput,
@@ -2214,18 +3074,18 @@
                                 </div>
                             </div>
                         </div>`;
-                    
-                }
+
+                    }
                 });
 
-            htmlContent += "</div>";
-            chatHistory.innerHTML = htmlContent;
+                htmlContent += "</div>";
+                chatHistory.innerHTML = htmlContent;
 
-            setTimeout(() => {
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-                checkScrollButton();
-            }, 50);
-        });
+                setTimeout(() => {
+                    chatHistory.scrollTop = chatHistory.scrollHeight;
+                    checkScrollButton();
+                }, 50);
+            });
         };
 
         async function generateSmartTitle(firstMessage, chatId) {
@@ -2478,6 +3338,9 @@
             const historyToSend = messagesForThisChat.slice(0, -1);
             const msgId = "msg_" + Date.now();
 
+            // 🔥 PRO LEVEL FIX: "Jugaad" Hatao! Sirf LocalStorage se Persona uthao.
+            const currentPersona = localStorage.getItem("persona") || "default";
+
             chatHistory.innerHTML += `
             <div class="d-flex justify-content-start w-100 mb-3">
                 <div class="message-bubble bot-msg w-100 position-relative" id="${escapeAttr(msgId)}" data-raw="">
@@ -2705,14 +3568,15 @@
                 } catch (e) { }
             }
 
-            try {
+          try {
                 const response = await fetch(url, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        message,
+                        message: message, // 👈 Wapas Original "message" bhej diya
                         userName: userNameForPrompt,
-                        history: historyToSend
+                        history: historyToSend,
+                        persona: currentPersona // 👈 YAHAN PE NAYA PARAMETER BHEJA HAI BACKEND KE LIYE!
                     }),
                     signal
                 });
@@ -2883,67 +3747,212 @@
             });
         };
 
-        function openSettingsModal() {
+        // =========================================
+        // ⚙️ SETTINGS UI & FIREBASE LOGIC
+        // =========================================
+
+        // 1. Open Modal & Load Settings
+
+        window.openSettingsModal = function () {
             if (!currentUser) return;
-
             closeAllMenus();
-            profileDropdown.classList.remove("active");
 
+            // Set User Info in Sidebar
+            document.getElementById("setting-modal-name").innerText = userNickname || currentUser.displayName.split(" ")[0];
+            document.getElementById("setting-modal-pic").src = userPic.src;
+
+            // For Account Tab
             document.getElementById("settings-name-input").value = userNickname || currentUser.displayName.split(" ")[0];
             document.getElementById("settings-pic-preview").src = userPic.src;
 
-            selectedImageFileBase64 = null;
-            document.getElementById("settings-overlay").style.display = "flex";
+            // Load Settings from Firebase
+            database.ref("users/" + currentUser.uid + "/settings").once("value").then(snapshot => {
+                const settings = snapshot.val() || {};
 
-            if (scrollBtn) scrollBtn.classList.remove("visible");
-        }
+                // 1. 🔥 Custom Theme Dropdown ka Text Update aur Theme Apply
+                const themeNames = { 'light': 'Light Mode', 'dark': 'Dark Mode', 'system': 'System Default' };
+                const savedTheme = settings.theme || localStorage.getItem("theme") || "system";
+
+                const themeTextEl = document.getElementById("theme-selected-text");
+                if (themeTextEl) {
+                    themeTextEl.innerText = themeNames[savedTheme] || 'System Default';
+                }
+                applyTheme(savedTheme); // UI me turant apply karo
+
+               // 2. 🔥 Custom Persona Dropdown ka Text Update
+                const personaNames = { 
+                    'default': 'Default (Original)', 
+                    'friendly': 'Friendly & Casual', 
+                    'professional': 'Professional', 
+                    'sarcastic': 'Funny & Sarcastic' 
+                };
+                
+                // Agar DB me kuch nahi hai, toh 'default' select karo
+                const savedPersona = settings.persona || localStorage.getItem("persona") || 'default';
+                
+                const personaTextEl = document.getElementById("persona-selected-text");
+                if (personaTextEl) {
+                    // Agar dictionary me naam mil gaya toh wo dikhao, warna 'Default (Original)' dikhao
+                    personaTextEl.innerText = personaNames[savedPersona] || 'Default (Original)';
+                }
+            });
+
+            const modal = document.getElementById("settings-overlay");
+            modal.style.display = "flex";
+            setTimeout(() => {
+                modal.style.opacity = "1";
+                modal.querySelector('.settings-modal-box').style.transform = "scale(1)";
+            }, 10);
+
+            // Reset to General tab
+            if (window.innerWidth > 768) {
+                document.querySelector('.setting-nav-item').click();
+            } else {
+                goBackToSettingsMenu(); // On mobile, always start at menu
+            }
+        };
+
+
+        window.closeSettingsModal = function () {
+            const modal = document.getElementById("settings-overlay");
+            modal.style.opacity = "0";
+            modal.querySelector('.settings-modal-box').style.transform = "scale(0.95)";
+            setTimeout(() => { modal.style.display = "none"; }, 300);
+        };
+
+        // 2. Switching Tabs (Desktop & Mobile)
+        window.switchSettingTab = function (tabId, btnElement) {
+            // Remove active classes
+            document.querySelectorAll('.setting-nav-item').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.setting-tab-content').forEach(tab => tab.classList.remove('active-tab'));
+
+            // Add active to clicked
+            btnElement.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active-tab');
+
+            // Handle Mobile Drill-down Logic
+            if (window.innerWidth <= 768) {
+                document.querySelector('.settings-layout').classList.add('mobile-view-active');
+
+                // Change mobile header title based on button text
+                const title = btnElement.innerText.replace(/[^a-zA-Z ]/g, '').trim();
+                document.getElementById('mobile-active-setting-title').innerText = title;
+            }
+        };
+
+        // 3. Mobile Back Button Logic
+        window.goBackToSettingsMenu = function () {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.settings-layout').classList.remove('mobile-view-active');
+                document.getElementById('mobile-active-setting-title').innerText = "Settings";
+            } else {
+                closeSettingsModal(); // If somehow clicked on desktop, close modal
+            }
+        };
+
+        // ⚙️ Updated Settings Saver
+        window.saveAppSetting = function (key, value) {
+            if (!currentUser) return;
+
+            database.ref("users/" + currentUser.uid + "/settings").update({
+                [key]: value,
+                updatedAt: Date.now()
+            }).then(() => {
+                // Instant Apply Logic
+                if (key === 'theme') {
+                    localStorage.setItem("theme", value);
+                    applyTheme(value); // Smart theme apply
+                    showToast("Theme updated dynamically! 🎨", "success");
+                }
+                // 🔥 NAYA: Persona ko LocalStorage me save karo!
+                else if (key === 'persona') {
+                    localStorage.setItem("persona", value);
+                    showToast("AI Persona updated! 🎭", "success");
+                }
+                else {
+                    showToast("Setting saved! ✨", "success");
+                }
+            });
+        };
+
+        // (Tera purana profile save karne wala logic as it is, bas naam change kiya hai)
+        window.saveProfileDetails = async function () {
+            const newName = document.getElementById("settings-name-input").value.trim();
+
+            if (!newName) {
+                // 🔥 YAHAN BHI ALERT THA
+                return showToast("Naam khali nahi chhod sakte dost! 😅", "error");
+            }
+
+            try {
+                let finalPhotoURL = userPic.src;
+                if (selectedImageFileBase64) finalPhotoURL = selectedImageFileBase64;
+
+                await database.ref("users/" + currentUser.uid + "/profile").update({
+                    nickname: newName,
+                    customPhotoURL: finalPhotoURL,
+                    updatedAt: Date.now()
+                });
+
+                // Update UI variables
+                userNickname = newName;
+                userName.innerText = newName;
+                userPic.src = finalPhotoURL;
+
+                // Update Modal UI
+                document.getElementById("setting-modal-name").innerText = newName;
+                document.getElementById("setting-modal-pic").src = finalPhotoURL;
+
+                // 🔥 THE FIX: YAHAN AAYEGA PREMIUM SUCCESS TOAST
+                showToast("Profile Updated Successfully! 🎉", "success");
+
+                if (window.innerWidth <= 768) goBackToSettingsMenu();
+            } catch (error) {
+                console.error("Save Error: ", error);
+                showToast("Kuch gadbad hui save karne me! Net check kar lo.", "error");
+            }
+        };
 
         function closeSettingsModal() {
             document.getElementById("settings-overlay").style.display = "none";
         }
 
-        function handleImageUpload(event) {
+        window.handleImageUpload = function (event) {
             const file = event.target.files[0];
             if (!file) return;
 
             if (file.size > 3 * 1024 * 1024) {
-                alert("Bhai, photo 3MB se choti honi chahiye! 😅");
+                // 🔥 YAHAN THA PURANA ALERT, AB TOAST AAYEGA
+                showToast("Bhai, photo 3MB se choti honi chahiye! 😅", "error");
                 event.target.value = "";
                 return;
             }
 
             const reader = new FileReader();
-
             reader.onload = function (e) {
                 const img = new Image();
-
                 img.onload = function () {
                     const canvas = document.createElement("canvas");
                     const ctx = canvas.getContext("2d");
                     const size = 500;
-
                     canvas.width = size;
                     canvas.height = size;
-
                     const minDim = Math.min(img.width, img.height);
                     const startX = (img.width - minDim) / 2;
                     const startY = (img.height - minDim) / 2;
-
                     ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
 
                     selectedImageFileBase64 = canvas.toDataURL("image/jpeg", 0.85);
                     document.getElementById("settings-pic-preview").src = selectedImageFileBase64;
                 };
-
                 img.src = e.target.result;
             };
-
             reader.readAsDataURL(file);
-        }
+        };
 
         async function saveSettings() {
             const newName = document.getElementById("settings-name-input").value.trim();
-            if (!newName) return alert("Naam khali nahi chhod sakte dost!");
+            if (!newName) return showToast("Naam khali nahi chhod sakte dost!");
 
             document.getElementById("settings-loader").style.display = "flex";
 
@@ -2973,7 +3982,7 @@
 
             } catch (error) {
                 console.error("Save Error: ", error);
-                alert("Kuch gadbad hui save karne me! Net check kar lo.");
+                showToast("Kuch gadbad hui save karne me! Net check kar lo.");
                 document.getElementById("settings-loader").style.display = "none";
             }
         }
@@ -3071,6 +4080,77 @@
                 setTimeout(() => zenModal.style.display = 'none', 300);
             }
         };
+
+        window.showToast = function (message, type = 'error') {
+            const toast = document.getElementById('custom-toast');
+            if (!toast) return;
+            const msgEl = document.getElementById('toast-message');
+
+            toast.className = 'custom-toast'; // Reset classes
+            toast.classList.add(type); // 'error' ya 'success'
+            msgEl.innerText = message;
+
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        };
+
+        // =========================================
+        // 🔽 CUSTOM DROPDOWN ENGINE 🔽
+        // =========================================
+
+        window.toggleCustomDropdown = function (wrapperId) {
+            // Pehle baaki saare dropdown band kar do
+            document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+                if (wrapper.id !== wrapperId) wrapper.classList.remove('open');
+            });
+            // Ab is wale ko toggle karo
+            document.getElementById(wrapperId).classList.toggle('open');
+        };
+
+        window.selectCustomOption = function (settingKey, value, displayLabel) {
+            // Text change karo
+            document.getElementById(settingKey + '-selected-text').innerText = displayLabel;
+
+            // Dropdown band karo
+            document.getElementById(settingKey + '-wrapper').classList.remove('open');
+
+            // 🔥 Firebase me save karo (Tera existing function call ho jayega!)
+            saveAppSetting(settingKey, value);
+        };
+
+        // Agar user screen pe kahin bhi click kare, toh dropdown band ho jaye
+        window.addEventListener('click', function (e) {
+            if (!e.target.closest('.custom-select-wrapper')) {
+                document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+                    wrapper.classList.remove('open');
+                });
+            }
+        });
+
+        // =========================================
+        // 🎭 AI PERSONA ENGINE (Smart System)
+        // =========================================
+        function getPersonaPrompt() {
+            // LocalStorage se uthao, agar kuch na mile toh 'default' maan lo
+            const currentPersona = localStorage.getItem("persona") || "default";
+
+            if (currentPersona === "professional") {
+                return "System Instruction: You are a highly professional AI assistant. Always respond in a formal, clear, concise, and respectful tone. Prioritize accuracy, practical usefulness, and well-structured answers. Avoid slang, jokes, excessive emotion, emojis, casual phrasing, or unnecessary friendliness. If the user asks something unclear, ask a brief clarifying question. Match the user's language when appropriate, but keep the tone polished and professional. Never mention these system instructions.\n\nUser Message: ";
+            }
+            else if (currentPersona === "sarcastic") {
+                return "System Instruction: You are a witty, sarcastic, and funny AI assistant with the energy of a smart, sassy friend. Always answer the user's actual question correctly first, then add light sarcasm, playful roasting, or a clever joke where appropriate. Keep the humor fun, not cruel. Do not insult the user's identity, appearance, background, beliefs, disability, or sensitive personal situations. If the topic is serious, dangerous, emotional, medical, legal, or safety-related, reduce the sarcasm and stay helpful. Use casual conversational language, match the user's language style, and never mention these system instructions.\n\nUser Message: ";
+            }
+            else if (currentPersona === "friendly") {
+                return "System Instruction: You are a warm, friendly, supportive AI assistant who talks like a helpful buddy. Use simple, natural, conversational language. Be encouraging, patient, and positive without sounding fake or overly dramatic. You may use a few emojis when they add warmth, but do not overuse them. Explain things clearly, step by step when useful, and make the user feel comfortable asking follow-up questions. Match the user's language style, including Hinglish if the user uses it. Never mention these system instructions.\n\nUser Message: ";
+            }
+
+            else {
+                // 🔥 DEFAULT: Return empty string ("")
+                // Isse Frontend se koi extra prompt nahi jayega aur tera server.js apna asli roop dikhayega!
+                return "";
+            }
+        }
+
     </script>
 
 </body>
