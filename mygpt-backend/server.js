@@ -468,110 +468,278 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
   }
 });
 
-// =========================================
-// 🚀 100% PURE AI TITLE GENERATION (NO FALLBACKS!)
-// =========================================
 
 // =========================================
-// 🚀 100% PURE AI TITLE GENERATION (ULTRA CLEAN)
-// =========================================
-
-const TITLE_SYSTEM_PROMPT = `
-Generate a clear, meaningful chat title from the user's message.
-
-Rules:
-- Length: 5 to 10 words (strict)
-- Must clearly summarize the main topic
-- Avoid vague titles like "Help", "Chat", "Question"
-- Use simple, natural human language
-- Language: Match user's language (Hindi / Hinglish / English)
-- Format: Title Case
-
-Return ONLY the title. No extra text.
-`;
-
-// =========================================
-// 🚀 100% PURE AI TITLE GENERATION (SAFETY FILTERS DISABLED)
+// 🧠 SMART TITLE GENERATION — FIXED & PRODUCTION-GRADE
+//
+// Fixes applied vs your old version:
+//  1. thinkingBudget: 0  → kills Gemini's internal reasoning tokens,
+//     so maxOutputTokens: 30 goes 100% to visible output (fast + safe)
+//  2. BLOCK_NONE on all safety categories → no false blocks on
+//     harmless Hinglish queries like "phone bechu", "propose karna"
+//  3. Extract text on ANY finishReason (including MAX_TOKENS) →
+//     partial titles like "Phone Sel…" still get cleaned and used
+//  4. Few-shot conversation examples → strongly enforces 2–5 word
+//     Title Case + one emoji, zero extra prose from the model
+//  5. postProcessTitle() → strips "Title:", quotes, colons, artifacts
 // =========================================
 
 const TITLE_SAFETY_SETTINGS = [
-  { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-  { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-  { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-  { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
+  { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",  threshold: "BLOCK_NONE" },
+  { category: "HARM_CATEGORY_HATE_SPEECH",         threshold: "BLOCK_NONE" },
+  { category: "HARM_CATEGORY_HARASSMENT",          threshold: "BLOCK_NONE" },
+  { category: "HARM_CATEGORY_DANGEROUS_CONTENT",   threshold: "BLOCK_NONE" },
 ];
 
+// Few-shot pairs — teach the model your exact format.
+// Hinglish fillers get stripped, output is always Title Case + one emoji.
+const TITLE_FEW_SHOT = [
+  {
+    role: "user",
+    parts: [{ text: "gf baat kyu nahi kar rhi bhai? koi tips" }],
+  },
+  {
+    role: "model",
+    parts: [{ text: "GF Se Baat Kaise Karein 💔" }],
+  },
+  {
+    role: "user",
+    parts: [{ text: "bhai papa ke liye best gift under 500?" }],
+  },
+  {
+    role: "model",
+    parts: [{ text: "Budget Gift Ideas For Papa 🎁" }],
+  },
+  {
+    role: "user",
+    parts: [{ text: "online paise kaise kamaye student" }],
+  },
+  {
+    role: "model",
+    parts: [{ text: "Student Online Earning Tips 💰" }],
+  },
+  {
+    role: "user",
+    parts: [{ text: "bhai 15,000 ka phone 100000 me kaise bechu?" }],
+  },
+  {
+    role: "model",
+    parts: [{ text: "Phone Selling Strategy 📱" }],
+  },
+  {
+    role: "user",
+    parts: [{ text: "how do I fix cors error in express?" }],
+  },
+  {
+    role: "model",
+    parts: [{ text: "Fix CORS Error Express 🛠️" }],
+  },
+  {
+    role: "user",
+    parts: [{ text: "mujhe anxiety aa rhi hai exams ke liye" }],
+  },
+  {
+    role: "model",
+    parts: [{ text: "Exam Anxiety Tips 😮‍💨" }],
+  },
+];
+
+const TITLE_SYSTEM_INSTRUCTION = `You generate ultra-short chat titles.
+
+Rules (non-negotiable):
+- Output: 2 to 5 words only. Title Case. One relevant emoji at the end.
+- Language: match the user (Hindi/Hinglish/English).
+- Strip all filler words (bhai, yaar, please, can you, help me, etc.).
+- Focus on the CORE INTENT only.
+- NEVER output "Title:", quotes, explanation, or any extra text.
+- ONLY the title. Nothing else.`;
+
+/**
+ * Strips formatting artifacts from the raw model response.
+ * Handles "Title: X", "X", truncation from MAX_TOKENS, etc.
+ */
+function postProcessTitle(raw) {
+  if (!raw || typeof raw !== "string") return "";
+
+  let title = raw.trim();
+
+  // Strip markdown bold/italic/code
+  title = title.replace(/[*_`]/g, "");
+
+  // Strip label prefixes: "Title:", "Summary:", "Chat:", etc.
+  title = title.replace(/^(title|summary|chat|topic|subject)\s*[:\-]\s*/i, "");
+
+  // Strip surrounding quotes (straight and curly)
+  title = title.replace(/^["'""'']+|["'""'']+$/g, "");
+
+  // Strip leading/trailing stray punctuation
+  title = title.replace(/^[.!?,;:\-–—]+|[.!?,;:\-–—]+$/g, "");
+
+  // Collapse extra whitespace
+  title = title.replace(/\s+/g, " ").trim();
+
+  // Discard if post-processing left something too short to be a title
+  if (title.length < 3) return "";
+
+  return title;
+}
+
+/**
+ * Calls Gemini 2.5 Flash with thinking disabled and few-shot prompting
+ * to generate a short, clean, ChatGPT-style chat title.
+ *
+ * Returns the title string, or null on hard failure.
+ */
 async function generateSmartTitle(message) {
+  if (!message || typeof message !== "string") return null;
+  if (!GEMINI_API_KEY) {
+    console.error("[TITLE] GEMINI_API_KEY missing");
+    return null;
+  }
+
+  // Clamp — title gen doesn't need the full message, just the intent
+  const cleanedMessage = message.trim().slice(0, 300);
+
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-  
+
+  const requestBody = {
+    systemInstruction: {
+      parts: [{ text: TITLE_SYSTEM_INSTRUCTION }],
+    },
+    contents: [
+      // Few-shot examples come first so the model learns the format
+      ...TITLE_FEW_SHOT,
+      // Then the real user message
+      {
+        role: "user",
+        parts: [{ text: cleanedMessage }],
+      },
+    ],
+    generationConfig: {
+      // ✅ FIX 1: Disable thinking tokens entirely.
+      // Without this, Gemini 2.5 Flash burns your entire
+      // maxOutputTokens budget on invisible "thoughts" before
+      // writing a single visible character.
+      thinkingConfig: {
+        thinkingBudget: 0,
+      },
+      // Safe to keep low now that thinking is off — all tokens → output
+      maxOutputTokens: 30,
+      // Low temperature for consistent, format-compliant output
+      temperature: 0.1,
+      topP: 0.8,
+    },
+    // ✅ FIX 2: BLOCK_NONE on all categories.
+    // Without this, queries like "phone bechu" or "propose karna"
+    // silently get safety-blocked on the title call.
+    safetySettings: TITLE_SAFETY_SETTINGS,
+  };
+
+  // Abort if Gemini takes more than 10 seconds
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
   try {
-    console.log(`\n🕵️‍♂️ [TITLE API] Request: "${message}"`);
-    
+    console.log(`[TITLE] Generating for: "${cleanedMessage.slice(0, 60)}..."`);
+
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          { role: "user", parts: [{ text: "Create a short 3 to 5 word title with one emoji for: gf baat kyu nahi kar rhi bhai? koi tips" }] },
-          { role: "model", parts: [{ text: "Relationship Advice 💔" }] },
-          { role: "user", parts: [{ text: "Create a short 3 to 5 word title with one emoji for: bhai papa ke liye best gift?" }] },
-          { role: "model", parts: [{ text: "Papa Ke Liye Gift 🎁" }] },
-          { role: "user", parts: [{ text: "Create a short 3 to 5 word title with one emoji for: online paise kaise kamaye student" }] },
-          { role: "model", parts: [{ text: "Online Earning Ideas 💰" }] },
-          { role: "user", parts: [{ text: `Create a short 3 to 5 word title with one emoji for: ${message}` }] }
-        ],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 1000 },
-        safetySettings: TITLE_SAFETY_SETTINGS // 🔥 GOOGLE KE FILTERS KHATAM 🔥
-      }),
+      body: JSON.stringify(requestBody),
+      signal: controller.signal,
     });
 
-// ... tera fetch API wala code ...
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`🚨 [API ERROR]: ${await response.text()}`);
+      const errText = await response.text().catch(() => "");
+      console.error(`[TITLE] HTTP ${response.status}: ${errText.slice(0, 200)}`);
       return null;
     }
 
     const data = await response.json();
-    console.log("🕵️‍♂️ [RAW GOOGLE RESPONSE]:", JSON.stringify(data, null, 2));
 
     const candidate = data?.candidates?.[0];
-    
-    // 🔥 Pura strict "STOP" wala if-block maine hata diya!
-    
-    // Seedha title text uthao (chahe uski saans MAX_TOKENS pe phooli ho ya nahi)
-    const titleText = candidate?.content?.parts?.[0]?.text?.trim();
-    
-    // Agar text sach me khali hai tabhi error do
-    if (!titleText) {
-        console.error(`🚨 [TITLE API BLOCKED / EMPTY] Reason: ${candidate?.finishReason}`);
-        return "New Chat ✨";
+    const finishReason = candidate?.finishReason ?? "UNKNOWN";
+
+    // ✅ FIX 3: Extract text regardless of finishReason.
+    // Even "MAX_TOKENS" usually means the title is complete —
+    // e.g. "Phone Selling Strategy 📱" fits in 30 tokens easily.
+    // The OLD code rejected anything that wasn't "STOP". That was wrong.
+    const rawText = candidate?.content?.parts?.[0]?.text ?? "";
+
+    if (!rawText) {
+      console.warn(`[TITLE] Empty text from model. finishReason: ${finishReason}`);
+      return null;
     }
 
-    console.log(`✅ [TITLE API SUCCESS]: ${titleText}`);
-    return titleText;
+    // ✅ FIX 4 & 5: Clean up any formatting artifacts
+    const title = postProcessTitle(rawText);
+
+    if (!title) {
+      console.warn(`[TITLE] Post-processing gave empty result for raw: "${rawText}"`);
+      return null;
+    }
+
+    console.log(`[TITLE] ✅ "${title}" (finishReason: ${finishReason})`);
+    return title;
 
   } catch (err) {
-    console.error(`🔥 [NETWORK CRASH]: ${err.message}`);
+    clearTimeout(timeoutId);
+
+    if (err.name === "AbortError") {
+      console.warn("[TITLE] Timed out after 10s");
+    } else {
+      console.error(`[TITLE] Network error: ${err.message}`);
+    }
+
     return null;
   }
 }
 
+
+// =========================================
+// 🚀 /api/title  —  Express Route
+// =========================================
+
 app.post("/api/title", async (req, res) => {
   try {
-    const message = cleanMessage(req.body?.message).slice(0, 500);
-    if (!message || !GEMINI_API_KEY) return res.json({ title: "New Chat ✨" });
+    const rawMessage = req.body?.message;
 
-    const rawTitle = await generateSmartTitle(message);
-    if (!rawTitle) return res.json({ title: "New Chat ✨" });
+    // Always return 200 — never let a title failure crash the frontend
+    if (!rawMessage || typeof rawMessage !== "string" || rawMessage.trim().length === 0) {
+      return res.json({ title: "New Chat ✨" });
+    }
 
-    let finalTitle = rawTitle.replace(/["“”‘’*_`]/g, "").replace(/^(title|summary)\s*[:\-]\s*/i, "").trim();
-    return res.json({ title: finalTitle });
+    const message = rawMessage.trim().slice(0, 500);
+
+    const generatedTitle = await generateSmartTitle(message);
+
+    if (!generatedTitle) {
+      // Last-resort fallback: Title Case the first 4 words of the message.
+      // Still better than "New Chat ✨" — at least it's on-topic.
+      const sliceFallback = message
+        .split(/\s+/)
+        .slice(0, 4)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(" ");
+
+      console.log(`[TITLE] Slice fallback used: "${sliceFallback}"`);
+      return res.json({ title: sliceFallback || "New Chat ✨" });
+    }
+
+    return res.json({ title: generatedTitle });
 
   } catch (error) {
+    console.error("[TITLE] Route error:", error);
     return res.json({ title: "New Chat ✨" });
   }
 });
+
+
+// =========================================
+// Static routes
+// =========================================
 
 app.get("/share.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "share.html"));
