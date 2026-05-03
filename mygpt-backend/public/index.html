@@ -287,7 +287,7 @@
         .sidebar {
             background-color: var(--sidebar-bg);
             color: var(--sidebar-text);
-            width: 280px;
+            width: 350px;
             display: flex;
             flex-direction: column;
             padding: 20px 15px;
@@ -2518,1641 +2518,1615 @@
     </div>
 
     <script>
-        // FIREBASE CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
-            authDomain: "my-gemini-bot-gradex.firebaseapp.com",
-            databaseURL: "https://my-gemini-bot-gradex-default-rtdb.firebaseio.com/",
-            projectId: "my-gemini-bot-gradex",
-            storageBucket: "my-gemini-bot-gradex.firebasestorage.app",
-            messagingSenderId: "979133444805",
-            appId: "1:979133444805:web:e1bc587482362365e2b6ac",
-            measurementId: "G-0GFKZBZ8M1"
+    // FIREBASE CONFIG
+    const firebaseConfig = {
+        apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
+        authDomain: "my-gemini-bot-gradex.firebaseapp.com",
+        databaseURL: "https://my-gemini-bot-gradex-default-rtdb.firebaseio.com/",
+        projectId: "my-gemini-bot-gradex",
+        storageBucket: "my-gemini-bot-gradex.firebasestorage.app",
+        messagingSenderId: "979133444805",
+        appId: "1:979133444805:web:e1bc587482362365e2b6ac",
+        measurementId: "G-0GFKZBZ8M1"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const database = firebase.database();
+
+    let selectedImageFileBase64 = null;
+    let currentUser = null;
+    let currentChatId = null;
+    let currentChatMessages = [];
+    let userNickname = "";
+    let isUserLoggedIn = false;
+    let isGenerating = false;
+    let currentAbortController = null;
+    let isAtTop = true;
+    let sidebarChatsRef = null;
+
+    // DATABASE WRITE QUEUE
+    let cloudSaveQueue = Promise.resolve();
+
+    const inputSection = document.getElementById("input-section");
+    const chatHistory = document.getElementById("chat-history");
+    const welcomeText = document.getElementById("welcome-text");
+    const userInput = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+    const sidebarChatList = document.getElementById("sidebar-chat-list");
+    const loginBtn = document.getElementById("login-btn");
+    const profileArea = document.getElementById("profile-area");
+    const userPic = document.getElementById("user-pic");
+    const userName = document.getElementById("user-name");
+    const profileDropdown = document.getElementById("profile-dropdown");
+    const profileTrigger = document.getElementById("profile-trigger");
+    const darkModeToggle = document.getElementById("dark-mode-toggle");
+    const scrollBtn = document.getElementById("scroll-action-btn");
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        }[char]));
+    }
+
+    function escapeAttr(value) {
+        return escapeHTML(value).replace(/`/g, "&#096;");
+    }
+
+    function escapeJSString(value) {
+        return String(value ?? "")
+            .replace(/\\/g, "\\\\")
+            .replace(/'/g, "\\'")
+            .replace(/\n/g, "\\n")
+            .replace(/\r/g, "");
+    }
+
+    function rawAttr(value) {
+        return escapeAttr(encodeURIComponent(String(value ?? "")));
+    }
+
+    function formatPlainText(value) {
+        return escapeHTML(value).replace(/\n/g, "<br>");
+    }
+
+    function renderBotMarkdown(value) {
+        let html = "";
+        try {
+            html = window.marked ? marked.parse(String(value ?? "")) : formatPlainText(value);
+        } catch (e) {
+            html = formatPlainText(value);
+        }
+
+        if (window.DOMPurify) {
+            html = DOMPurify.sanitize(html);
+        }
+
+        return html;
+    }
+
+    function cleanBotText(value) {
+        return String(value ?? "").replace(/\[REACT:[^\]]*\]?/gi, "").trim();
+    }
+
+    function cloneMessages(messages = currentChatMessages) {
+        return JSON.parse(JSON.stringify(messages || []));
+    }
+
+    function copyIconSvg() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>`;
+    }
+
+    function checkIconSvg() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>`;
+    }
+
+    function ensureCurrentChatId() {
+        if (!currentChatId) {
+            currentChatId = "chat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+            localStorage.setItem("activeChatId", currentChatId);
+        }
+        return currentChatId;
+    }
+
+    function cleanChatTitle(value) {
+        return String(value || "")
+            .replace(/[\r\n\t]/g, " ")
+            .replace(/["“”‘’*_`#]/g, "")
+            .replace(/\s+/g, " ")
+            .replace(/[.!?;:,，।]+$/u, "")
+            .trim()
+            .slice(0, 90);
+    }
+
+    function isInvalidTitleFromServer(title, firstMessage) {
+        const cleaned = cleanChatTitle(title);
+        const message = cleanChatTitle(firstMessage);
+
+        if (!cleaned) return true;
+
+        const lower = cleaned.toLowerCase();
+        const badTitles = new Set([
+            "help",
+            "chat",
+            "question",
+            "new chat",
+            "mygpt chat",
+            "nayi baat",
+            "need help",
+            "user question",
+            "user request",
+            "general discussion",
+            "quick question",
+            "chat title",
+            "untitled chat",
+            "title soch raha hu"
+        ]);
+
+        if (badTitles.has(lower)) return true;
+        if (message && lower === message.toLowerCase()) return true;
+        if (/^guide to\b/i.test(cleaned)) return true;
+
+        return false;
+    }
+
+    function queueStateSave({ chatId = currentChatId, messages = currentChatMessages, title = null } = {}) {
+        if (!currentUser || !chatId) return Promise.resolve();
+
+        const uid = currentUser.uid;
+        const messagesSnapshot = cloneMessages(messages);
+        const titleSnapshot = title;
+
+        cloudSaveQueue = cloudSaveQueue
+            .then(() => saveStateToCloud({
+                uid,
+                chatId,
+                messages: messagesSnapshot,
+                title: titleSnapshot
+            }))
+            .catch(err => console.error("Cloud save failed:", err));
+
+        return cloudSaveQueue;
+    }
+
+    function saveStateToCloud({ uid, chatId, messages, title = null }) {
+        if (!uid || !chatId) return Promise.resolve();
+
+        const payload = {
+            messages: cloneMessages(messages),
+            updatedAt: Date.now()
         };
 
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-
-        const auth = firebase.auth();
-        const provider = new firebase.auth.GoogleAuthProvider();
-        const database = firebase.database();
-
-        let selectedImageFileBase64 = null;
-        let currentUser = null;
-        let currentChatId = null;
-        let currentChatMessages = [];
-        let userNickname = "";
-        let isUserLoggedIn = false;
-        let isGenerating = false;
-        let currentAbortController = null;
-        let isAtTop = true;
-        let sidebarChatsRef = null;
-
-        // DATABASE WRITE QUEUE
-        let cloudSaveQueue = Promise.resolve();
-
-        const inputSection = document.getElementById("input-section");
-        const chatHistory = document.getElementById("chat-history");
-        const welcomeText = document.getElementById("welcome-text");
-        const userInput = document.getElementById("user-input");
-        const sendBtn = document.getElementById("send-btn");
-        const sidebarChatList = document.getElementById("sidebar-chat-list");
-        const loginBtn = document.getElementById("login-btn");
-        const profileArea = document.getElementById("profile-area");
-        const userPic = document.getElementById("user-pic");
-        const userName = document.getElementById("user-name");
-        const profileDropdown = document.getElementById("profile-dropdown");
-        const profileTrigger = document.getElementById("profile-trigger");
-        const darkModeToggle = document.getElementById("dark-mode-toggle");
-        const scrollBtn = document.getElementById("scroll-action-btn");
-
-        function escapeHTML(value) {
-            return String(value ?? "").replace(/[&<>"']/g, char => ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#039;"
-            }[char]));
+        if (title) {
+            payload.title = cleanChatTitle(title);
         }
 
-        function escapeAttr(value) {
-            return escapeHTML(value).replace(/`/g, "&#096;");
+        return database.ref("userChats/" + uid + "/" + chatId).update(payload);
+    }
+
+    // =========================================
+    // 🌓 SMART THEME ENGINE (System Detection)
+    // =========================================
+
+    function applyTheme(themeValue) {
+        const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let isDark = false;
+
+        if (themeValue === 'dark') {
+            isDark = true;
+        } else if (themeValue === 'light') {
+            isDark = false;
+        } else {
+            isDark = prefersDarkOS;
         }
 
-        function escapeJSString(value) {
-            return String(value ?? "")
-                .replace(/\\/g, "\\\\")
-                .replace(/'/g, "\\'")
-                .replace(/\n/g, "\\n")
-                .replace(/\r/g, "");
+        if (isDark) {
+            document.body.classList.add("dark-theme");
+            if (darkModeToggle) darkModeToggle.checked = true;
+        } else {
+            document.body.classList.remove("dark-theme");
+            if (darkModeToggle) darkModeToggle.checked = false;
         }
+    }
 
-        function rawAttr(value) {
-            return escapeAttr(encodeURIComponent(String(value ?? "")));
-        }
+    function initTheme() {
+        let savedTheme = localStorage.getItem("theme") || "system";
+        applyTheme(savedTheme);
 
-        function formatPlainText(value) {
-            return escapeHTML(value).replace(/\n/g, "<br>");
-        }
-
-        function renderBotMarkdown(value) {
-            let html = "";
-            try {
-                html = window.marked ? marked.parse(String(value ?? "")) : formatPlainText(value);
-            } catch (e) {
-                html = formatPlainText(value);
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (localStorage.getItem("theme") === "system") {
+                applyTheme("system");
             }
-
-            if (window.DOMPurify) {
-                html = DOMPurify.sanitize(html);
-            }
-
-            return html;
-        }
-
-        function cleanBotText(value) {
-            return String(value ?? "").replace(/\[REACT:[^\]]*\]?/gi, "").trim();
-        }
-
-        function cloneMessages(messages = currentChatMessages) {
-            return JSON.parse(JSON.stringify(messages || []));
-        }
-
-        function copyIconSvg() {
-            return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>`;
-        }
-
-        function checkIconSvg() {
-            return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>`;
-        }
-
-        function ensureCurrentChatId() {
-            if (!currentChatId) {
-                currentChatId = "chat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
-                localStorage.setItem("activeChatId", currentChatId);
-            }
-            return currentChatId;
-        }
-
-        function queueStateSave({ chatId = currentChatId, messages = currentChatMessages, title = null } = {}) {
-            if (!currentUser || !chatId) return Promise.resolve();
-
-            const uid = currentUser.uid;
-            const messagesSnapshot = cloneMessages(messages);
-            const titleSnapshot = title;
-
-            cloudSaveQueue = cloudSaveQueue
-                .then(() => saveStateToCloud({
-                    uid,
-                    chatId,
-                    messages: messagesSnapshot,
-                    title: titleSnapshot
-                }))
-                .catch(err => console.error("Cloud save failed:", err));
-
-            return cloudSaveQueue;
-        }
-
-        function saveStateToCloud({ uid, chatId, messages, title = null }) {
-            if (!uid || !chatId) return Promise.resolve();
-
-            const payload = {
-                messages: cloneMessages(messages),
-                updatedAt: Date.now()
-            };
-
-            if (title) {
-                payload.title = title.length > 30 ? title.substring(0, 30) + "..." : title;
-            }
-
-            return database.ref("userChats/" + uid + "/" + chatId).update(payload);
-        }
-
-        // =========================================
-        // 🌓 SMART THEME ENGINE (System Detection)
-        // =========================================
-
-        function applyTheme(themeValue) {
-            // Check user's OS / Device theme
-            const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            let isDark = false;
-
-            if (themeValue === 'dark') {
-                isDark = true;
-            } else if (themeValue === 'light') {
-                isDark = false;
-            } else {
-                // Agar 'system' hai, toh device ka theme dekho!
-                isDark = prefersDarkOS;
-            }
-
-            if (isDark) {
-                document.body.classList.add("dark-theme");
-                if (darkModeToggle) darkModeToggle.checked = true;
-            } else {
-                document.body.classList.remove("dark-theme");
-                if (darkModeToggle) darkModeToggle.checked = false;
-            }
-        }
-
-        function initTheme() {
-            let savedTheme = localStorage.getItem("theme") || "system";
-            applyTheme(savedTheme);
-
-            // 🔥 REAL-TIME OS TRACKER: Agar user laptop ki setting dark se light kare, 
-            // toh website usi second bina refresh kare light ho jayegi!
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (localStorage.getItem("theme") === "system") {
-                    applyTheme("system");
-                }
-            });
-        }
-        // Init the theme engine when script loads
-        initTheme();
-
-        function toggleDarkMode() {
-            // 1. Toggle switch ka naya status check karo
-            const newTheme = darkModeToggle.checked ? "dark" : "light";
-
-            // 2. Screen par turant apply karo
-            document.body.classList.toggle("dark-theme", darkModeToggle.checked);
-
-            // 3. Local Storage me save karo
-            localStorage.setItem("theme", newTheme);
-
-            // 4. 🔥 THE MAGIC: Naye Custom Dropdown ka text update karo!
-            const themeNames = { 'light': 'Light Mode', 'dark': 'Dark Mode', 'system': 'System Default' };
-            const themeText = document.getElementById("theme-selected-text");
-            if (themeText) {
-                themeText.innerText = themeNames[newTheme];
-            }
-
-            // 5. 🔥 Firebase Database me bhi save kar do (Agar user logged in hai)
-            if (typeof currentUser !== 'undefined' && currentUser) {
-                database.ref("users/" + currentUser.uid + "/settings").update({
-                    theme: newTheme,
-                    updatedAt: Date.now()
-                }).catch(err => {
-                    console.error("Theme sync failed:", err);
-                });
-            }
-        }
-
-        initTheme();
-
-        function toggleProfileDropdown(event) {
-            if (!currentUser) return;
-            profileDropdown.classList.toggle("active");
-            profileTrigger.classList.toggle("active");
-        }
-
-        function closeAllMenus() {
-            document.querySelectorAll(".chat-options-menu.active").forEach(menu => {
-                menu.classList.remove("active");
-            });
-        }
-
-        window.addEventListener("click", function (e) {
-            if (profileArea && !profileArea.contains(e.target)) {
-                profileDropdown.classList.remove("active");
-                profileTrigger.classList.remove("active");
-            }
-            closeAllMenus();
         });
+    }
 
-        function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("active");
-            document.getElementById("mobile-overlay").classList.toggle("active");
+    initTheme();
+
+    function toggleDarkMode() {
+        const newTheme = darkModeToggle.checked ? "dark" : "light";
+
+        document.body.classList.toggle("dark-theme", darkModeToggle.checked);
+        localStorage.setItem("theme", newTheme);
+
+        const themeNames = { 'light': 'Light Mode', 'dark': 'Dark Mode', 'system': 'System Default' };
+        const themeText = document.getElementById("theme-selected-text");
+        if (themeText) {
+            themeText.innerText = themeNames[newTheme];
         }
 
-        function closeSidebar() {
-            document.getElementById("sidebar").classList.remove("active");
-            document.getElementById("mobile-overlay").classList.remove("active");
+        if (typeof currentUser !== 'undefined' && currentUser) {
+            database.ref("users/" + currentUser.uid + "/settings").update({
+                theme: newTheme,
+                updatedAt: Date.now()
+            }).catch(err => {
+                console.error("Theme sync failed:", err);
+            });
         }
+    }
 
-        function signInWithGoogle() {
-            auth.signInWithPopup(provider).catch(() => showToast("Login failed"));
-        }
+    function toggleProfileDropdown(event) {
+        if (!currentUser) return;
+        profileDropdown.classList.toggle("active");
+        profileTrigger.classList.toggle("active");
+    }
 
-        function signOut(event) {
+    function closeAllMenus() {
+        document.querySelectorAll(".chat-options-menu.active").forEach(menu => {
+            menu.classList.remove("active");
+        });
+    }
+
+    window.addEventListener("click", function (e) {
+        if (profileArea && !profileArea.contains(e.target)) {
             profileDropdown.classList.remove("active");
             profileTrigger.classList.remove("active");
-            localStorage.removeItem("activeChatId");
+        }
+        closeAllMenus();
+    });
 
-            if (sidebarChatsRef) {
-                sidebarChatsRef.off();
-                sidebarChatsRef = null;
-            }
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("active");
+        document.getElementById("mobile-overlay").classList.toggle("active");
+    }
 
-            auth.signOut();
+    function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("active");
+        document.getElementById("mobile-overlay").classList.remove("active");
+    }
+
+    function signInWithGoogle() {
+        auth.signInWithPopup(provider).catch(() => showToast("Login failed"));
+    }
+
+    function signOut(event) {
+        profileDropdown.classList.remove("active");
+        profileTrigger.classList.remove("active");
+        localStorage.removeItem("activeChatId");
+
+        if (sidebarChatsRef) {
+            sidebarChatsRef.off();
+            sidebarChatsRef = null;
         }
 
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                isUserLoggedIn = true;
-                currentUser = user;
+        auth.signOut();
+    }
 
-                userInput.readOnly = false;
-                userInput.disabled = false;
-                sendBtn.disabled = false;
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            isUserLoggedIn = true;
+            currentUser = user;
 
-                loginBtn.style.display = "none";
-                profileTrigger.style.display = "none";
+            userInput.readOnly = false;
+            userInput.disabled = false;
+            sendBtn.disabled = false;
 
-                document.getElementById("main-initial-loader").style.display = "flex";
-                inputSection.style.display = "none";
+            loginBtn.style.display = "none";
+            profileTrigger.style.display = "none";
 
-                loadSidebarHistory();
+            document.getElementById("main-initial-loader").style.display = "flex";
+            inputSection.style.display = "none";
 
-                database.ref("users/" + user.uid + "/profile").once("value").then(snapshot => {
-                    const profile = snapshot.val();
+            loadSidebarHistory();
 
-                    if (profile && profile.nickname) {
-                        userNickname = profile.nickname;
-                        userName.innerText = userNickname;
-                        userPic.src = profile.customPhotoURL || user.photoURL;
-                        profileTrigger.style.display = "flex";
-                        profileTrigger.classList.add("fade-in-smooth");
-                        document.getElementById("onboarding-overlay").style.display = "none";
-                        loadMainApp();
-                    } else {
-                        userName.innerText = user.displayName.split(" ")[0];
-                        userPic.src = user.photoURL;
-                        profileTrigger.style.display = "flex";
-                        profileTrigger.classList.add("fade-in-smooth");
-                        document.getElementById("main-initial-loader").style.display = "none";
-                        document.getElementById("onboarding-overlay").style.display = "flex";
-                    }
-                });
-            } else {
-                currentUser = null;
-                currentChatId = null;
-                currentChatMessages = [];
-                userNickname = "";
-                isUserLoggedIn = false;
+            database.ref("users/" + user.uid + "/profile").once("value").then(snapshot => {
+                const profile = snapshot.val();
 
-                loginBtn.style.display = "block";
-                profileTrigger.style.display = "none";
-
-                userInput.disabled = false;
-                userInput.readOnly = true;
-                sendBtn.disabled = false;
-
-                document.getElementById("onboarding-overlay").style.display = "none";
-                document.getElementById("main-initial-loader").style.display = "none";
-                inputSection.style.display = "";
-
-                welcomeText.innerText = "Dost, pehle login karlo!";
-                welcomeText.style.opacity = "1";
-                sidebarChatList.innerHTML = "";
-
-                resetToNewChat();
-            }
-        });
-
-        window.closeLoginWarning = function () {
-            document.getElementById("login-warning-modal").style.display = "none";
-        };
-
-        userInput.addEventListener("focus", function () {
-            if (!isUserLoggedIn) {
-                userInput.blur();
-                document.getElementById("login-warning-modal").style.display = "flex";
-            }
-        });
-
-        window.saveNickname = function () {
-            const nameInput = document.getElementById("nickname-input").value.trim();
-            if (!nameInput) return showToast("Are naam toh bata do yaar! 😅");
-
-            database.ref("users/" + currentUser.uid + "/profile").set({
-                nickname: nameInput,
-                joinedAt: Date.now()
-            }).then(() => {
-                userNickname = nameInput;
-                document.getElementById("onboarding-overlay").style.display = "none";
-                loadMainApp();
+                if (profile && profile.nickname) {
+                    userNickname = profile.nickname;
+                    userName.innerText = userNickname;
+                    userPic.src = profile.customPhotoURL || user.photoURL;
+                    profileTrigger.style.display = "flex";
+                    profileTrigger.classList.add("fade-in-smooth");
+                    document.getElementById("onboarding-overlay").style.display = "none";
+                    loadMainApp();
+                } else {
+                    userName.innerText = user.displayName.split(" ")[0];
+                    userPic.src = user.photoURL;
+                    profileTrigger.style.display = "flex";
+                    profileTrigger.classList.add("fade-in-smooth");
+                    document.getElementById("main-initial-loader").style.display = "none";
+                    document.getElementById("onboarding-overlay").style.display = "flex";
+                }
             });
-        };
+        } else {
+            currentUser = null;
+            currentChatId = null;
+            currentChatMessages = [];
+            userNickname = "";
+            isUserLoggedIn = false;
 
-        function loadMainApp() {
-            userName.innerText = userNickname;
+            loginBtn.style.display = "block";
+            profileTrigger.style.display = "none";
+
+            userInput.disabled = false;
+            userInput.readOnly = true;
+            sendBtn.disabled = false;
+
+            document.getElementById("onboarding-overlay").style.display = "none";
             document.getElementById("main-initial-loader").style.display = "none";
             inputSection.style.display = "";
-            inputSection.classList.add("fade-in-smooth");
 
-            const savedChatId = localStorage.getItem("activeChatId");
+            welcomeText.innerText = "Dost, pehle login karlo!";
+            welcomeText.style.opacity = "1";
+            sidebarChatList.innerHTML = "";
 
-            if (savedChatId) {
-                loadSpecificChat(savedChatId);
-            } else {
-                welcomeText.innerText = `Hello ${userNickname}, Main hamesha tumhare sath hu...`;
-                welcomeText.style.opacity = "1";
-                resetToNewChat();
-            }
+            resetToNewChat();
         }
+    });
 
-        function loadSidebarHistory() {
-            if (!currentUser) return;
+    window.closeLoginWarning = function () {
+        document.getElementById("login-warning-modal").style.display = "none";
+    };
 
-            if (sidebarChatsRef) sidebarChatsRef.off();
+    userInput.addEventListener("focus", function () {
+        if (!isUserLoggedIn) {
+            userInput.blur();
+            document.getElementById("login-warning-modal").style.display = "flex";
+        }
+    });
 
-            sidebarChatList.innerHTML = `<div class="loader-center"><div class="thinking-spinner" style="width: 35px; height: 35px; border-width: 4px;"></div></div>`;
+    window.saveNickname = function () {
+        const nameInput = document.getElementById("nickname-input").value.trim();
+        if (!nameInput) return showToast("Are naam toh bata do yaar! 😅");
 
-            sidebarChatsRef = database.ref("userChats/" + currentUser.uid);
-            sidebarChatsRef.on("value", snapshot => {
-                const data = snapshot.val();
-                let htmlContent = `<div class="fade-in-smooth">`;
-                htmlContent += `<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Your Chats</small>`;
+        database.ref("users/" + currentUser.uid + "/profile").set({
+            nickname: nameInput,
+            joinedAt: Date.now()
+        }).then(() => {
+            userNickname = nameInput;
+            document.getElementById("onboarding-overlay").style.display = "none";
+            loadMainApp();
+        });
+    };
 
-                if (data) {
-                    const chatsArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+    function loadMainApp() {
+        userName.innerText = userNickname;
+        document.getElementById("main-initial-loader").style.display = "none";
+        inputSection.style.display = "";
+        inputSection.classList.add("fade-in-smooth");
 
-                    chatsArray.sort((a, b) => {
-                        const timeA = a.updatedAt || parseInt(String(a.id).split("_")[1]) || 0;
-                        const timeB = b.updatedAt || parseInt(String(b.id).split("_")[1]) || 0;
-                        return timeB - timeA;
-                    });
+        const savedChatId = localStorage.getItem("activeChatId");
 
-                    chatsArray.forEach(chat => {
-                        const id = String(chat.id);
-                        const idAttr = escapeAttr(id);
-                        const idJs = escapeJSString(id);
-                        const title = chat.title || "Nayi Baat";
-                        const safeTitle = escapeHTML(title);
-                        const safeTitleAttr = escapeAttr(title);
-                        const isActive = currentChatId === id ? "active-chat" : "";
+        if (savedChatId) {
+            loadSpecificChat(savedChatId);
+        } else {
+            welcomeText.innerText = `Hello ${userNickname}, Main hamesha tumhare sath hu...`;
+            welcomeText.style.opacity = "1";
+            resetToNewChat();
+        }
+    }
 
-                        htmlContent += `
-                        <div class="chat-wrapper" id="wrapper-${idAttr}">
-                            <div class="chat-item mt-2 ${isActive}" id="chat-item-${idAttr}" onclick="loadSpecificChat('${idJs}')">
-                                <span class="chat-icon">💬</span>
-                                <span class="chat-title-text">${safeTitle}</span>
-                                <button class="chat-options-btn" onclick="event.stopPropagation(); toggleOptionsMenu('${idJs}')">⋮</button>
-                                <div class="chat-options-menu" id="menu-${idAttr}">
-                                    <button class="chat-option-item" onclick="event.stopPropagation(); shareChat('${idJs}')">🔗 Share</button>
-                                    <button class="chat-option-item" onclick="event.stopPropagation(); showRenameUI('${idJs}')">✏️ Rename</button>
-                                    <button class="chat-option-item chat-option-delete" onclick="event.stopPropagation(); showDeleteUI('${idJs}')">🗑️ Delete</button>
-                                </div>
-                            </div>
+    function loadSidebarHistory() {
+        if (!currentUser) return;
 
-                            <div class="inline-action-box" id="rename-box-${idAttr}">
-                                <input type="text" class="rename-input-box" id="rename-input-${idAttr}" value="${safeTitleAttr}">
-                                <div class="d-flex gap-2">
-                                    <button class="action-btn btn-confirm-save" onclick="saveRename('${idJs}')">Save</button>
-                                    <button class="action-btn btn-cancel" onclick="hideActionBox('${idJs}', 'rename')">Cancel</button>
-                                </div>
-                            </div>
+        if (sidebarChatsRef) sidebarChatsRef.off();
 
-                            <div class="inline-action-box" id="delete-box-${idAttr}">
-                                <div style="font-size: 13px; margin-bottom: 8px; color: var(--white); text-align: center;">Sach me delete karna hai?</div>
-                                <div class="d-flex gap-2">
-                                    <button class="action-btn btn-confirm-del" onclick="confirmDelete('${idJs}')">Yes</button>
-                                    <button class="action-btn btn-cancel" onclick="hideActionBox('${idJs}', 'delete')">No</button>
-                                </div>
+        sidebarChatList.innerHTML = `<div class="loader-center"><div class="thinking-spinner" style="width: 35px; height: 35px; border-width: 4px;"></div></div>`;
+
+        sidebarChatsRef = database.ref("userChats/" + currentUser.uid);
+        sidebarChatsRef.on("value", snapshot => {
+            const data = snapshot.val();
+            let htmlContent = `<div class="fade-in-smooth">`;
+            htmlContent += `<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Your Chats</small>`;
+
+            if (data) {
+                const chatsArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+
+                chatsArray.sort((a, b) => {
+                    const timeA = a.updatedAt || parseInt(String(a.id).split("_")[1]) || 0;
+                    const timeB = b.updatedAt || parseInt(String(b.id).split("_")[1]) || 0;
+                    return timeB - timeA;
+                });
+
+                chatsArray.forEach(chat => {
+                    const id = String(chat.id);
+                    const idAttr = escapeAttr(id);
+                    const idJs = escapeJSString(id);
+                    const title = chat.title || "Nayi Baat";
+                    const safeTitle = escapeHTML(title);
+                    const safeTitleAttr = escapeAttr(title);
+                    const isActive = currentChatId === id ? "active-chat" : "";
+
+                    htmlContent += `
+                    <div class="chat-wrapper" id="wrapper-${idAttr}">
+                        <div class="chat-item mt-2 ${isActive}" id="chat-item-${idAttr}" onclick="loadSpecificChat('${idJs}')">
+                            <span class="chat-icon">💬</span>
+                            <span class="chat-title-text">${safeTitle}</span>
+                            <button class="chat-options-btn" onclick="event.stopPropagation(); toggleOptionsMenu('${idJs}')">⋮</button>
+                            <div class="chat-options-menu" id="menu-${idAttr}">
+                                <button class="chat-option-item" onclick="event.stopPropagation(); shareChat('${idJs}')">🔗 Share</button>
+                                <button class="chat-option-item" onclick="event.stopPropagation(); showRenameUI('${idJs}')">✏️ Rename</button>
+                                <button class="chat-option-item chat-option-delete" onclick="event.stopPropagation(); showDeleteUI('${idJs}')">🗑️ Delete</button>
                             </div>
                         </div>
-                    `;
-                    });
-                }
 
-                htmlContent += "</div>";
-                sidebarChatList.innerHTML = htmlContent;
-            });
-        }
-
-        window.toggleOptionsMenu = function (id) {
-            closeAllMenus();
-            const menu = document.getElementById(`menu-${id}`);
-            if (menu) menu.classList.toggle("active");
-        };
-
-        window.showRenameUI = function (id) {
-            closeAllMenus();
-            document.getElementById(`rename-box-${id}`)?.classList.add("active");
-            document.getElementById(`delete-box-${id}`)?.classList.remove("active");
-        };
-
-        window.showDeleteUI = function (id) {
-            closeAllMenus();
-            document.getElementById(`delete-box-${id}`)?.classList.add("active");
-            document.getElementById(`rename-box-${id}`)?.classList.remove("active");
-        };
-
-        window.hideActionBox = function (id, type) {
-            if (type === "rename") document.getElementById(`rename-box-${id}`)?.classList.remove("active");
-            if (type === "delete") document.getElementById(`delete-box-${id}`)?.classList.remove("active");
-        };
-
-        window.saveRename = function (id) {
-            const newTitle = document.getElementById(`rename-input-${id}`)?.value.trim();
-            if (!newTitle || !currentUser) return;
-
-            database.ref("userChats/" + currentUser.uid + "/" + id).update({
-                title: newTitle
-            }).then(() => hideActionBox(id, "rename"));
-        };
-
-        window.confirmDelete = function (id) {
-            if (!currentUser) return;
-
-            database.ref("userChats/" + currentUser.uid + "/" + id).remove().then(() => {
-                if (currentChatId === id) resetToNewChat();
-            });
-        };
-
-        window.loadSpecificChat = function (id) {
-            if (!currentUser) return;
-
-            currentChatId = id;
-            localStorage.setItem("activeChatId", id);
-
-            if (window.innerWidth <= 768) closeSidebar();
-
-            document.querySelectorAll(".chat-item").forEach(item => item.classList.remove("active-chat"));
-            document.getElementById(`chat-item-${id}`)?.classList.add("active-chat");
-
-            inputSection.classList.remove("centered-state");
-            inputSection.classList.add("bottom-state");
-            welcomeText.style.opacity = "0";
-            welcomeText.style.display = "none";
-            chatHistory.style.display = "flex";
-
-            chatHistory.innerHTML = `
-            <div class="loader-center" style="height: 60vh;">
-                <div class="thinking-spinner" style="width: 50px; height: 50px; border-width: 5px;"></div>
-            </div>`;
-
-            const requestedChatId = id;
-
-            database.ref("userChats/" + currentUser.uid + "/" + id).once("value").then(snapshot => {
-                if (currentChatId !== requestedChatId) return;
-
-                const data = snapshot.val();
-
-                if (!data) {
-                    resetToNewChat();
-                    return;
-                }
-
-                const savedMessages = data.messages || [];
-                currentChatMessages = Array.isArray(savedMessages)
-                    ? cloneMessages(savedMessages)
-                    : cloneMessages(Object.values(savedMessages));
-
-                let htmlContent = `<div class="fade-in-smooth w-100 d-flex flex-column" style="gap: 15px;">`;
-
-                currentChatMessages.forEach(msg => {
-                    const text = String(msg.text ?? "");
-                    const reactionHTML = msg.reaction ? `<div class="reaction-badge">${escapeHTML(msg.reaction)}</div>` : "";
-
-                    if (msg.role === "user") {
-                        htmlContent += `
-                        <div class="d-flex justify-content-end w-100 mb-3">
-                            <div class="message-bubble user-msg position-relative" data-raw="${rawAttr(text)}">
-                                <strong>${escapeHTML(currentUser.displayName.split(" ")[0])}:</strong> <br>${formatPlainText(text)}
-                                ${reactionHTML}
-                                <div class="copy-action-wrapper">
-                                    <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy your text">
-                                        ${copyIconSvg()}
-                                    </button>
-                                </div>
+                        <div class="inline-action-box" id="rename-box-${idAttr}">
+                            <input type="text" class="rename-input-box" id="rename-input-${idAttr}" value="${safeTitleAttr}">
+                            <div class="d-flex gap-2">
+                                <button class="action-btn btn-confirm-save" onclick="saveRename('${idJs}')">Save</button>
+                                <button class="action-btn btn-cancel" onclick="hideActionBox('${idJs}', 'rename')">Cancel</button>
                             </div>
-                        </div>`;
-                    } else {
-                        htmlContent += `
-                        <div class="d-flex justify-content-start w-100 mb-3">
-                            <div class="message-bubble bot-msg position-relative" data-raw="${rawAttr(text)}">
-                                <strong>MyGPT:</strong> <br>${renderBotMarkdown(text)}
-                                <div class="copy-action-wrapper" style="display: flex; gap: 8px;">
-                                    <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy exact text">
-                                        ${copyIconSvg()}
-                                    </button>
-                                    <button class="copy-msg-btn" onclick="openZenMode(this)" title="Zen Reading Mode">
-                                        ${zenIconSvg()}
-                                    </button>
-                                </div>
+                        </div>
+
+                        <div class="inline-action-box" id="delete-box-${idAttr}">
+                            <div style="font-size: 13px; margin-bottom: 8px; color: var(--white); text-align: center;">Sach me delete karna hai?</div>
+                            <div class="d-flex gap-2">
+                                <button class="action-btn btn-confirm-del" onclick="confirmDelete('${idJs}')">Yes</button>
+                                <button class="action-btn btn-cancel" onclick="hideActionBox('${idJs}', 'delete')">No</button>
                             </div>
-                        </div>`;
-
-                    }
-                });
-
-                htmlContent += "</div>";
-                chatHistory.innerHTML = htmlContent;
-
-                setTimeout(() => {
-                    chatHistory.scrollTop = chatHistory.scrollHeight;
-                    checkScrollButton();
-                }, 50);
-            });
-        };
-
-        async function generateSmartTitle(firstMessage, chatId) {
-            if (!currentUser || !chatId) return;
-
-            try {
-                const res = await fetch("/api/title", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: firstMessage })
-                });
-
-                const data = await res.json();
-                let finalTitle = data.title;
-
-                // 🔥 THE FIX: Agar backend API clash ki wajah se default "Nayi Baat" de de...
-                if (!finalTitle || finalTitle === "Nayi Baat" || finalTitle === "MyGPT Chat") {
-                    // Toh user ke message ke pehle 4 words ko hi smart title bana lo!
-                    finalTitle = firstMessage.split(' ').slice(0, 4).join(' ') + "...";
-                }
-
-                if (finalTitle && currentUser) {
-                    await database.ref("userChats/" + currentUser.uid + "/" + chatId).update({
-                        title: finalTitle
-                    });
-                }
-            } catch (e) {
-                console.log("Title background sync failed.", e);
-                // Agar internet thoda hile ya network error aaye, toh bhi fallback use karo
-                let fallbackTitle = firstMessage.split(' ').slice(0, 4).join(' ') + "...";
-                database.ref("userChats/" + currentUser.uid + "/" + chatId).update({
-                    title: fallbackTitle
+                        </div>
+                    </div>
+                `;
                 });
             }
-        }
 
-        window.handleSendClick = function () {
-            if (!isUserLoggedIn) {
-                document.getElementById("login-warning-modal").style.display = "flex";
+            htmlContent += "</div>";
+            sidebarChatList.innerHTML = htmlContent;
+        });
+    }
+
+    window.toggleOptionsMenu = function (id) {
+        closeAllMenus();
+        const menu = document.getElementById(`menu-${id}`);
+        if (menu) menu.classList.toggle("active");
+    };
+
+    window.showRenameUI = function (id) {
+        closeAllMenus();
+        document.getElementById(`rename-box-${id}`)?.classList.add("active");
+        document.getElementById(`delete-box-${id}`)?.classList.remove("active");
+    };
+
+    window.showDeleteUI = function (id) {
+        closeAllMenus();
+        document.getElementById(`delete-box-${id}`)?.classList.add("active");
+        document.getElementById(`rename-box-${id}`)?.classList.remove("active");
+    };
+
+    window.hideActionBox = function (id, type) {
+        if (type === "rename") document.getElementById(`rename-box-${id}`)?.classList.remove("active");
+        if (type === "delete") document.getElementById(`delete-box-${id}`)?.classList.remove("active");
+    };
+
+    window.saveRename = function (id) {
+        const newTitle = document.getElementById(`rename-input-${id}`)?.value.trim();
+        if (!newTitle || !currentUser) return;
+
+        database.ref("userChats/" + currentUser.uid + "/" + id).update({
+            title: cleanChatTitle(newTitle)
+        }).then(() => hideActionBox(id, "rename"));
+    };
+
+    window.confirmDelete = function (id) {
+        if (!currentUser) return;
+
+        database.ref("userChats/" + currentUser.uid + "/" + id).remove().then(() => {
+            if (currentChatId === id) resetToNewChat();
+        });
+    };
+
+    window.loadSpecificChat = function (id) {
+        if (!currentUser) return;
+
+        currentChatId = id;
+        localStorage.setItem("activeChatId", id);
+
+        if (window.innerWidth <= 768) closeSidebar();
+
+        document.querySelectorAll(".chat-item").forEach(item => item.classList.remove("active-chat"));
+        document.getElementById(`chat-item-${id}`)?.classList.add("active-chat");
+
+        inputSection.classList.remove("centered-state");
+        inputSection.classList.add("bottom-state");
+        welcomeText.style.opacity = "0";
+        welcomeText.style.display = "none";
+        chatHistory.style.display = "flex";
+
+        chatHistory.innerHTML = `
+        <div class="loader-center" style="height: 60vh;">
+            <div class="thinking-spinner" style="width: 50px; height: 50px; border-width: 5px;"></div>
+        </div>`;
+
+        const requestedChatId = id;
+
+        database.ref("userChats/" + currentUser.uid + "/" + id).once("value").then(snapshot => {
+            if (currentChatId !== requestedChatId) return;
+
+            const data = snapshot.val();
+
+            if (!data) {
+                resetToNewChat();
                 return;
             }
 
-            if (isGenerating) stopGeneration();
-            else sendMessage();
-        };
+            const savedMessages = data.messages || [];
+            currentChatMessages = Array.isArray(savedMessages)
+                ? cloneMessages(savedMessages)
+                : cloneMessages(Object.values(savedMessages));
 
-        function copyToClipboard(text) {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                return navigator.clipboard.writeText(text);
-            }
+            let htmlContent = `<div class="fade-in-smooth w-100 d-flex flex-column" style="gap: 15px;">`;
 
-            const textarea = document.createElement("textarea");
-            textarea.value = text;
-            textarea.style.position = "fixed";
-            textarea.style.opacity = "0";
-            document.body.appendChild(textarea);
-            textarea.select();
+            currentChatMessages.forEach(msg => {
+                const text = String(msg.text ?? "");
+                const reactionHTML = msg.reaction ? `<div class="reaction-badge">${escapeHTML(msg.reaction)}</div>` : "";
 
-            try {
-                document.execCommand("copy");
-                return Promise.resolve();
-            } catch (e) {
-                return Promise.reject(e);
-            } finally {
-                document.body.removeChild(textarea);
-            }
-        }
-
-        window.copyMessageData = function (btn) {
-            const bubble = btn.closest(".message-bubble");
-            let rawText = "";
-
-            try {
-                const raw = bubble.getAttribute("data-raw");
-                if (raw && raw !== "null") rawText = decodeURIComponent(raw);
-            } catch (e) {
-                rawText = "";
-            }
-
-            if (!rawText) {
-                rawText = bubble.innerText.replace(/^.*:\n/, "").trim();
-            }
-
-            copyToClipboard(rawText).then(() => {
-                const originalSvg = btn.innerHTML;
-                btn.innerHTML = checkIconSvg();
-                btn.style.color = "var(--safe-green, #27ae60)";
-
-                setTimeout(() => {
-                    btn.innerHTML = originalSvg;
-                    btn.style.color = "";
-                }, 2000);
+                if (msg.role === "user") {
+                    htmlContent += `
+                    <div class="d-flex justify-content-end w-100 mb-3">
+                        <div class="message-bubble user-msg position-relative" data-raw="${rawAttr(text)}">
+                            <strong>${escapeHTML(currentUser.displayName.split(" ")[0])}:</strong> <br>${formatPlainText(text)}
+                            ${reactionHTML}
+                            <div class="copy-action-wrapper">
+                                <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy your text">
+                                    ${copyIconSvg()}
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                } else {
+                    htmlContent += `
+                    <div class="d-flex justify-content-start w-100 mb-3">
+                        <div class="message-bubble bot-msg position-relative" data-raw="${rawAttr(text)}">
+                            <strong>MyGPT:</strong> <br>${renderBotMarkdown(text)}
+                            <div class="copy-action-wrapper" style="display: flex; gap: 8px;">
+                                <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy exact text">
+                                    ${copyIconSvg()}
+                                </button>
+                                <button class="copy-msg-btn" onclick="openZenMode(this)" title="Zen Reading Mode">
+                                    ${zenIconSvg()}
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                }
             });
-        };
 
-        window.copyBotMessage = window.copyMessageData;
-
-        window.stopGeneration = function () {
-            if (currentAbortController) currentAbortController.abort();
-
-            const randomMessages = [
-                "Kya hua bhai, aage nahi sunna? 😂",
-                "Arre rukk kyu gaye? Chalo theek hai!",
-                "Achha theek hai, zyada gyaan nahi pelunga. 🤐",
-                "Arey stop kar diya? Lagta hai answer pehle hi mil gaya! 😎",
-                "Chalo chhodo, topic hi boring tha. Nayi baat karte hain! 🚀"
-            ];
-
-            const randomMsg = randomMessages[Math.floor(Math.random() * randomMessages.length)];
-            const msgId = "msg_" + Date.now();
+            htmlContent += "</div>";
+            chatHistory.innerHTML = htmlContent;
 
             setTimeout(() => {
-                if (!currentChatId) return;
-
-                chatHistory.innerHTML += `
-                <div class="d-flex justify-content-start w-100 mb-3 fade-in-smooth">
-                    <div class="message-bubble bot-msg position-relative" style="background-color: transparent; border: 1px dashed var(--light-brown); font-style: italic; opacity: 0.8;" data-raw="${rawAttr(randomMsg)}">
-                        ${formatPlainText(randomMsg)}
-                        <div class="copy-action-wrapper">
-                            <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy text">
-                                ${copyIconSvg()}
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-
                 chatHistory.scrollTop = chatHistory.scrollHeight;
+                checkScrollButton();
+            }, 50);
+        });
+    };
 
-                currentChatMessages.push({
-                    id: msgId,
-                    role: "bot",
-                    text: `*${randomMsg}*`,
-                    reaction: ""
-                });
+ async function generateSmartTitle(firstMessage, chatId) {
+    if (!currentUser || !chatId) return;
 
-                queueStateSave({
-                    chatId: currentChatId,
-                    messages: currentChatMessages
-                });
+    const cleanMessage = String(firstMessage || "").trim();
+    if (!cleanMessage) return;
 
-                resetInputUI();
-            }, 300);
-        };
+    try {
+        const res = await fetch("/api/title", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: cleanMessage })
+        });
 
-        function resetInputUI() {
-            isGenerating = false;
-            currentAbortController = null;
+        const data = await res.json().catch(() => ({}));
 
-            document.getElementById("send-icon").style.display = "block";
-            document.getElementById("stop-icon").style.display = "none";
-            sendBtn.classList.remove("stop-mode");
+        let finalTitle = String(data.title || "")
+            .replace(/["“”‘’*_`#]/g, "")
+            .replace(/\s+/g, " ")
+            .replace(/[.!?;:,]+$/g, "")
+            .trim();
 
-            setTimeout(() => userInput.focus(), 100);
+        if (!finalTitle || finalTitle === "Nayi Baat" || finalTitle === "MyGPT Chat") {
+            finalTitle = "New chat topic";
         }
 
-        window.sendMessage = function () {
-            if (!currentUser || isGenerating) return;
+        await database.ref("userChats/" + currentUser.uid + "/" + chatId).update({
+            title: finalTitle,
+            autoTitle: true,
+            titleSource: data.source || "unknown",
+            titleUpdatedAt: Date.now()
+        });
+    } catch (e) {
+        console.log("Title background sync failed.", e);
 
-            const text = userInput.value.trim();
-            if (text === "") return;
+        await database.ref("userChats/" + currentUser.uid + "/" + chatId).update({
+            title: "New chat topic",
+            autoTitle: true,
+            titleSource: "fallback",
+            titleUpdatedAt: Date.now()
+        });
+    }
+}
 
-            isGenerating = true;
 
-            document.getElementById("send-icon").style.display = "none";
-            document.getElementById("stop-icon").style.display = "block";
-            sendBtn.classList.add("stop-mode");
+    window.handleSendClick = function () {
+        if (!isUserLoggedIn) {
+            document.getElementById("login-warning-modal").style.display = "flex";
+            return;
+        }
 
-            inputSection.classList.remove("centered-state");
-            inputSection.classList.add("bottom-state");
-            welcomeText.style.opacity = "0";
-            welcomeText.style.display = "none";
-            chatHistory.style.display = "flex";
+        if (isGenerating) stopGeneration();
+        else sendMessage();
+    };
 
-            const isNewChat = !currentChatId;
-            const chatRoomIdAtTimeOfSend = ensureCurrentChatId();
-            const userMsgId = "user_msg_" + Date.now();
+    function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text);
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+            document.execCommand("copy");
+            return Promise.resolve();
+        } catch (e) {
+            return Promise.reject(e);
+        } finally {
+            document.body.removeChild(textarea);
+        }
+    }
+
+    window.copyMessageData = function (btn) {
+        const bubble = btn.closest(".message-bubble");
+        let rawText = "";
+
+        try {
+            const raw = bubble.getAttribute("data-raw");
+            if (raw && raw !== "null") rawText = decodeURIComponent(raw);
+        } catch (e) {
+            rawText = "";
+        }
+
+        if (!rawText) {
+            rawText = bubble.innerText.replace(/^.*:\n/, "").trim();
+        }
+
+        copyToClipboard(rawText).then(() => {
+            const originalSvg = btn.innerHTML;
+            btn.innerHTML = checkIconSvg();
+            btn.style.color = "var(--safe-green, #27ae60)";
+
+            setTimeout(() => {
+                btn.innerHTML = originalSvg;
+                btn.style.color = "";
+            }, 2000);
+        });
+    };
+
+    window.copyBotMessage = window.copyMessageData;
+
+    window.stopGeneration = function () {
+        if (currentAbortController) currentAbortController.abort();
+
+        const randomMessages = [
+            "Kya hua bhai, aage nahi sunna? 😂",
+            "Arre rukk kyu gaye? Chalo theek hai!",
+            "Achha theek hai, zyada gyaan nahi pelunga. 🤐",
+            "Arey stop kar diya? Lagta hai answer pehle hi mil gaya! 😎",
+            "Chalo chhodo, topic hi boring tha. Nayi baat karte hain! 🚀"
+        ];
+
+        const randomMsg = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+        const msgId = "msg_" + Date.now();
+
+        setTimeout(() => {
+            if (!currentChatId) return;
 
             chatHistory.innerHTML += `
-            <div class="d-flex justify-content-end w-100 mb-3 fade-in-smooth">
-                <div class="message-bubble user-msg position-relative" id="${escapeAttr(userMsgId)}" data-raw="${rawAttr(text)}">
-                    <strong>${escapeHTML(currentUser.displayName.split(" ")[0])}:</strong> <br>${formatPlainText(text)}
+            <div class="d-flex justify-content-start w-100 mb-3 fade-in-smooth">
+                <div class="message-bubble bot-msg position-relative" style="background-color: transparent; border: 1px dashed var(--light-brown); font-style: italic; opacity: 0.8;" data-raw="${rawAttr(randomMsg)}">
+                    ${formatPlainText(randomMsg)}
                     <div class="copy-action-wrapper">
-                        <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy your text">
+                        <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy text">
                             ${copyIconSvg()}
                         </button>
                     </div>
                 </div>
             </div>`;
 
-            userInput.value = "";
             chatHistory.scrollTop = chatHistory.scrollHeight;
 
             currentChatMessages.push({
-                id: userMsgId,
-                role: "user",
-                text,
+                id: msgId,
+                role: "bot",
+                text: `*${randomMsg}*`,
                 reaction: ""
             });
 
-            const messagesForThisChat = currentChatMessages;
-
-            const firstSavePromise = queueStateSave({
-                chatId: chatRoomIdAtTimeOfSend,
-                messages: messagesForThisChat,
-                title: isNewChat ? "⏳ Title soch raha hu" : null
+            queueStateSave({
+                chatId: currentChatId,
+                messages: currentChatMessages
             });
 
-            // 🔥 THE FIX: Chat API aur Title API ke beech 2.5 sec ka gap do
-            if (isNewChat) {
-                firstSavePromise.then(() => {
-                    setTimeout(() => {
-                        generateSmartTitle(text, chatRoomIdAtTimeOfSend);
-                    }, 2500);
-                });
-            }
+            resetInputUI();
+        }, 300);
+    };
 
-            currentAbortController = new AbortController();
+    function resetInputUI() {
+        isGenerating = false;
+        currentAbortController = null;
 
-            setTimeout(() => {
-                fetchGeminiResponse(
-                    text,
-                    chatRoomIdAtTimeOfSend,
-                    currentAbortController.signal,
-                    userMsgId,
-                    messagesForThisChat
-                ).then(() => {
-                    if (isGenerating) resetInputUI();
-                }).catch(err => {
-                    if (err.name === "AbortError") {
-                        console.log("Stream ruk gayi bhai!");
-                    } else {
-                        console.error(err);
-                    }
+        document.getElementById("send-icon").style.display = "block";
+        document.getElementById("stop-icon").style.display = "none";
+        sendBtn.classList.remove("stop-mode");
 
-                    if (isGenerating) resetInputUI();
-                });
-            }, 100);
-        };
+        setTimeout(() => userInput.focus(), 100);
+    }
 
-        userInput.addEventListener("keydown", function (e) {
-            if (e.key === "Enter" && !e.shiftKey && !isGenerating) {
-                e.preventDefault();
-                handleSendClick();
-            }
+    window.sendMessage = function () {
+        if (!currentUser || isGenerating) return;
+
+        const text = userInput.value.trim();
+        if (text === "") return;
+
+        isGenerating = true;
+
+        document.getElementById("send-icon").style.display = "none";
+        document.getElementById("stop-icon").style.display = "block";
+        sendBtn.classList.add("stop-mode");
+
+        inputSection.classList.remove("centered-state");
+        inputSection.classList.add("bottom-state");
+        welcomeText.style.opacity = "0";
+        welcomeText.style.display = "none";
+        chatHistory.style.display = "flex";
+
+        const isNewChat = !currentChatId;
+        const chatRoomIdAtTimeOfSend = ensureCurrentChatId();
+        const userMsgId = "user_msg_" + Date.now();
+
+        chatHistory.innerHTML += `
+        <div class="d-flex justify-content-end w-100 mb-3 fade-in-smooth">
+            <div class="message-bubble user-msg position-relative" id="${escapeAttr(userMsgId)}" data-raw="${rawAttr(text)}">
+                <strong>${escapeHTML(currentUser.displayName.split(" ")[0])}:</strong> <br>${formatPlainText(text)}
+                <div class="copy-action-wrapper">
+                    <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy your text">
+                        ${copyIconSvg()}
+                    </button>
+                </div>
+            </div>
+        </div>`;
+
+        userInput.value = "";
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+
+        currentChatMessages.push({
+            id: userMsgId,
+            role: "user",
+            text,
+            reaction: ""
         });
 
-        async function fetchGeminiResponse(message, expectedChatId, signal, userMsgId, messagesForThisChat = currentChatMessages) {
-            const url = "/api/chat";
-            const userNameForPrompt = userNickname || (currentUser ? currentUser.displayName.split(" ")[0] : "Dost");
-            const historyToSend = messagesForThisChat.slice(0, -1);
-            const msgId = "msg_" + Date.now();
+        const messagesForThisChat = currentChatMessages;
 
-            // 🔥 PRO LEVEL FIX: "Jugaad" Hatao! Sirf LocalStorage se Persona uthao.
-            const currentPersona = localStorage.getItem("persona") || "default";
+        const firstSavePromise = queueStateSave({
+            chatId: chatRoomIdAtTimeOfSend,
+            messages: messagesForThisChat,
+            title: isNewChat ? "Title soch raha hu" : null
+        });
 
-            chatHistory.innerHTML += `
-            <div class="d-flex justify-content-start w-100 mb-3">
-                <div class="message-bubble bot-msg w-100 position-relative" id="${escapeAttr(msgId)}" data-raw="">
-                    <strong>MyGPT:</strong> <br>
-                    <div id="thinking-box-${escapeAttr(msgId)}" class="d-flex align-items-center mt-2" style="color: var(--light-brown); font-style: italic;">
-                        <div class="thinking-spinner"></div>
-                        <div id="thinking-text-${escapeAttr(msgId)}" class="thinking-text-phrase ms-2">⏳ Dimaag laga raha hu...</div>
-                    </div>
-                    <div class="typing-content" style="display: none;"></div>
-                    <div class="copy-action-wrapper" style="display: flex; gap: 8px;">
-                        <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy exact text">
-                            ${copyIconSvg()}
-                        </button>
-                        <button class="copy-msg-btn" onclick="openZenMode(this)" title="Zen Reading Mode">
-                            ${zenIconSvg()}
-                        </button>
-                    </div>
+        
+
+        currentAbortController = new AbortController();
+
+        setTimeout(() => {
+            fetchGeminiResponse(
+                text,
+                chatRoomIdAtTimeOfSend,
+                currentAbortController.signal,
+                userMsgId,
+                messagesForThisChat
+            ).then(() => {
+                if (isGenerating) resetInputUI();
+            }).catch(err => {
+                if (err.name === "AbortError") {
+                    console.log("Stream ruk gayi bhai!");
+                } else {
+                    console.error(err);
+                }
+
+                if (isGenerating) resetInputUI();
+            });
+        }, 100);
+    };
+
+    userInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey && !isGenerating) {
+            e.preventDefault();
+            handleSendClick();
+        }
+    });
+
+    async function fetchGeminiResponse(message, expectedChatId, signal, userMsgId, messagesForThisChat = currentChatMessages) {
+        const url = "/api/chat";
+        const userNameForPrompt = userNickname || (currentUser ? currentUser.displayName.split(" ")[0] : "Dost");
+        const historyToSend = messagesForThisChat.slice(0, -1);
+        const msgId = "msg_" + Date.now();
+
+        const currentPersona = localStorage.getItem("persona") || "default";
+
+        chatHistory.innerHTML += `
+        <div class="d-flex justify-content-start w-100 mb-3">
+            <div class="message-bubble bot-msg w-100 position-relative" id="${escapeAttr(msgId)}" data-raw="">
+                <strong>MyGPT:</strong> <br>
+                <div id="thinking-box-${escapeAttr(msgId)}" class="d-flex align-items-center mt-2" style="color: var(--light-brown); font-style: italic;">
+                    <div class="thinking-spinner"></div>
+                    <div id="thinking-text-${escapeAttr(msgId)}" class="thinking-text-phrase ms-2">⏳ Dimaag laga raha hu...</div>
                 </div>
-            </div>`;
+                <div class="typing-content" style="display: none;"></div>
+                <div class="copy-action-wrapper" style="display: flex; gap: 8px;">
+                    <button class="copy-msg-btn" onclick="copyMessageData(this)" title="Copy exact text">
+                        ${copyIconSvg()}
+                    </button>
+                    <button class="copy-msg-btn" onclick="openZenMode(this)" title="Zen Reading Mode">
+                        ${zenIconSvg()}
+                    </button>
+                </div>
+            </div>
+        </div>`;
 
-            let thinkingBox = document.getElementById(`thinking-box-${msgId}`);
-            let thinkingText = document.getElementById(`thinking-text-${msgId}`);
-            let contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
+        let thinkingBox = document.getElementById(`thinking-box-${msgId}`);
+        let thinkingText = document.getElementById(`thinking-text-${msgId}`);
+        let contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
 
-            chatHistory.scrollTop = chatHistory.scrollHeight;
+        chatHistory.scrollTop = chatHistory.scrollHeight;
 
-            const thinkingPhrases = [
-                "🤔 Tumhari baat samajh raha hu...",
-                "💡 Bas ek second dena...",
-                "🧠 Gehraai mein jaa raha hu..."
-            ];
+        const thinkingPhrases = [
+            "🤔 Tumhari baat samajh raha hu...",
+            "💡 Bas ek second dena...",
+            "🧠 Gehraai mein jaa raha hu..."
+        ];
 
-            let phraseIndex = 0;
-            let phraseInterval = setInterval(() => {
-                phraseIndex = (phraseIndex + 1) % thinkingPhrases.length;
+        let phraseIndex = 0;
+        let phraseInterval = setInterval(() => {
+            phraseIndex = (phraseIndex + 1) % thinkingPhrases.length;
 
-                if (thinkingText) {
-                    thinkingText.style.opacity = 0;
+            if (thinkingText) {
+                thinkingText.style.opacity = 0;
 
-                    setTimeout(() => {
-                        if (thinkingText) {
-                            thinkingText.innerText = thinkingPhrases[phraseIndex];
-                            thinkingText.style.opacity = 1;
-                        }
-                    }, 300);
-                }
-            }, 2500);
+                setTimeout(() => {
+                    if (thinkingText) {
+                        thinkingText.innerText = thinkingPhrases[phraseIndex];
+                        thinkingText.style.opacity = 1;
+                    }
+                }, 300);
+            }
+        }, 2500);
 
-            let rawBotReply = "";
-            let fullServerResponse = "";
-            let charQueue = "";
-            let isTyping = false;
-            let isFirstChunk = true;
-            let reactionProcessed = false;
-            let botMsgIndex = -1;
-            let lastPartialSaveAt = 0;
+        let rawBotReply = "";
+        let fullServerResponse = "";
+        let charQueue = "";
+        let isTyping = false;
+        let isFirstChunk = true;
+        let reactionProcessed = false;
+        let botMsgIndex = -1;
+        let lastPartialSaveAt = 0;
 
-            function processReaction(sourceText) {
-                if (reactionProcessed || !userMsgId) return null;
+        function processReaction(sourceText) {
+            if (reactionProcessed || !userMsgId) return null;
 
-                // 1. Purane '[REACT: ]' tag check karo (For backwards compatibility)
-                const oldTagMatch = String(sourceText).match(/\[REACT:\s*(.*?)\s*\]/i);
+            const oldTagMatch = String(sourceText).match(/\[REACT:\s*(.*?)\s*\]/i);
+            const emojiMatch = String(sourceText).match(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u);
 
-                // 2. Naya Logic: Text me aane wala sabse PEHLA normal emoji pakdo (😂, 🥺, 😡 etc.)
-                const emojiMatch = String(sourceText).match(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u);
+            let emoji = null;
+            let tagToRemove = null;
 
-                let emoji = null;
-                let tagToRemove = null;
-
-                if (oldTagMatch) {
-                    emoji = oldTagMatch[1].trim();
-                    tagToRemove = oldTagMatch[0]; // Isko text se gayab karna padega
-                } else if (emojiMatch) {
-                    emoji = emojiMatch[0];
-                    // Yahan tagToRemove null rahega, kyunki hume emoji AI ke text me rakhna hai!
-                }
-
-                if (!emoji) return null;
-
-                const userBubble = document.getElementById(userMsgId);
-
-                if (userBubble && !userBubble.querySelector(".reaction-badge")) {
-                    userBubble.innerHTML += `<div class="reaction-badge">${escapeHTML(emoji)}</div>`;
-                }
-
-                const userIndex = messagesForThisChat.findIndex(m => m.id === userMsgId);
-                if (userIndex !== -1) {
-                    messagesForThisChat[userIndex].reaction = emoji;
-                }
-
-                reactionProcessed = true;
-                return { didReact: true, tagToRemove: tagToRemove };
+            if (oldTagMatch) {
+                emoji = oldTagMatch[1].trim();
+                tagToRemove = oldTagMatch[0];
+            } else if (emojiMatch) {
+                emoji = emojiMatch[0];
             }
 
-            function queueBotSnapshotSave() {
-                if (botMsgIndex === -1) return Promise.resolve();
+            if (!emoji) return null;
 
-                const finalCleanReply = cleanBotText(fullServerResponse);
-                if (!finalCleanReply) return Promise.resolve();
+            const userBubble = document.getElementById(userMsgId);
 
-                processReaction(fullServerResponse);
-                messagesForThisChat[botMsgIndex].text = finalCleanReply;
+            if (userBubble && !userBubble.querySelector(".reaction-badge")) {
+                userBubble.innerHTML += `<div class="reaction-badge">${escapeHTML(emoji)}</div>`;
+            }
 
-                return queueStateSave({
+            const userIndex = messagesForThisChat.findIndex(m => m.id === userMsgId);
+            if (userIndex !== -1) {
+                messagesForThisChat[userIndex].reaction = emoji;
+            }
+
+            reactionProcessed = true;
+            return { didReact: true, tagToRemove: tagToRemove };
+        }
+
+        function queueBotSnapshotSave() {
+            if (botMsgIndex === -1) return Promise.resolve();
+
+            const finalCleanReply = cleanBotText(fullServerResponse);
+            if (!finalCleanReply) return Promise.resolve();
+
+            processReaction(fullServerResponse);
+            messagesForThisChat[botMsgIndex].text = finalCleanReply;
+
+            return queueStateSave({
+                chatId: expectedChatId,
+                messages: messagesForThisChat
+            });
+        }
+
+        function maybeQueuePartialSave() {
+            const now = Date.now();
+            if (now - lastPartialSaveAt < 1200) return;
+
+            lastPartialSaveAt = now;
+            queueBotSnapshotSave();
+        }
+
+        function processQueue() {
+            if (charQueue.length === 0) {
+                isTyping = false;
+                return;
+            }
+
+            isTyping = true;
+
+            const charArray = Array.from(charQueue);
+            const charsToTake = Math.max(1, Math.ceil(charArray.length / 15));
+            const currentRender = charArray.slice(0, charsToTake).join("");
+
+            rawBotReply += currentRender;
+            charQueue = charArray.slice(charsToTake).join("");
+
+            const reactionData = processReaction(rawBotReply);
+
+            if (reactionData && reactionData.didReact) {
+                if (reactionData.tagToRemove) {
+                    rawBotReply = rawBotReply.replace(reactionData.tagToRemove, "").trimLeft();
+                }
+
+                queueStateSave({
                     chatId: expectedChatId,
                     messages: messagesForThisChat
                 });
             }
 
-            function maybeQueuePartialSave() {
-                const now = Date.now();
-                if (now - lastPartialSaveAt < 1200) return;
+            const displayReply = cleanBotText(rawBotReply);
 
-                lastPartialSaveAt = now;
-                queueBotSnapshotSave();
-            }
+            contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
+            if (contentDiv) contentDiv.innerHTML = renderBotMarkdown(displayReply);
 
-            function processQueue() {
-                if (charQueue.length === 0) {
-                    isTyping = false;
-                    return;
-                }
+            const botBubble = document.getElementById(msgId);
+            if (botBubble) botBubble.setAttribute("data-raw", encodeURIComponent(displayReply));
 
-                isTyping = true;
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            setTimeout(processQueue, 15);
+        }
 
-                const charArray = Array.from(charQueue);
-                const charsToTake = Math.max(1, Math.ceil(charArray.length / 15));
-                const currentRender = charArray.slice(0, charsToTake).join("");
-
-                rawBotReply += currentRender;
-                charQueue = charArray.slice(charsToTake).join("");
-
-                // 🔥 THE NEW REACTION LOGIC 🔥
-                const reactionData = processReaction(rawBotReply);
-
-                if (reactionData && reactionData.didReact) {
-                    // Agar purana [REACT: ] tag mila hai, toh usko remove karo
-                    if (reactionData.tagToRemove) {
-                        rawBotReply = rawBotReply.replace(reactionData.tagToRemove, "").trimLeft();
+        function waitForTypingComplete() {
+            return new Promise(resolve => {
+                const interval = setInterval(() => {
+                    if (charQueue.length === 0 && !isTyping) {
+                        clearInterval(interval);
+                        resolve();
                     }
-                    // Naya natural emoji mila hai toh remove NAHI hoga, seedha Firebase me save marenge
-                    queueStateSave({
-                        chatId: expectedChatId,
-                        messages: messagesForThisChat
-                    });
-                }
+                }, 50);
+            });
+        }
 
-                const displayReply = cleanBotText(rawBotReply);
+        function startBotMessageIfNeeded() {
+            if (!isFirstChunk) return;
 
-                contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
-                if (contentDiv) contentDiv.innerHTML = renderBotMarkdown(displayReply);
+            clearInterval(phraseInterval);
 
-                const botBubble = document.getElementById(msgId);
-                if (botBubble) botBubble.setAttribute("data-raw", encodeURIComponent(displayReply));
+            thinkingBox = document.getElementById(`thinking-box-${msgId}`);
+            contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
 
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-                setTimeout(processQueue, 15);
-            }
+            if (thinkingBox) thinkingBox.remove();
+            if (contentDiv) contentDiv.style.display = "block";
 
-            function waitForTypingComplete() {
-                return new Promise(resolve => {
-                    const interval = setInterval(() => {
-                        if (charQueue.length === 0 && !isTyping) {
-                            clearInterval(interval);
-                            resolve();
-                        }
-                    }, 50);
-                });
-            }
+            messagesForThisChat.push({
+                id: msgId,
+                role: "bot",
+                text: "",
+                reaction: ""
+            });
 
-            function startBotMessageIfNeeded() {
-                if (!isFirstChunk) return;
+            botMsgIndex = messagesForThisChat.length - 1;
+            isFirstChunk = false;
+        }
 
-                clearInterval(phraseInterval);
+        function handleStreamLine(line) {
+            if (!line.trim() || !line.startsWith("data: ")) return;
 
-                thinkingBox = document.getElementById(`thinking-box-${msgId}`);
-                contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
+            try {
+                const json = JSON.parse(line.substring(6));
 
-                if (thinkingBox) thinkingBox.remove();
-                if (contentDiv) contentDiv.style.display = "block";
-
-                messagesForThisChat.push({
-                    id: msgId,
-                    role: "bot",
-                    text: "",
-                    reaction: ""
-                });
-
-                botMsgIndex = messagesForThisChat.length - 1;
-                isFirstChunk = false;
-            }
-
-            function handleStreamLine(line) {
-                if (!line.trim() || !line.startsWith("data: ")) return;
-
-                try {
-                    const json = JSON.parse(line.substring(6));
-
-                    if (json.error) {
-                        startBotMessageIfNeeded();
-
-                        charQueue += `\n\n<span class="text-danger fw-bold">⚠️ ${escapeHTML(json.error)}</span>`;
-                        fullServerResponse += `\n\n⚠️ ${json.error}`;
-
-                        if (!isTyping) processQueue();
-                        maybeQueuePartialSave();
-                        return;
-                    }
-
-                    const text =
-                        json?.candidates?.[0]?.content?.parts?.[0]?.text ||
-                        json?.text ||
-                        json?.delta ||
-                        "";
-
-                    if (!text) return;
-
+                if (json.error) {
                     startBotMessageIfNeeded();
 
-                    charQueue += text;
-                    fullServerResponse += text;
+                    charQueue += `\n\n<span class="text-danger fw-bold">⚠️ ${escapeHTML(json.error)}</span>`;
+                    fullServerResponse += `\n\n⚠️ ${json.error}`;
 
                     if (!isTyping) processQueue();
                     maybeQueuePartialSave();
-                } catch (e) { }
+                    return;
+                }
+
+                const text =
+                    json?.candidates?.[0]?.content?.parts?.[0]?.text ||
+                    json?.text ||
+                    json?.delta ||
+                    "";
+
+                if (!text) return;
+
+                startBotMessageIfNeeded();
+
+                charQueue += text;
+                fullServerResponse += text;
+
+                if (!isTyping) processQueue();
+                maybeQueuePartialSave();
+            } catch (e) { }
+        }
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: message,
+                    userName: userNameForPrompt,
+                    history: historyToSend,
+                    persona: currentPersona
+                }),
+                signal
+            });
+
+            if (!response.ok) {
+                throw new Error("Server error: " + response.status);
             }
 
-          try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        message: message, // 👈 Wapas Original "message" bhej diya
-                        userName: userNameForPrompt,
-                        history: historyToSend,
-                        persona: currentPersona // 👈 YAHAN PE NAYA PARAMETER BHEJA HAI BACKEND KE LIYE!
-                    }),
-                    signal
-                });
+            if (!response.body) {
+                throw new Error("Server se stream body nahi aayi.");
+            }
 
-                if (!response.ok) {
-                    throw new Error("Server error: " + response.status);
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let streamBuffer = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+
+                if (done) break;
+
+                streamBuffer += decoder.decode(value, { stream: true });
+
+                const lines = streamBuffer.split("\n");
+                streamBuffer = lines.pop();
+
+                for (const line of lines) {
+                    handleStreamLine(line);
                 }
+            }
 
-                if (!response.body) {
-                    throw new Error("Server se stream body nahi aayi.");
-                }
+            streamBuffer += decoder.decode();
 
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let streamBuffer = "";
+            if (streamBuffer.trim()) {
+                streamBuffer.split("\n").forEach(handleStreamLine);
+            }
 
-                while (true) {
-                    const { done, value } = await reader.read();
-
-                    if (done) break;
-
-                    streamBuffer += decoder.decode(value, { stream: true });
-
-                    const lines = streamBuffer.split("\n");
-                    streamBuffer = lines.pop();
-
-                    for (const line of lines) {
-                        handleStreamLine(line);
-                    }
-                }
-
-                streamBuffer += decoder.decode();
-
-                if (streamBuffer.trim()) {
-                    streamBuffer.split("\n").forEach(handleStreamLine);
-                }
-
-                if (isFirstChunk) {
-                    clearInterval(phraseInterval);
-
-                    thinkingBox = document.getElementById(`thinking-box-${msgId}`);
-                    contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
-
-                    if (thinkingBox) thinkingBox.remove();
-
-                    if (contentDiv) {
-                        contentDiv.style.display = "block";
-                        contentDiv.innerHTML = `<span class="text-danger fw-bold">⚠️ Oops! Server se proper jawab nahi aaya. Backend terminal check karo!</span>`;
-                    }
-
-                    return;
-                }
-
-                await queueBotSnapshotSave();
-                await waitForTypingComplete();
-
-            } catch (error) {
+            if (isFirstChunk) {
                 clearInterval(phraseInterval);
 
-                if (error.name === "AbortError") {
-                    thinkingBox = document.getElementById(`thinking-box-${msgId}`);
-                    if (thinkingBox) thinkingBox.remove();
+                thinkingBox = document.getElementById(`thinking-box-${msgId}`);
+                contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
 
-                    if (botMsgIndex !== -1) {
-                        const partialCleanReply = cleanBotText(fullServerResponse);
+                if (thinkingBox) thinkingBox.remove();
 
-                        if (partialCleanReply) {
-                            messagesForThisChat[botMsgIndex].text = partialCleanReply;
-                            await queueStateSave({
-                                chatId: expectedChatId,
-                                messages: messagesForThisChat
-                            });
-                        } else {
-                            messagesForThisChat.splice(botMsgIndex, 1);
-                        }
-                    }
-
-                    return;
+                if (contentDiv) {
+                    contentDiv.style.display = "block";
+                    contentDiv.innerHTML = `<span class="text-danger fw-bold">⚠️ Oops! Server se proper jawab nahi aaya. Backend terminal check karo!</span>`;
                 }
 
-                console.error("Streaming Error:", error);
+                return;
+            }
 
+           await queueBotSnapshotSave();
+            await waitForTypingComplete();
+
+            // 🔥 MASTERSTROKE: Chat khatam hone ke poore 2 seconds baad Title API bulao
+            const userMessagesCount = messagesForThisChat.filter(m => m.role === "user").length;
+            if (userMessagesCount === 1) {
+                setTimeout(() => {
+                    generateSmartTitle(message, expectedChatId);
+                }, 2000); 
+            }
+
+        } catch (error) {
+            clearInterval(phraseInterval);
+
+            if (error.name === "AbortError") {
                 thinkingBox = document.getElementById(`thinking-box-${msgId}`);
                 if (thinkingBox) thinkingBox.remove();
 
-                if (currentChatId === expectedChatId) {
-                    chatHistory.innerHTML += `<div class="text-danger p-2">Dost, connection toot gaya ya bot atak gaya...</div>`;
-                    chatHistory.scrollTop = chatHistory.scrollHeight;
+                if (botMsgIndex !== -1) {
+                    const partialCleanReply = cleanBotText(fullServerResponse);
+
+                    if (partialCleanReply) {
+                        messagesForThisChat[botMsgIndex].text = partialCleanReply;
+                        await queueStateSave({
+                            chatId: expectedChatId,
+                            messages: messagesForThisChat
+                        });
+                    } else {
+                        messagesForThisChat.splice(botMsgIndex, 1);
+                    }
                 }
 
-                throw error;
-            }
-        }
-
-        function resetToNewChat() {
-            currentChatId = null;
-            currentChatMessages = [];
-            localStorage.removeItem("activeChatId");
-
-            if (window.innerWidth <= 768) closeSidebar();
-
-            document.querySelectorAll(".chat-item").forEach(item => item.classList.remove("active-chat"));
-
-            chatHistory.innerHTML = "";
-            chatHistory.style.display = "none";
-
-            inputSection.classList.remove("bottom-state");
-            inputSection.classList.add("centered-state");
-
-            if (currentUser) {
-                const nameToShow = userNickname || currentUser.displayName.split(" ")[0];
-                welcomeText.innerText = `Hello ${nameToShow}, Main hamesha tumhare sath hu...`;
-                welcomeText.style.display = "block";
-
-                setTimeout(() => {
-                    welcomeText.style.opacity = "1";
-                }, 50);
+                return;
             }
 
-            checkScrollButton();
+            console.error("Streaming Error:", error);
+
+            thinkingBox = document.getElementById(`thinking-box-${msgId}`);
+            if (thinkingBox) thinkingBox.remove();
+
+            if (currentChatId === expectedChatId) {
+                chatHistory.innerHTML += `<div class="text-danger p-2">Dost, connection toot gaya ya bot atak gaya...</div>`;
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+
+            throw error;
         }
+    }
 
-        window.shareChat = function (id) {
-            if (!currentUser) return;
+    function resetToNewChat() {
+        currentChatId = null;
+        currentChatMessages = [];
+        localStorage.removeItem("activeChatId");
 
-            closeAllMenus();
+        if (window.innerWidth <= 768) closeSidebar();
 
-            database.ref("userChats/" + currentUser.uid + "/" + id).once("value").then(snapshot => {
-                const data = snapshot.val();
-                if (!data) return;
+        document.querySelectorAll(".chat-item").forEach(item => item.classList.remove("active-chat"));
 
-                const shareId = "share_" + Date.now();
+        chatHistory.innerHTML = "";
+        chatHistory.style.display = "none";
 
-                database.ref("sharedChats/" + shareId).set({
-                    title: data.title || "Shared Chat",
-                    messages: data.messages || [],
-                    sharedBy: currentUser.displayName.split(" ")[0],
-                    sharedAt: Date.now()
-                }).then(() => {
-                    let baseUrl = window.location.href.split("index.html")[0];
-                    if (!baseUrl.endsWith("/")) baseUrl += "/";
+        inputSection.classList.remove("bottom-state");
+        inputSection.classList.add("centered-state");
 
-                    const finalLink = baseUrl + "share.html?id=" + shareId;
+        if (currentUser) {
+            const nameToShow = userNickname || currentUser.displayName.split(" ")[0];
+            welcomeText.innerText = `Hello ${nameToShow}, Main hamesha tumhare sath hu...`;
+            welcomeText.style.display = "block";
 
-                    document.getElementById("share-link-text").innerText = finalLink;
-                    document.getElementById("share-modal-backdrop").classList.add("active");
-                    document.getElementById("copy-link-btn").innerText = "📋 Copy Link";
-                });
-            });
-        };
-
-        window.closeShareModal = function () {
-            document.getElementById("share-modal-backdrop").classList.remove("active");
-        };
-
-        window.copyShareLink = function () {
-            const linkText = document.getElementById("share-link-text").innerText;
-
-            copyToClipboard(linkText).then(() => {
-                const btn = document.getElementById("copy-link-btn");
-                btn.innerText = "✅ Copied!";
-                btn.style.background = "var(--safe-green, #27ae60)";
-
-                setTimeout(() => {
-                    btn.innerText = "📋 Copy Link";
-                    btn.style.background = "var(--med-brown)";
-                }, 2000);
-            });
-        };
-
-        // =========================================
-        // ⚙️ SETTINGS UI & FIREBASE LOGIC
-        // =========================================
-
-        // 1. Open Modal & Load Settings
-
-        window.openSettingsModal = function () {
-            if (!currentUser) return;
-            closeAllMenus();
-
-            // Set User Info in Sidebar
-            document.getElementById("setting-modal-name").innerText = userNickname || currentUser.displayName.split(" ")[0];
-            document.getElementById("setting-modal-pic").src = userPic.src;
-
-            // For Account Tab
-            document.getElementById("settings-name-input").value = userNickname || currentUser.displayName.split(" ")[0];
-            document.getElementById("settings-pic-preview").src = userPic.src;
-
-            // Load Settings from Firebase
-            database.ref("users/" + currentUser.uid + "/settings").once("value").then(snapshot => {
-                const settings = snapshot.val() || {};
-
-                // 1. 🔥 Custom Theme Dropdown ka Text Update aur Theme Apply
-                const themeNames = { 'light': 'Light Mode', 'dark': 'Dark Mode', 'system': 'System Default' };
-                const savedTheme = settings.theme || localStorage.getItem("theme") || "system";
-
-                const themeTextEl = document.getElementById("theme-selected-text");
-                if (themeTextEl) {
-                    themeTextEl.innerText = themeNames[savedTheme] || 'System Default';
-                }
-                applyTheme(savedTheme); // UI me turant apply karo
-
-               // 2. 🔥 Custom Persona Dropdown ka Text Update
-                const personaNames = { 
-                    'default': 'Default (Original)', 
-                    'friendly': 'Friendly & Casual', 
-                    'professional': 'Professional', 
-                    'sarcastic': 'Funny & Sarcastic' 
-                };
-                
-                // Agar DB me kuch nahi hai, toh 'default' select karo
-                const savedPersona = settings.persona || localStorage.getItem("persona") || 'default';
-                
-                const personaTextEl = document.getElementById("persona-selected-text");
-                if (personaTextEl) {
-                    // Agar dictionary me naam mil gaya toh wo dikhao, warna 'Default (Original)' dikhao
-                    personaTextEl.innerText = personaNames[savedPersona] || 'Default (Original)';
-                }
-            });
-
-            const modal = document.getElementById("settings-overlay");
-            modal.style.display = "flex";
             setTimeout(() => {
-                modal.style.opacity = "1";
-                modal.querySelector('.settings-modal-box').style.transform = "scale(1)";
-            }, 10);
+                welcomeText.style.opacity = "1";
+            }, 50);
+        }
 
-            // Reset to General tab
-            if (window.innerWidth > 768) {
-                document.querySelector('.setting-nav-item').click();
-            } else {
-                goBackToSettingsMenu(); // On mobile, always start at menu
-            }
-        };
+        checkScrollButton();
+    }
 
+    window.shareChat = function (id) {
+        if (!currentUser) return;
 
-        window.closeSettingsModal = function () {
-            const modal = document.getElementById("settings-overlay");
-            modal.style.opacity = "0";
-            modal.querySelector('.settings-modal-box').style.transform = "scale(0.95)";
-            setTimeout(() => { modal.style.display = "none"; }, 300);
-        };
+        closeAllMenus();
 
-        // 2. Switching Tabs (Desktop & Mobile)
-        window.switchSettingTab = function (tabId, btnElement) {
-            // Remove active classes
-            document.querySelectorAll('.setting-nav-item').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.setting-tab-content').forEach(tab => tab.classList.remove('active-tab'));
+        database.ref("userChats/" + currentUser.uid + "/" + id).once("value").then(snapshot => {
+            const data = snapshot.val();
+            if (!data) return;
 
-            // Add active to clicked
-            btnElement.classList.add('active');
-            document.getElementById('tab-' + tabId).classList.add('active-tab');
+            const shareId = "share_" + Date.now();
 
-            // Handle Mobile Drill-down Logic
-            if (window.innerWidth <= 768) {
-                document.querySelector('.settings-layout').classList.add('mobile-view-active');
-
-                // Change mobile header title based on button text
-                const title = btnElement.innerText.replace(/[^a-zA-Z ]/g, '').trim();
-                document.getElementById('mobile-active-setting-title').innerText = title;
-            }
-        };
-
-        // 3. Mobile Back Button Logic
-        window.goBackToSettingsMenu = function () {
-            if (window.innerWidth <= 768) {
-                document.querySelector('.settings-layout').classList.remove('mobile-view-active');
-                document.getElementById('mobile-active-setting-title').innerText = "Settings";
-            } else {
-                closeSettingsModal(); // If somehow clicked on desktop, close modal
-            }
-        };
-
-        // ⚙️ Updated Settings Saver
-        window.saveAppSetting = function (key, value) {
-            if (!currentUser) return;
-
-            database.ref("users/" + currentUser.uid + "/settings").update({
-                [key]: value,
-                updatedAt: Date.now()
+            database.ref("sharedChats/" + shareId).set({
+                title: data.title || "Shared Chat",
+                messages: data.messages || [],
+                sharedBy: currentUser.displayName.split(" ")[0],
+                sharedAt: Date.now()
             }).then(() => {
-                // Instant Apply Logic
-                if (key === 'theme') {
-                    localStorage.setItem("theme", value);
-                    applyTheme(value); // Smart theme apply
-                    showToast("Theme updated dynamically! 🎨", "success");
-                }
-                // 🔥 NAYA: Persona ko LocalStorage me save karo!
-                else if (key === 'persona') {
-                    localStorage.setItem("persona", value);
-                    showToast("AI Persona updated! 🎭", "success");
-                }
-                else {
-                    showToast("Setting saved! ✨", "success");
-                }
+                let baseUrl = window.location.href.split("index.html")[0];
+                if (!baseUrl.endsWith("/")) baseUrl += "/";
+
+                const finalLink = baseUrl + "share.html?id=" + shareId;
+
+                document.getElementById("share-link-text").innerText = finalLink;
+                document.getElementById("share-modal-backdrop").classList.add("active");
+                document.getElementById("copy-link-btn").innerText = "📋 Copy Link";
             });
-        };
+        });
+    };
 
-        // (Tera purana profile save karne wala logic as it is, bas naam change kiya hai)
-        window.saveProfileDetails = async function () {
-            const newName = document.getElementById("settings-name-input").value.trim();
+    window.closeShareModal = function () {
+        document.getElementById("share-modal-backdrop").classList.remove("active");
+    };
 
-            if (!newName) {
-                // 🔥 YAHAN BHI ALERT THA
-                return showToast("Naam khali nahi chhod sakte dost! 😅", "error");
+    window.copyShareLink = function () {
+        const linkText = document.getElementById("share-link-text").innerText;
+
+        copyToClipboard(linkText).then(() => {
+            const btn = document.getElementById("copy-link-btn");
+            btn.innerText = "✅ Copied!";
+            btn.style.background = "var(--safe-green, #27ae60)";
+
+            setTimeout(() => {
+                btn.innerText = "📋 Copy Link";
+                btn.style.background = "var(--med-brown)";
+            }, 2000);
+        });
+    };
+
+    window.openSettingsModal = function () {
+        if (!currentUser) return;
+        closeAllMenus();
+
+        document.getElementById("setting-modal-name").innerText = userNickname || currentUser.displayName.split(" ")[0];
+        document.getElementById("setting-modal-pic").src = userPic.src;
+
+        document.getElementById("settings-name-input").value = userNickname || currentUser.displayName.split(" ")[0];
+        document.getElementById("settings-pic-preview").src = userPic.src;
+
+        database.ref("users/" + currentUser.uid + "/settings").once("value").then(snapshot => {
+            const settings = snapshot.val() || {};
+
+            const themeNames = { 'light': 'Light Mode', 'dark': 'Dark Mode', 'system': 'System Default' };
+            const savedTheme = settings.theme || localStorage.getItem("theme") || "system";
+
+            const themeTextEl = document.getElementById("theme-selected-text");
+            if (themeTextEl) {
+                themeTextEl.innerText = themeNames[savedTheme] || 'System Default';
             }
+            applyTheme(savedTheme);
 
-            try {
-                let finalPhotoURL = userPic.src;
-                if (selectedImageFileBase64) finalPhotoURL = selectedImageFileBase64;
-
-                await database.ref("users/" + currentUser.uid + "/profile").update({
-                    nickname: newName,
-                    customPhotoURL: finalPhotoURL,
-                    updatedAt: Date.now()
-                });
-
-                // Update UI variables
-                userNickname = newName;
-                userName.innerText = newName;
-                userPic.src = finalPhotoURL;
-
-                // Update Modal UI
-                document.getElementById("setting-modal-name").innerText = newName;
-                document.getElementById("setting-modal-pic").src = finalPhotoURL;
-
-                // 🔥 THE FIX: YAHAN AAYEGA PREMIUM SUCCESS TOAST
-                showToast("Profile Updated Successfully! 🎉", "success");
-
-                if (window.innerWidth <= 768) goBackToSettingsMenu();
-            } catch (error) {
-                console.error("Save Error: ", error);
-                showToast("Kuch gadbad hui save karne me! Net check kar lo.", "error");
-            }
-        };
-
-        function closeSettingsModal() {
-            document.getElementById("settings-overlay").style.display = "none";
-        }
-
-        window.handleImageUpload = function (event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            if (file.size > 3 * 1024 * 1024) {
-                // 🔥 YAHAN THA PURANA ALERT, AB TOAST AAYEGA
-                showToast("Bhai, photo 3MB se choti honi chahiye! 😅", "error");
-                event.target.value = "";
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const img = new Image();
-                img.onload = function () {
-                    const canvas = document.createElement("canvas");
-                    const ctx = canvas.getContext("2d");
-                    const size = 500;
-                    canvas.width = size;
-                    canvas.height = size;
-                    const minDim = Math.min(img.width, img.height);
-                    const startX = (img.width - minDim) / 2;
-                    const startY = (img.height - minDim) / 2;
-                    ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
-
-                    selectedImageFileBase64 = canvas.toDataURL("image/jpeg", 0.85);
-                    document.getElementById("settings-pic-preview").src = selectedImageFileBase64;
-                };
-                img.src = e.target.result;
+            const personaNames = {
+                'default': 'Default (Original)',
+                'friendly': 'Friendly & Casual',
+                'professional': 'Professional',
+                'sarcastic': 'Funny & Sarcastic'
             };
-            reader.readAsDataURL(file);
-        };
 
-        async function saveSettings() {
-            const newName = document.getElementById("settings-name-input").value.trim();
-            if (!newName) return showToast("Naam khali nahi chhod sakte dost!");
+            const savedPersona = settings.persona || localStorage.getItem("persona") || 'default';
 
-            document.getElementById("settings-loader").style.display = "flex";
-
-            try {
-                let finalPhotoURL = userPic.src;
-
-                if (selectedImageFileBase64) {
-                    finalPhotoURL = selectedImageFileBase64;
-                }
-
-                await database.ref("users/" + currentUser.uid + "/profile").update({
-                    nickname: newName,
-                    customPhotoURL: finalPhotoURL,
-                    updatedAt: Date.now()
-                });
-
-                userNickname = newName;
-                userName.innerText = newName;
-                userPic.src = finalPhotoURL;
-
-                if (!currentChatId) {
-                    welcomeText.innerText = `Hello ${userNickname}, Main hamesha tumhare sath hu...`;
-                }
-
-                document.getElementById("settings-loader").style.display = "none";
-                closeSettingsModal();
-
-            } catch (error) {
-                console.error("Save Error: ", error);
-                showToast("Kuch gadbad hui save karne me! Net check kar lo.");
-                document.getElementById("settings-loader").style.display = "none";
-            }
-        }
-
-        function checkScrollButton() {
-            if (!scrollBtn) return;
-
-            if (chatHistory.style.display === "none" || !currentChatId) {
-                scrollBtn.classList.remove("visible");
-                return;
-            }
-
-            if (chatHistory.scrollHeight <= chatHistory.clientHeight + 50) {
-                scrollBtn.classList.remove("visible");
-                return;
-            }
-
-            scrollBtn.classList.add("visible");
-
-            if (chatHistory.scrollTop > 300) {
-                scrollBtn.innerHTML = "↑";
-                isAtTop = false;
-            } else {
-                scrollBtn.innerHTML = "↓";
-                isAtTop = true;
-            }
-        }
-
-        window.checkScrollButton = checkScrollButton;
-
-        chatHistory.addEventListener("scroll", checkScrollButton);
-
-        window.handleScrollAction = function () {
-            if (isAtTop) {
-                chatHistory.scrollTo({ top: chatHistory.scrollHeight, behavior: "smooth" });
-            } else {
-                chatHistory.scrollTo({ top: 0, behavior: "smooth" });
-            }
-        };
-
-        // Zen Mode ka Icon (Expand jaisa)
-        function zenIconSvg() {
-            return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>`;
-        }
-
-        window.openZenMode = function (btn) {
-            const bubble = btn.closest(".message-bubble");
-            let rawText = "";
-
-            // Live ho ya purani chat, 'data-raw' me hamesha latest pure markdown hota hai!
-            try {
-                const raw = bubble.getAttribute("data-raw");
-                if (raw && raw !== "null") rawText = decodeURIComponent(raw);
-            } catch (e) { rawText = ""; }
-
-            if (!rawText) rawText = bubble.innerText.replace(/^.*:\n/, "").trim();
-
-            // Markdown me format karo
-            let htmlContent = renderBotMarkdown(rawText);
-
-            // Zen Modal Inject karo agar pehle se nahi hai
-            let zenModal = document.getElementById('zen-mode-modal');
-            if (!zenModal) {
-                zenModal = document.createElement('div');
-                zenModal.id = 'zen-mode-modal';
-                zenModal.className = 'zen-modal-overlay';
-                zenModal.innerHTML = `
-                <div class="zen-modal-content">
-                    <button class="close-zen-btn" onclick="closeZenMode()">✖</button>
-                    <div id="zen-text-container" style="margin-top: 5px;"></div>
-                </div>
-                `;
-                document.body.appendChild(zenModal);
-
-                // Background pe click karne se band
-                zenModal.addEventListener('click', (e) => {
-                    if (e.target === zenModal) closeZenMode();
-                });
-                // Esc dabane se band
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') closeZenMode();
-                });
-            }
-
-            // Data daalo aur Show karo
-            document.getElementById('zen-text-container').innerHTML = htmlContent;
-            zenModal.style.display = 'flex';
-            setTimeout(() => zenModal.classList.add('active'), 10);
-        };
-
-        window.closeZenMode = function () {
-            const zenModal = document.getElementById('zen-mode-modal');
-            if (zenModal) {
-                zenModal.classList.remove('active');
-                setTimeout(() => zenModal.style.display = 'none', 300);
-            }
-        };
-
-        window.showToast = function (message, type = 'error') {
-            const toast = document.getElementById('custom-toast');
-            if (!toast) return;
-            const msgEl = document.getElementById('toast-message');
-
-            toast.className = 'custom-toast'; // Reset classes
-            toast.classList.add(type); // 'error' ya 'success'
-            msgEl.innerText = message;
-
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
-        };
-
-        // =========================================
-        // 🔽 CUSTOM DROPDOWN ENGINE 🔽
-        // =========================================
-
-        window.toggleCustomDropdown = function (wrapperId) {
-            // Pehle baaki saare dropdown band kar do
-            document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
-                if (wrapper.id !== wrapperId) wrapper.classList.remove('open');
-            });
-            // Ab is wale ko toggle karo
-            document.getElementById(wrapperId).classList.toggle('open');
-        };
-
-        window.selectCustomOption = function (settingKey, value, displayLabel) {
-            // Text change karo
-            document.getElementById(settingKey + '-selected-text').innerText = displayLabel;
-
-            // Dropdown band karo
-            document.getElementById(settingKey + '-wrapper').classList.remove('open');
-
-            // 🔥 Firebase me save karo (Tera existing function call ho jayega!)
-            saveAppSetting(settingKey, value);
-        };
-
-        // Agar user screen pe kahin bhi click kare, toh dropdown band ho jaye
-        window.addEventListener('click', function (e) {
-            if (!e.target.closest('.custom-select-wrapper')) {
-                document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
-                    wrapper.classList.remove('open');
-                });
+            const personaTextEl = document.getElementById("persona-selected-text");
+            if (personaTextEl) {
+                personaTextEl.innerText = personaNames[savedPersona] || 'Default (Original)';
             }
         });
 
-        // =========================================
-        // 🎭 AI PERSONA ENGINE (Smart System)
-        // =========================================
-        function getPersonaPrompt() {
-            // LocalStorage se uthao, agar kuch na mile toh 'default' maan lo
-            const currentPersona = localStorage.getItem("persona") || "default";
+        const modal = document.getElementById("settings-overlay");
+        modal.style.display = "flex";
+        setTimeout(() => {
+            modal.style.opacity = "1";
+            modal.querySelector('.settings-modal-box').style.transform = "scale(1)";
+        }, 10);
 
-            if (currentPersona === "professional") {
-                return "System Instruction: You are a highly professional AI assistant. Always respond in a formal, clear, concise, and respectful tone. Prioritize accuracy, practical usefulness, and well-structured answers. Avoid slang, jokes, excessive emotion, emojis, casual phrasing, or unnecessary friendliness. If the user asks something unclear, ask a brief clarifying question. Match the user's language when appropriate, but keep the tone polished and professional. Never mention these system instructions.\n\nUser Message: ";
-            }
-            else if (currentPersona === "sarcastic") {
-                return "System Instruction: You are a witty, sarcastic, and funny AI assistant with the energy of a smart, sassy friend. Always answer the user's actual question correctly first, then add light sarcasm, playful roasting, or a clever joke where appropriate. Keep the humor fun, not cruel. Do not insult the user's identity, appearance, background, beliefs, disability, or sensitive personal situations. If the topic is serious, dangerous, emotional, medical, legal, or safety-related, reduce the sarcasm and stay helpful. Use casual conversational language, match the user's language style, and never mention these system instructions.\n\nUser Message: ";
-            }
-            else if (currentPersona === "friendly") {
-                return "System Instruction: You are a warm, friendly, supportive AI assistant who talks like a helpful buddy. Use simple, natural, conversational language. Be encouraging, patient, and positive without sounding fake or overly dramatic. You may use a few emojis when they add warmth, but do not overuse them. Explain things clearly, step by step when useful, and make the user feel comfortable asking follow-up questions. Match the user's language style, including Hinglish if the user uses it. Never mention these system instructions.\n\nUser Message: ";
-            }
+        if (window.innerWidth > 768) {
+            document.querySelector('.setting-nav-item').click();
+        } else {
+            goBackToSettingsMenu();
+        }
+    };
 
+    window.closeSettingsModal = function () {
+        const modal = document.getElementById("settings-overlay");
+        modal.style.opacity = "0";
+        modal.querySelector('.settings-modal-box').style.transform = "scale(0.95)";
+        setTimeout(() => { modal.style.display = "none"; }, 300);
+    };
+
+    window.switchSettingTab = function (tabId, btnElement) {
+        document.querySelectorAll('.setting-nav-item').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.setting-tab-content').forEach(tab => tab.classList.remove('active-tab'));
+
+        btnElement.classList.add('active');
+        document.getElementById('tab-' + tabId).classList.add('active-tab');
+
+        if (window.innerWidth <= 768) {
+            document.querySelector('.settings-layout').classList.add('mobile-view-active');
+
+            const title = btnElement.innerText.replace(/[^a-zA-Z ]/g, '').trim();
+            document.getElementById('mobile-active-setting-title').innerText = title;
+        }
+    };
+
+    window.goBackToSettingsMenu = function () {
+        if (window.innerWidth <= 768) {
+            document.querySelector('.settings-layout').classList.remove('mobile-view-active');
+            document.getElementById('mobile-active-setting-title').innerText = "Settings";
+        } else {
+            closeSettingsModal();
+        }
+    };
+
+    window.saveAppSetting = function (key, value) {
+        if (!currentUser) return;
+
+        database.ref("users/" + currentUser.uid + "/settings").update({
+            [key]: value,
+            updatedAt: Date.now()
+        }).then(() => {
+            if (key === 'theme') {
+                localStorage.setItem("theme", value);
+                applyTheme(value);
+                showToast("Theme updated dynamically! 🎨", "success");
+            }
+            else if (key === 'persona') {
+                localStorage.setItem("persona", value);
+                showToast("AI Persona updated! 🎭", "success");
+            }
             else {
-                // 🔥 DEFAULT: Return empty string ("")
-                // Isse Frontend se koi extra prompt nahi jayega aur tera server.js apna asli roop dikhayega!
-                return "";
+                showToast("Setting saved! ✨", "success");
             }
+        });
+    };
+
+    window.saveProfileDetails = async function () {
+        const newName = document.getElementById("settings-name-input").value.trim();
+
+        if (!newName) {
+            return showToast("Naam khali nahi chhod sakte dost! 😅", "error");
         }
 
-    </script>
+        try {
+            let finalPhotoURL = userPic.src;
+            if (selectedImageFileBase64) finalPhotoURL = selectedImageFileBase64;
 
+            await database.ref("users/" + currentUser.uid + "/profile").update({
+                nickname: newName,
+                customPhotoURL: finalPhotoURL,
+                updatedAt: Date.now()
+            });
+
+            userNickname = newName;
+            userName.innerText = newName;
+            userPic.src = finalPhotoURL;
+
+            document.getElementById("setting-modal-name").innerText = newName;
+            document.getElementById("setting-modal-pic").src = finalPhotoURL;
+
+            showToast("Profile Updated Successfully! 🎉", "success");
+
+            if (window.innerWidth <= 768) goBackToSettingsMenu();
+        } catch (error) {
+            console.error("Save Error: ", error);
+            showToast("Kuch gadbad hui save karne me! Net check kar lo.", "error");
+        }
+    };
+
+    function closeSettingsModal() {
+        document.getElementById("settings-overlay").style.display = "none";
+    }
+
+    window.handleImageUpload = function (event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (file.size > 3 * 1024 * 1024) {
+            showToast("Bhai, photo 3MB se choti honi chahiye! 😅", "error");
+            event.target.value = "";
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.onload = function () {
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                const size = 500;
+                canvas.width = size;
+                canvas.height = size;
+                const minDim = Math.min(img.width, img.height);
+                const startX = (img.width - minDim) / 2;
+                const startY = (img.height - minDim) / 2;
+                ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
+
+                selectedImageFileBase64 = canvas.toDataURL("image/jpeg", 0.85);
+                document.getElementById("settings-pic-preview").src = selectedImageFileBase64;
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    async function saveSettings() {
+        const newName = document.getElementById("settings-name-input").value.trim();
+        if (!newName) return showToast("Naam khali nahi chhod sakte dost!");
+
+        document.getElementById("settings-loader").style.display = "flex";
+
+        try {
+            let finalPhotoURL = userPic.src;
+
+            if (selectedImageFileBase64) {
+                finalPhotoURL = selectedImageFileBase64;
+            }
+
+            await database.ref("users/" + currentUser.uid + "/profile").update({
+                nickname: newName,
+                customPhotoURL: finalPhotoURL,
+                updatedAt: Date.now()
+            });
+
+            userNickname = newName;
+            userName.innerText = newName;
+            userPic.src = finalPhotoURL;
+
+            if (!currentChatId) {
+                welcomeText.innerText = `Hello ${userNickname}, Main hamesha tumhare sath hu...`;
+            }
+
+            document.getElementById("settings-loader").style.display = "none";
+            closeSettingsModal();
+
+        } catch (error) {
+            console.error("Save Error: ", error);
+            showToast("Kuch gadbad hui save karne me! Net check kar lo.");
+            document.getElementById("settings-loader").style.display = "none";
+        }
+    }
+
+    function checkScrollButton() {
+        if (!scrollBtn) return;
+
+        if (chatHistory.style.display === "none" || !currentChatId) {
+            scrollBtn.classList.remove("visible");
+            return;
+        }
+
+        if (chatHistory.scrollHeight <= chatHistory.clientHeight + 50) {
+            scrollBtn.classList.remove("visible");
+            return;
+        }
+
+        scrollBtn.classList.add("visible");
+
+        if (chatHistory.scrollTop > 300) {
+            scrollBtn.innerHTML = "↑";
+            isAtTop = false;
+        } else {
+            scrollBtn.innerHTML = "↓";
+            isAtTop = true;
+        }
+    }
+
+    window.checkScrollButton = checkScrollButton;
+
+    chatHistory.addEventListener("scroll", checkScrollButton);
+
+    window.handleScrollAction = function () {
+        if (isAtTop) {
+            chatHistory.scrollTo({ top: chatHistory.scrollHeight, behavior: "smooth" });
+        } else {
+            chatHistory.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    };
+
+    function zenIconSvg() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>`;
+    }
+
+    window.openZenMode = function (btn) {
+        const bubble = btn.closest(".message-bubble");
+        let rawText = "";
+
+        try {
+            const raw = bubble.getAttribute("data-raw");
+            if (raw && raw !== "null") rawText = decodeURIComponent(raw);
+        } catch (e) { rawText = ""; }
+
+        if (!rawText) rawText = bubble.innerText.replace(/^.*:\n/, "").trim();
+
+        let htmlContent = renderBotMarkdown(rawText);
+
+        let zenModal = document.getElementById('zen-mode-modal');
+        if (!zenModal) {
+            zenModal = document.createElement('div');
+            zenModal.id = 'zen-mode-modal';
+            zenModal.className = 'zen-modal-overlay';
+            zenModal.innerHTML = `
+            <div class="zen-modal-content">
+                <button class="close-zen-btn" onclick="closeZenMode()">✖</button>
+                <div id="zen-text-container" style="margin-top: 5px;"></div>
+            </div>
+            `;
+            document.body.appendChild(zenModal);
+
+            zenModal.addEventListener('click', (e) => {
+                if (e.target === zenModal) closeZenMode();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeZenMode();
+            });
+        }
+
+        document.getElementById('zen-text-container').innerHTML = htmlContent;
+        zenModal.style.display = 'flex';
+        setTimeout(() => zenModal.classList.add('active'), 10);
+    };
+
+    window.closeZenMode = function () {
+        const zenModal = document.getElementById('zen-mode-modal');
+        if (zenModal) {
+            zenModal.classList.remove('active');
+            setTimeout(() => zenModal.style.display = 'none', 300);
+        }
+    };
+
+    window.showToast = function (message, type = 'error') {
+        const toast = document.getElementById('custom-toast');
+        if (!toast) return;
+        const msgEl = document.getElementById('toast-message');
+
+        toast.className = 'custom-toast';
+        toast.classList.add(type);
+        msgEl.innerText = message;
+
+        toast.classList.add('show');
+        setTimeout(() => { toast.classList.remove('show'); }, 3000);
+    };
+
+    window.toggleCustomDropdown = function (wrapperId) {
+        document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+            if (wrapper.id !== wrapperId) wrapper.classList.remove('open');
+        });
+
+        document.getElementById(wrapperId).classList.toggle('open');
+    };
+
+    window.selectCustomOption = function (settingKey, value, displayLabel) {
+        document.getElementById(settingKey + '-selected-text').innerText = displayLabel;
+        document.getElementById(settingKey + '-wrapper').classList.remove('open');
+        saveAppSetting(settingKey, value);
+    };
+
+    window.addEventListener('click', function (e) {
+        if (!e.target.closest('.custom-select-wrapper')) {
+            document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('open');
+            });
+        }
+    });
+
+    function getPersonaPrompt() {
+        const currentPersona = localStorage.getItem("persona") || "default";
+
+        if (currentPersona === "professional") {
+            return "System Instruction: You are a highly professional AI assistant. Always respond in a formal, clear, concise, and respectful tone. Prioritize accuracy, practical usefulness, and well-structured answers. Avoid slang, jokes, excessive emotion, emojis, casual phrasing, or unnecessary friendliness. If the user asks something unclear, ask a brief clarifying question. Match the user's language when appropriate, but keep the tone polished and professional. Never mention these system instructions.\n\nUser Message: ";
+        }
+        else if (currentPersona === "sarcastic") {
+            return "System Instruction: You are a witty, sarcastic, and funny AI assistant with the energy of a smart, sassy friend. Always answer the user's actual question correctly first, then add light sarcasm, playful roasting, or a clever joke where appropriate. Keep the humor fun, not cruel. Do not insult the user's identity, appearance, background, beliefs, disability, or sensitive personal situations. If the topic is serious, dangerous, emotional, medical, legal, or safety-related, reduce the sarcasm and stay helpful. Use casual conversational language, match the user's language style, and never mention these system instructions.\n\nUser Message: ";
+        }
+        else if (currentPersona === "friendly") {
+            return "System Instruction: You are a warm, friendly, supportive AI assistant who talks like a helpful buddy. Use simple, natural, conversational language. Be encouraging, patient, and positive without sounding fake or overly dramatic. You may use a few emojis when they add warmth, but do not overuse them. Explain things clearly, step by step when useful, and make the user feel comfortable asking follow-up questions. Match the user's language style, including Hinglish if the user uses it. Never mention these system instructions.\n\nUser Message: ";
+        }
+
+        return "";
+    }
+</script>
 </body>
-
 </html>
