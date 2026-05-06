@@ -1900,6 +1900,7 @@
             }
 
             .sidebar {
+                width: 300px;
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -3566,8 +3567,7 @@
             }, 2000);
         });
     };
-
-    window.openSettingsModal = function () {
+window.openSettingsModal = function () {
         if (!currentUser) return;
         closeAllMenus();
 
@@ -3611,13 +3611,14 @@
             modal.querySelector('.settings-modal-box').style.transform = "scale(1)";
         }, 10);
 
+        // 🔥 THE BUG FIX 🔥
         if (window.innerWidth > 768) {
             document.querySelector('.setting-nav-item').click();
         } else {
-            goBackToSettingsMenu();
+            document.querySelector('.settings-layout').classList.remove('mobile-view-active');
+            document.getElementById('mobile-active-setting-title').innerText = "Settings";
         }
     };
-
     // FIX 4: Only ONE closeSettingsModal — animated version, duplicate plain function removed
     window.closeSettingsModal = function () {
         const modal = document.getElementById("settings-overlay");
@@ -3643,9 +3644,19 @@
 
     window.goBackToSettingsMenu = function () {
         if (window.innerWidth <= 768) {
-            document.querySelector('.settings-layout').classList.remove('mobile-view-active');
-            document.getElementById('mobile-active-setting-title').innerText = "Settings";
+            const layout = document.querySelector('.settings-layout');
+            
+            // Check karega ki kya hum kisi andar wale tab (General/Account) me hain
+            if (layout.classList.contains('mobile-view-active')) {
+                // Agar haan, toh sirf back aayega Settings menu par
+                layout.classList.remove('mobile-view-active');
+                document.getElementById('mobile-active-setting-title').innerText = "Settings";
+            } else {
+                // Agar hum pehle se hi main menu par hain, toh poori settings band karke Home pe jayega
+                closeSettingsModal();
+            }
         } else {
+            // Desktop par humesha close karega
             closeSettingsModal();
         }
     };
