@@ -3121,7 +3121,11 @@
                         profileTrigger.style.display = "flex";
                         profileTrigger.classList.add("fade-in-smooth");
                         document.getElementById("main-initial-loader").style.display = "none";
-                        document.getElementById("onboarding-overlay").style.display = "flex";
+                        
+                        // 🔥 Yahan Fix Apply Hua Hai 🔥
+                        const onboardingModal = document.getElementById("onboarding-overlay");
+                        onboardingModal.style.display = "flex";
+                        setTimeout(() => onboardingModal.classList.add("active"), 10);
                     }
                 });
             } else {
@@ -3151,7 +3155,9 @@
         });
 
         window.closeLoginWarning = function () {
-            document.getElementById("login-warning-modal").style.display = "none";
+            const modal = document.getElementById("login-warning-modal");
+            modal.classList.remove("active");
+            setTimeout(() => { modal.style.display = "none"; }, 300); // 300ms wait for smooth fade out
         };
 
         userInput.addEventListener("focus", function () {
@@ -3161,7 +3167,7 @@
             }
         });
 
-        window.saveNickname = function () {
+    window.saveNickname = function () {
             const nameInput = document.getElementById("nickname-input").value.trim();
             if (!nameInput) return showToast("At least tell me your name! 😅");
 
@@ -3170,8 +3176,12 @@
                 joinedAt: Date.now()
             }).then(() => {
                 userNickname = nameInput;
-                document.getElementById("onboarding-overlay").style.display = "none";
-                loadMainApp();
+                const modal = document.getElementById("onboarding-overlay");
+                modal.classList.remove("active");
+                setTimeout(() => {
+                    modal.style.display = "none";
+                    loadMainApp();
+                }, 300);
             });
         };
 
@@ -3444,7 +3454,9 @@
 
         window.handleSendClick = function () {
             if (!isUserLoggedIn) {
-                document.getElementById("login-warning-modal").style.display = "flex";
+                const modal = document.getElementById("login-warning-modal");
+                modal.style.display = "flex";
+                setTimeout(() => modal.classList.add("active"), 10);
                 return;
             }
 
@@ -3702,14 +3714,13 @@
                 : c.removeAttribute('data-scroll');
         });
 
-        // 🔥 SMART ENTER KEY LOGIC 🔥
-        userInput.addEventListener("keydown", function (e) {
-            // If Enter is pressed WITHOUT Shift key, send the message
-            if (e.key === "Enter" && !e.shiftKey && !isGenerating) {
-                e.preventDefault(); // Prevents it from going to a new line
-                handleSendClick();
+        userInput.addEventListener("focus", function () {
+            if (!isUserLoggedIn) {
+                userInput.blur();
+                const modal = document.getElementById("login-warning-modal");
+                modal.style.display = "flex";
+                setTimeout(() => modal.classList.add("active"), 10); // Trigger smooth fade in
             }
-            // If Shift + Enter is pressed, it will naturally go to a new line!
         });
 
         // Payload structure matches /api/chat on backend exactly:
