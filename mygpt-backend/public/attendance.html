@@ -9,8 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
@@ -29,6 +30,7 @@
             --card-shadow: rgba(140, 90, 60, 0.08);
             --safe-green: #2ecc71;
             --danger-red: #e74c3c;
+            --warning-yellow: #f39c12;
         }
 
         body.dark-theme {
@@ -40,34 +42,342 @@
             --card-shadow: rgba(0, 0, 0, 0.4);
         }
 
-        body { background-color: var(--bg-body); color: var(--text-main); font-family: "Lexend Deca", sans-serif; min-height: 100vh; display: flex; flex-direction: column; transition: background-color 0.3s ease, color 0.3s ease; }
-        .top-navbar { padding: 20px 30px; display: flex; align-items: center; border-bottom: 1px solid rgba(192, 133, 82, 0.15); }
-        .back-btn { background: var(--card-bg); border: 1px solid var(--input-border); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px var(--card-shadow); }
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: "Lexend Deca", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
 
-        .main-container { flex-grow: 1; display: flex; justify-content: center; padding: 20px; }
-        .calculator-card { background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px var(--card-shadow); border: 1px solid var(--input-border); width: 100%; max-width: 650px; animation: fadeInUp 0.5s ease; }
+        .top-navbar {
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(192, 133, 82, 0.15);
+        }
 
-        .input-group-custom { margin-bottom: 18px; }
-        .input-group-custom label { font-weight: 500; margin-bottom: 8px; display: block; opacity: 0.9; }
-        .custom-input { background-color: var(--input-bg); border: 2px solid var(--input-border); color: var(--text-main); border-radius: 12px; padding: 14px 20px; width: 100%; }
+        .back-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            padding: 8px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px var(--card-shadow);
+            transition: all 0.3s ease;
+        }
 
-        .calc-btn { background-color: var(--med-brown); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 600; margin-top: 10px; }
-        .explain-btn { background-color: transparent; border: 2px solid var(--light-brown); color: var(--light-brown); width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; margin-top: 15px; display: none; }
-        .continue-btn { background-color: var(--dark-brown); color: white; border: none; width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; margin-top: 15px; display: none; }
+        .back-btn:hover {
+            background: var(--light-brown);
+            color: white;
+            transform: translateX(-3px);
+        }
 
-        .result-box { margin-top: 25px; background: rgba(192, 133, 82, 0.08); border-radius: 16px; padding: 25px; display: none; animation: fadeInUp 0.4s ease; text-align: center; }
-        .percent-circle { width: 100px; height: 100px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto; font-size: 24px; font-weight: 700; border: 6px solid var(--med-brown); }
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
 
-        .ai-analysis-area { margin-top: 20px; text-align: left; padding: 15px; border-radius: 12px; background: rgba(255, 255, 255, 0.3); border-left: 4px solid var(--light-brown); display: none; line-height: 1.6; }
+        .calculator-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px var(--card-shadow);
+            border: 1px solid var(--input-border);
+            width: 100%;
+            max-width: 650px;
+            animation: fadeInUp 0.5s ease;
+        }
 
-        .loader-container { display: flex; justify-content: center; align-items: center; height: 40px; }
-        .spinner-ring { width: 30px; height: 30px; border: 3px solid rgba(192, 133, 82, 0.2); border-top-color: var(--light-brown); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .input-group-custom {
+            margin-bottom: 18px;
+        }
+
+        .input-group-custom label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+            opacity: 0.9;
+        }
+
+        .custom-input {
+            background-color: var(--input-bg);
+            border: 2px solid var(--input-border);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 14px 20px;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .custom-input:focus {
+            border-color: var(--light-brown);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1);
+        }
+
+        .calc-btn {
+            background-color: var(--med-brown);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2);
+        }
+
+        .calc-btn:hover {
+            background-color: var(--dark-brown);
+            transform: translateY(-2px);
+        }
+
+        .explain-btn {
+            background-color: transparent;
+            border: 2px solid var(--light-brown);
+            color: var(--light-brown);
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-top: 15px;
+            display: none;
+            transition: 0.3s;
+        }
+
+        .explain-btn:hover:not(:disabled) {
+            background-color: var(--light-brown);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .explain-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .continue-btn {
+            background-color: transparent;
+            border: 2px solid var(--med-brown);
+            color: var(--med-brown);
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-top: 15px;
+            display: none;
+            transition: 0.3s;
+        }
+
+        .continue-btn:hover {
+            background-color: var(--med-brown);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .result-box {
+            margin-top: 25px;
+            background: rgba(192, 133, 82, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            display: none;
+            animation: fadeInUp 0.4s ease;
+            text-align: center;
+        }
+
+        .percent-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px auto;
+            font-size: 24px;
+            font-weight: 700;
+            border: 6px solid var(--med-brown);
+            transition: border-color 0.4s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .stat-item {
+            background: rgba(192, 133, 82, 0.06);
+            border-radius: 10px;
+            padding: 10px 14px;
+            border: 1px solid var(--input-border);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.65;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--med-brown);
+            margin-top: 2px;
+        }
+
+        .stat-value.safe { color: var(--safe-green); }
+        .stat-value.danger { color: var(--danger-red); }
+        .stat-value.warning { color: var(--warning-yellow); }
+
+        .ai-analysis-area {
+            margin-top: 20px;
+            text-align: left;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border-left: 4px solid var(--light-brown);
+            display: none;
+            line-height: 1.6;
+        }
+
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+
+        .spinner-ring {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(192, 133, 82, 0.2);
+            border-top-color: var(--light-brown);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .typing-content h3,
+        .typing-content h4 {
+            color: var(--med-brown);
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        .typing-content strong {
+            color: var(--light-brown);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 🚫 REMOVE NUMBER INPUT ARROWS 🚫 */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type="number"] { -moz-appearance: textfield; }
+
+        /* 🍞 TOAST NOTIFICATION 🍞 */
+        .custom-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14.5px;
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .custom-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .custom-toast.error {
+            background-color: #FDF3F2;
+            color: #E74C3C;
+            border: 1.5px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .custom-toast.success {
+            background-color: #F0FDF4;
+            color: #27AE60;
+            border: 1.5px solid rgba(39, 174, 96, 0.2);
+        }
+
+        body.dark-theme .custom-toast.error {
+            background-color: #2C1A1A;
+            color: #FF6B6B;
+            border-color: rgba(255, 107, 107, 0.2);
+        }
+
+        body.dark-theme .custom-toast.success {
+            background-color: #1A2C20;
+            color: #2ECC71;
+            border-color: rgba(46, 204, 113, 0.2);
+        }
     </style>
 </head>
 
 <body>
+    <div id="custom-toast" class="custom-toast">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        (function () {
+            function updateThemeUI(themeValue) {
+                const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = themeValue === "dark" || (themeValue === "system" && prefersDarkOS);
+                if (isDark) document.body.classList.add("dark-theme");
+                else document.body.classList.remove("dark-theme");
+            }
+
+            const savedTheme = localStorage.getItem("theme") || "system";
+            updateThemeUI(savedTheme);
+
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem("theme") === "system") updateThemeUI("system");
+            });
+
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') updateThemeUI(e.newValue || "system");
+            });
+        })();
+    </script>
 
     <div class="top-navbar">
         <a href="tools.html" class="back-btn"><span>←</span> Back to Tools</a>
@@ -79,41 +389,54 @@
 
             <div class="input-group-custom">
                 <label>Total Classes Held (Till Today)</label>
-                <input type="number" id="total-classes" class="custom-input" placeholder="e.g., 500">
+                <input type="number" id="total-classes" class="custom-input" placeholder="e.g., 120" min="1">
             </div>
 
             <div class="input-group-custom">
                 <label>Classes You Attended</label>
-                <input type="number" id="attended-classes" class="custom-input" placeholder="e.g., 180">
+                <input type="number" id="attended-classes" class="custom-input" placeholder="e.g., 80" min="0">
             </div>
 
             <div class="input-group-custom">
                 <label>Target Percentage (%)</label>
-                <input type="number" id="target-percent" class="custom-input" value="75">
+                <input type="number" id="target-percent" class="custom-input" value="75" min="1" max="99">
             </div>
 
             <button class="calc-btn" onclick="calculateAttendance()">Check My Status</button>
 
             <div id="result-area" class="result-box">
                 <div id="success-data">
-                    <div class="percent-circle" id="res-circle"><span id="res-percent">0%</span></div>
-                    <div id="res-action" class="fw-bold mb-3"></div>
-                    
-                    <button id="explain-btn" class="explain-btn" onclick="explainWithAI()">🤔 Explain me how? Kya karu?</button>
-                    
-                    <div id="ai-analysis" class="ai-analysis-area">
-                        <div id="ai-loading" class="loader-container" style="display: none;"><div class="spinner-ring"></div></div>
-                        <div id="ai-text"></div>
+                    <div class="percent-circle" id="res-circle">
+                        <span id="res-percent">0%</span>
                     </div>
 
-                    <button id="continue-btn" class="continue-btn" onclick="continueToMainChat()">💬 Continue Chat with AI</button>
+                    <div id="res-action" class="fw-bold mb-3"></div>
+
+                    <div class="stats-grid" id="stats-grid"></div>
+
+                    <button id="explain-btn" class="explain-btn" onclick="explainWithAI()">
+                        🤔 Explain me how? Kya karu?
+                    </button>
+
+                    <div id="ai-analysis" class="ai-analysis-area">
+                        <div id="ai-loading" class="loader-container" style="display: none;">
+                            <div class="spinner-ring"></div>
+                        </div>
+                        <div id="ai-text" class="typing-content"></div>
+                    </div>
+
+                    <button id="continue-btn" class="continue-btn" onclick="continueToMainChat()">
+                        💬 Continue Chat with AI
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // FIREBASE CONFIG
+        // ─────────────────────────────────────────────
+        // FIREBASE INIT
+        // ─────────────────────────────────────────────
         const firebaseConfig = {
             apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
             authDomain: "my-gemini-bot-gradex.firebaseapp.com",
@@ -129,40 +452,225 @@
         let currentUser = null;
         auth.onAuthStateChanged(user => { currentUser = user; });
 
-        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+        // ─────────────────────────────────────────────
+        // STATE
+        // ─────────────────────────────────────────────
+        let mathAnalysis = "";
+        let rawBotReply = "";
 
-        let mathAnalysis = ""; // AI text store karne ke liye
+        // 🍞 TOAST FUNCTION
+        window.showToast = function (message, type = 'error') {
+            const toast = document.getElementById('custom-toast');
+            if (!toast) return;
+            const msgEl = document.getElementById('toast-message');
 
-        function calculateAttendance() {
-            const total = parseInt(document.getElementById('total-classes').value);
-            const attended = parseInt(document.getElementById('attended-classes').value);
-            const target = parseInt(document.getElementById('target-percent').value);
-            
-            if (isNaN(total) || isNaN(attended) || attended > total) { alert("Sahi values daalo bhai!"); return; }
+            toast.className = 'custom-toast';
+            toast.classList.add(type);
+            msgEl.innerText = message;
 
-            let currentPercent = (attended / total) * 100;
-            document.getElementById('result-area').style.display = 'block';
-            document.getElementById('res-percent').innerText = currentPercent.toFixed(1) + "%";
-            document.getElementById('explain-btn').style.display = 'block';
-            document.getElementById('ai-analysis').style.display = 'none';
-            document.getElementById('continue-btn').style.display = 'none';
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        };
 
-            let actionText = "";
-            if (currentPercent >= target) {
-                let bunk = Math.floor((100 * attended - target * total) / target);
-                actionText = bunk > 0 ? `Safe Zone! Tu ${bunk} classes bunk kar sakta hai.` : `Edge pe hai bhai, bunk mat marna!`;
-                document.getElementById('res-circle').style.borderColor = "var(--safe-green)";
-            } else {
-                let req = Math.ceil((target * total - 100 * attended) / (100 - target));
-                actionText = `Danger! Tujhe lagatar ${req} classes leni padengi.`;
-                document.getElementById('res-circle').style.borderColor = "var(--danger-red)";
-            }
-            document.getElementById('res-action').innerText = actionText;
-            
-            // MATH EXPLANATION FOR AI
-            mathAnalysis = `Data: Total classes held so far = ${total}, Attended = ${attended}, Target = ${target}%. Current percentage is ${currentPercent.toFixed(1)}%.`;
+        // ─────────────────────────────────────────────
+        // CORE ATTENDANCE LOGIC
+        // ─────────────────────────────────────────────
+        function calcMaxBunks(attended, total, targetPct) {
+            const t = targetPct / 100;
+            const bunks = Math.floor((attended - t * total) / t);
+            return Math.max(0, bunks);
         }
 
+        function calcClassesNeeded(attended, total, targetPct) {
+            const t = targetPct / 100;
+            if (t >= 1) return Infinity;
+            const needed = Math.ceil((t * total - attended) / (1 - t));
+            return Math.max(0, needed);
+        }
+
+        function projectedPercent(attended, total, extraAttended) {
+            const newAttended = attended + extraAttended;
+            const newTotal = total + extraAttended;
+            return (newAttended / newTotal) * 100;
+        }
+
+        function percentAfterBunks(attended, total, bunks) {
+            const newTotal = total + bunks;
+            return newTotal === 0 ? 0 : (attended / newTotal) * 100;
+        }
+
+        // ─────────────────────────────────────────────
+        // INPUT VALIDATION
+        // ─────────────────────────────────────────────
+        function validateInputs(total, attended, target) {
+            if (isNaN(total) || isNaN(attended) || isNaN(target)) {
+                return "Saari fields bharo bhai! Koi field khali nahi rehni chahiye.";
+            }
+            if (!Number.isInteger(total) || !Number.isInteger(attended)) {
+                return "Classes sirf whole numbers mein hoti hain — decimal mat daalo!";
+            }
+            if (total <= 0) {
+                return "Total classes kam se kam 1 honi chahiye!";
+            }
+            if (attended < 0) {
+                return "Attended classes negative nahi ho sakti!";
+            }
+            if (attended > total) {
+                return "Attended classes, total classes se zyada nahi ho sakti bhai!";
+            }
+            if (target <= 0 || target >= 100) {
+                return "Target percentage 1% aur 99% ke beech honi chahiye!";
+            }
+            return null;
+        }
+
+        // ─────────────────────────────────────────────
+        // MAIN CALCULATE FUNCTION
+        // ─────────────────────────────────────────────
+        function calculateAttendance() {
+            const totalRaw = document.getElementById('total-classes').value.trim();
+            const attendedRaw = document.getElementById('attended-classes').value.trim();
+            const targetRaw = document.getElementById('target-percent').value.trim();
+
+            const total = Number(totalRaw);
+            const attended = Number(attendedRaw);
+            const target = Number(targetRaw);
+
+            // Validate
+            const error = validateInputs(total, attended, target);
+            if (error) {
+                showToast(error, 'error'); // 🔥 Alert hata diya!
+                return;
+            }
+
+            const currentPercent = (attended / total) * 100;
+            const isSafe = currentPercent >= target;
+            const isEdge = isSafe && (currentPercent - target) < 2;
+
+            // ── UI Reset ──
+            document.getElementById('result-area').style.display = 'block';
+            document.getElementById('ai-analysis').style.display = 'none';
+            document.getElementById('continue-btn').style.display = 'none';
+            document.getElementById('ai-text').innerHTML = '';
+
+            const explainBtn = document.getElementById('explain-btn');
+            explainBtn.style.display = 'block';
+            explainBtn.disabled = false;
+            explainBtn.innerText = "🤔 Explain me how? Kya karu?";
+
+            // ── Percent Circle ──
+            document.getElementById('res-percent').innerText = currentPercent.toFixed(1) + "%";
+            const circle = document.getElementById('res-circle');
+
+            // ── Action Text & Color ──
+            let actionText = "";
+            let statsHTML = "";
+
+            if (isSafe) {
+                const maxBunks = calcMaxBunks(attended, total, target);
+
+                if (isEdge || maxBunks === 0) {
+                    actionText = `⚠️ Bilkul boundary pe khada hai! Ek bhi bunk aur tu danger zone mein!`;
+                    circle.style.borderColor = "var(--warning-yellow)";
+
+                    const pctAfter1Bunk = percentAfterBunks(attended, total, 1).toFixed(1);
+                    statsHTML = `
+                        <div class="stat-item">
+                            <div class="stat-label">Current %</div>
+                            <div class="stat-value warning">${currentPercent.toFixed(1)}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Safe Bunks Left</div>
+                            <div class="stat-value warning">${maxBunks} class${maxBunks === 1 ? '' : 'es'}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">% After 1 Bunk</div>
+                            <div class="stat-value danger">${pctAfter1Bunk}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Target</div>
+                            <div class="stat-value">${target}%</div>
+                        </div>
+                    `;
+                } else {
+                    actionText = `✅ Safe Zone! Tu ${maxBunks} aur classes bunk kar sakta hai.`;
+                    circle.style.borderColor = "var(--safe-green)";
+
+                    const halfBunks = Math.floor(maxBunks / 2);
+                    const pctAfterHalf = percentAfterBunks(attended, total, halfBunks).toFixed(1);
+                    const pctAfterAll = percentAfterBunks(attended, total, maxBunks).toFixed(1);
+                    statsHTML = `
+                        <div class="stat-item">
+                            <div class="stat-label">Current %</div>
+                            <div class="stat-value safe">${currentPercent.toFixed(1)}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Max Bunks Available</div>
+                            <div class="stat-value safe">${maxBunks} classes</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">% After ${halfBunks} Bunks</div>
+                            <div class="stat-value">${pctAfterHalf}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">% If All Bunks Used</div>
+                            <div class="stat-value warning">${pctAfterAll}%</div>
+                        </div>
+                    `;
+                }
+            } else {
+                const needed = calcClassesNeeded(attended, total, target);
+                actionText = `🚨 Danger! Tujhe lagatar ${needed} classes attend karni padengi bina ek bhi miss kiye.`;
+                circle.style.borderColor = "var(--danger-red)";
+
+                const pctAfter10 = projectedPercent(attended, total, Math.min(10, needed)).toFixed(1);
+                const gap = (target - currentPercent).toFixed(1);
+                statsHTML = `
+                    <div class="stat-item">
+                        <div class="stat-label">Current %</div>
+                        <div class="stat-value danger">${currentPercent.toFixed(1)}%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Gap to Target</div>
+                        <div class="stat-value danger">-${gap}%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Classes Needed</div>
+                        <div class="stat-value danger">${needed} consecutive</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">% After ${Math.min(10, needed)} Classes</div>
+                        <div class="stat-value warning">${pctAfter10}%</div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('res-action').innerText = actionText;
+            document.getElementById('stats-grid').innerHTML = statsHTML;
+
+            // ── Build mathAnalysis for AI prompt ──
+            const maxBunks = isSafe ? calcMaxBunks(attended, total, target) : 0;
+            const needed = !isSafe ? calcClassesNeeded(attended, total, target) : 0;
+            mathAnalysis = `
+Student Attendance Data:
+- Total classes held: ${total}
+- Classes attended: ${attended}
+- Current percentage: ${currentPercent.toFixed(2)}%
+- Target percentage: ${target}%
+- Status: ${isSafe ? (isEdge || maxBunks === 0 ? "AT EDGE (0 buffer)" : `SAFE ZONE`) : "DANGER ZONE"}
+${isSafe
+                    ? `- Maximum additional classes student can bunk (while staying ≥${target}%): ${maxBunks}
+- Percentage after using all ${maxBunks} bunks: ${percentAfterBunks(attended, total, maxBunks).toFixed(2)}%`
+                    : `- Consecutive classes student must attend without missing any to reach ${target}%: ${needed}
+- Projected % after attending ${needed} consecutive classes: ${projectedPercent(attended, total, needed).toFixed(2)}%`
+                }
+- Summary: ${actionText}
+            `.trim();
+        }
+
+        // ─────────────────────────────────────────────
+        // AI EXPLAIN
+        // ─────────────────────────────────────────────
         async function explainWithAI() {
             const aiArea = document.getElementById('ai-analysis');
             const aiText = document.getElementById('ai-text');
@@ -172,57 +680,429 @@
 
             aiArea.style.display = 'block';
             aiLoading.style.display = 'flex';
-            aiText.innerText = "";
+            aiText.innerHTML = `<span style="color: var(--light-brown); font-weight: 500; font-style: italic;">Wait, check kar raha hu...</span>`;
             explainBtn.disabled = true;
+            explainBtn.innerText = "Processing... ⏳";
+            rawBotReply = "";
 
-            const prompt = `${mathAnalysis}. Mera ek best friend bankar mujhe deep aur friendly detail me samjhao ki ye calculation kaise hui? Mujhe dilaasa do aur ek solid plan batao ki main apni attendance kaise improve karu bina stress liye. Jawab ekdum human touch me dena.`;
+            const userName = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
+
+            const prompt = `
+You are not an AI tool. You are not an attendance calculator.
+
+You are ${currentUser ? currentUser.displayName.split(" ")[0] : "Dost"}'s most trusted college senior — 
+someone who has personally navigated the brutal attendance game, 
+knows every rule, every loophole, every mistake students make, 
+and genuinely wants this person to come out on top.
+
+THE EXACT NUMBERS:
+${mathAnalysis}
+
+════════════════════════════════════════
+🧠 BEFORE YOU WRITE — THE INTERNAL SCAN
+════════════════════════════════════════
+
+Read the numbers silently. Then feel the real situation:
+
+→ How serious is this actually?
+   Calculate the precise gap between current % and target %.
+   Is this a minor course correction or a genuine crisis?
+
+→ What does this attendance % tell you about this student's college life?
+   Someone at 45% isn't lazy — they're probably overwhelmed, stressed, or dealing with something real.
+   Someone at 73% when target is 75% is one bad week away from trouble.
+   Someone at 85% is safe but needs to know exactly how much buffer they have.
+
+→ What is the PRECISE math behind their situation?
+   Do the actual calculations:
+   - If they're SAFE: exactly how many classes can they miss before hitting danger?
+   - If they're in DANGER: exactly how many consecutive classes must they attend?
+   - If they're at the EDGE: what's the next 2 weeks going to look like?
+
+→ What are the REAL RISKS they might not be thinking about?
+   Sick days? Festivals? College events? Last-minute leaves?
+   Factor real life into this — not just raw numbers.
+
+Only after this full scan — begin writing.
+
+════════════════════════════════════════
+📝 TONE & LANGUAGE
+════════════════════════════════════════
+
+Write exactly like a college senior who's been through this.
+Someone who looks at these numbers and immediately knows the reality — 
+and tells it straight, with warmth.
+
+Language: Natural Hinglish — real, warm, zero corporate fluff.
+Tone: Senior bhaiya energy — honest, caring, practical.
+Format: Markdown (##, **, -) but every line feels human and real.
+
+Never start with: "Based on your attendance data" or "It appears that"
+Start from the feeling these numbers give — is this a relief? A wake-up call? A close call?
+
+════════════════════════════════════════
+⚡ SECTION 1 — SEEDHA BAAT: TERI ACTUAL SITUATION
+════════════════════════════════════════
+
+## ⚡ Teri Actual Situation — Koi Sugarcoat Nahi
+
+Open with ONE honest line that captures the real vibe of these numbers.
+Not generic. Specific to exactly where they stand.
+
+Examples of the ENERGY (never copy, generate fresh):
+- If 85%+: "Yrr tu actually safe zone mein hai — aur teri safety margin se zyada hai jo tu soch raha hai."
+- If exactly at target: "Bhai tu bilkul boundary pe khada hai — ek absent aur scene kharab."  
+- If 5-10% below: "Okay, ye fixable hai — but fix karna padega, ignore karne ka time nahi."
+- If 15%+ below: "Main tujhse seedha baat karta hu — ye serious hai. Par serious ka matlab hopeless nahi."
+- If extremely low: "Yaar, ye ek tough conversation hogi — but tu sahi jagah aa gaya."
+
+Then do the COMPLETE MATH — show the exact calculations transparently:
+
+**Current Status:**
+- Total Classes: [X]
+- Attended: [Y]  
+- Current %: [Z%]
+- Target: [T%]
+- Gap: [exactly how many % away]
+
+**The Precise Reality:**
+
+IF SAFE ZONE:
+"Abhi tu [Z%] pe hai, target [T%] ka hai.
+Matlab tu [exact number] classes aur miss kar sakta hai TABHI BHI target pe rahega.
+Iske baad ek bhi miss ki toh danger zone."
+
+Show the formula openly:
+"Formula: Agar tune X aur classes miss ki, tera % hoga: (Y) / (Total + 0) × 100 = [result]"
+
+IF DANGER ZONE:
+"Abhi tu [Z%] pe hai, target [T%] chahiye.
+Tujhe [exact number] consecutive classes attend karni padenge bina ek bhi miss kiye.
+Har ek class attend karne ke baad tera % [calculate kya hoga] ho jaayega."
+
+Show the recovery math:
+"Har class attend karne se tera % [X] points badhega approximately."
+
+IF AT EDGE:
+"Tu [Z%] pe hai — matlab [exact number] classes ki safety hai.
+Ek class miss = [new %]. Do miss = [new %]. Teen miss = DANGER."
+
+Make the math crystal clear and specific. No vagueness.
+
+════════════════════════════════════════
+📅 SECTION 2 — REAL LIFE RISK ASSESSMENT
+════════════════════════════════════════
+
+## 📅 Real Life Risks Jo Tu Bhool Raha Hai
+
+This is what separates real advice from generic calculator output.
+
+Based on their numbers, identify the REAL hidden risks:
+
+**Upcoming Threats to Attendance:**
+- Festivals and holidays coming up (college may have unexpected offs that reset expectations)
+- Exam seasons where students tend to skip pre-exam classes
+- If they're in danger zone — illness is a genuine threat: 
+  "Agar kal fever aa gaya aur 3 din miss hue, tera % [calculate] ho jaayega"
+- Project deadlines and submission days where students skip classes
+- The psychology trap: "Safe feel ho raha hai toh aur bunk maaro" — this is how safe becomes danger
+
+**The Buffer You Actually Need:**
+Don't just tell them the minimum — tell them the SAFE buffer:
+"Calculator kehta hai tu [X] classes miss kar sakta hai.
+Par real life mein mere hisaab se [X-3] se zyada mat miss karna —
+kyunki unexpected cheezein hamesha hoti hain. Ye teri real safety margin hai."
+
+════════════════════════════════════════
+🗓️ SECTION 3 — WEEK-BY-WEEK RECOVERY / MAINTENANCE PLAN
+════════════════════════════════════════
+
+## 🗓️ Aage Ka Concrete Plan
+
+NOT generic "attend all classes" advice.
+A realistic, week-by-week plan based on their ACTUAL numbers.
+
+**IF IN DANGER ZONE:**
+
+Week 1 Goal: Attend every single class. Zero exceptions.
+"Ye week sabse critical hai — agar tu ek bhi miss kiya toh 
+recovery time double ho jaata hai."
+Calculate: "Week 1 ke end mein tera % [calculate] hoga."
+
+Week 2 Goal: [calculate target for week 2]
+"Ab tera % [X] hoga. Recovery is visible. Keep going."
+
+Week 3+: [when they'll hit target, exactly]
+"Agar tune plan follow kiya — exactly [date/week] mein tu [target]% cross kar lega."
+
+Give them a FINISH LINE — specific and calculated.
+
+**IF IN SAFE ZONE:**
+
+"Tu safe hai — but ye strategy follow kar:
+- Maximum consecutive bunks jo tu afford kar sakta hai: [exact number]
+- Ek subject mein poora quota mat daalo — spread karo across subjects
+- [Month] ke end mein ek baar dobara calculate karna — things change"
+
+**IF AT EDGE:**
+
+"Next 2 weeks zero tolerance policy — no bunks, no exceptions.
+After 2 weeks: [calculate new %]
+Tab 1-2 bunks ki space milegi — par abhi nahi."
+
+════════════════════════════════════════
+🧠 SECTION 4 — SMART ATTENDANCE STRATEGIES
+════════════════════════════════════════
+
+## 🧠 Chalaaki Ke Saath Attendance Manage Karna
+
+Real strategies that actually work — not "just attend all classes":
+
+**Priority Subject Strategy:**
+"Sab subjects equally important nahi hote.
+Pehle check kar — kaunse subjects mein teri attendance sabse kharab hai?
+Wahan focus karo. Strong subjects mein thodi flexibility hai."
+
+**The Proxy Risk Reality:**
+"Agar proxy ka scene hai teri college mein — 
+main tujhe encourage nahi kar raha, par reality ye hai ki ye risky hai.
+Ek caught = attendance cancel. Risk vs reward soch le khud."
+
+**The Smart Bunk Strategy (If Safe):**
+"Bunk karna hai toh smarter way se:
+- Back-to-back classes ke beech wali bunk zyada efficient hai
+- Friday last period aur Monday first period — safest bunks
+- Teacher jo attendance strictly lete hain unki class kabhi mat chodo"
+
+**The Medical Leave Hack:**
+"Agar genuinely sick ho — medical certificate le lo.
+Kai colleges mein medical leave attendance mein count hoti hai.
+Apne college ka rule check karo — ye ek legitimate option hai."
+
+**The Early Warning System:**
+"Apne phone mein reminder set karo:
+Har Sunday raat attendance calculate karo.
+Agar kisi bhi subject mein [target - 5%] se neeche aayi — 
+wo subject next week ke liye priority."
+
+════════════════════════════════════════
+⚠️ SECTION 5 — MISTAKES JO STUDENTS YAHIN DOOBTE HAIN
+════════════════════════════════════════
+
+## ⚠️ Ye Galtiyan Mat Karna
+
+Based on their specific numbers — name the traps:
+
+**If Safe Zone:**
+"Sabse bada risk tera ye hai — 'Main safe hu' soch ke aur relax kar lena.
+Maine bohot students dekhe hain jo 80% pe the aur 2 hafte baad 70% pe the.
+Buffer real lagta hai — tab tak jab tak use khatam nahi kar dete."
+
+**If Danger Zone:**
+"Ye mat karna: ek din attend kiya, next din skip. Ye pattern kaam nahi karta.
+Consecutive attendance se percentage zyada fast recover hoti hai.
+Scattered attendance se recovery bahut slow hoti hai — math hai ye."
+
+**If At Edge:**
+"'Kal se pakka' wali soch abhi bahut dangerous hai.
+Kal se nahi — aaj ki next class se."
+
+════════════════════════════════════════
+🔥 SECTION 6 — EK BAAT SEEDHA DIL SE
+════════════════════════════════════════
+
+## 🔥 Ek Baat — Seedha Teri Situation Ke Baare Mein
+
+End with something real and specific — not motivational poster lines.
+
+If numbers are genuinely bad:
+"Main jaanta hu ye numbers dekhke stress hota hai.
+Par ye bhi jaanta hu ki [their specific calculation] — 
+ye numbers recoverable hain agar next [X weeks] seriously lo.
+Tujhe perfect nahi banana — bas target cross karna hai. Ye doable hai."
+
+If numbers are fine but close:
+"Tu safe hai — par I've seen this exact situation flip in 2 weeks.
+[Specific number] classes ka buffer lagta hai bohot — until it isn't.
+Bas smart reh, overconfident mat ho."
+
+If numbers are great:
+"Teri attendance genuinely solid hai — tu already discipline dikha raha hai.
+Ye maintain kar. Bas ek cheez — [specific advice based on their exact %]."
+
+Make them feel: "Yaar isko exactly meri situation samajh aayi — aur ab mujhe pata hai kya karna hai."
+
+════════════════════════════════════════
+⚠️ ABSOLUTE NEVER-DO LIST
+════════════════════════════════════════
+
+❌ Never give generic "attend all classes" advice without specific numbers
+❌ Never ignore the math — show actual calculations openly
+❌ Never pretend the situation is fine when it isn't
+❌ Never use robotic phrases like "Based on your data" or "It appears that"
+❌ Never give the same advice regardless of whether they're safe or in danger
+❌ Never skip the real-life risk assessment — raw numbers aren't the full picture
+❌ Ending with "Hope this helps!" or "Best of luck!" is banned
+
+════════════════════════════════════════
+✅ THE FINAL CHECK
+════════════════════════════════════════
+
+After writing everything, ask yourself:
+
+"If this student followed exactly what I said — 
+given THESE specific numbers — 
+would they actually hit their attendance target?"
+
+If yes → good. Send it.
+If it's still generic → go back. Make the calculations more specific.
+Name their exact numbers in every section. Make every piece of advice 
+feel like it was written ONLY for someone with these exact numbers.
+
+Minimum length: 500-700 words.
+Every section should feel mathematically precise AND humanly warm.
+`;
 
             try {
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: prompt, userName: currentUser ? currentUser.displayName.split(" ")[0] : "Dost" })
+                    body: JSON.stringify({
+                        message: prompt,
+                        userName: userName
+                    })
                 });
-                const data = await response.json();
-                aiLoading.style.display = 'none';
 
-                if (data && data.candidates) {
-                    let reply = data.candidates[0].content.parts[0].text;
-                    let index = 0;
-                    // 🔥 TYPEWRITER EFFECT 🔥
-                    let interval = setInterval(() => {
-                        if (index <= reply.length) {
-                            aiText.innerHTML = marked.parse(reply.substring(0, index));
-                            index += 3;
-                        } else {
-                            clearInterval(interval);
-                            continueBtn.style.display = 'block';
-                        }
-                    }, 15);
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
                 }
+
+                // SSE Streaming
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let isFirstChunk = true;
+                let buffer = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split("\n");
+
+                    // Keep last incomplete line in buffer
+                    buffer = lines.pop();
+
+                    for (const line of lines) {
+                        if (!line.startsWith("data: ")) continue;
+                        const payload = line.substring(6).trim();
+                        if (!payload || payload === "[DONE]") continue;
+
+                        try {
+                            const json = JSON.parse(payload);
+
+                            // Handle error from API
+                            if (json.error) {
+                                aiLoading.style.display = 'none';
+                                aiText.innerHTML = `<span class='text-danger fw-bold'>Error: ${json.error.message || json.error}</span>`;
+                                explainBtn.innerText = "🤔 Explain me how? Kya karu?";
+                                explainBtn.disabled = false;
+                                return;
+                            }
+
+                            // Gemini response structure
+                            const textChunk = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+                            if (textChunk) {
+                                if (isFirstChunk) {
+                                    aiLoading.style.display = 'none';
+                                    aiText.innerHTML = "";
+                                    isFirstChunk = false;
+                                }
+                                rawBotReply += textChunk;
+                                aiText.innerHTML = marked.parse(rawBotReply);
+                            }
+                        } catch (parseErr) {
+                            // Partial JSON line — skip silently
+                        }
+                    }
+                }
+
+                // Handle anything left in buffer after stream ends
+                if (buffer.startsWith("data: ")) {
+                    try {
+                        const json = JSON.parse(buffer.substring(6).trim());
+                        const textChunk = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (textChunk) {
+                            rawBotReply += textChunk;
+                            aiText.innerHTML = marked.parse(rawBotReply);
+                        }
+                    } catch (_) { /* ignore */ }
+                }
+
+                // If stream ended but nothing was written (empty response)
+                if (isFirstChunk) {
+                    aiLoading.style.display = 'none';
+                    aiText.innerHTML = `<span class='text-danger fw-bold'>AI ne koi response nahi diya. Dobara try karo!</span>`;
+                    explainBtn.innerText = "🤔 Try Again";
+                    explainBtn.disabled = false;
+                    return;
+                }
+
+                explainBtn.style.display = "none";
+                continueBtn.style.display = 'block';
+
             } catch (err) {
+                console.error("Streaming Error:", err);
                 aiLoading.style.display = 'none';
-                aiText.innerText = "Backend band hai shayad!";
+                aiText.innerHTML = `<span class='text-danger fw-bold'>Backend se connect nahi ho paya yaar! Network check kar lo.</span>`;
+                explainBtn.innerText = "🤔 Try Again";
+                explainBtn.disabled = false;
             }
         }
 
+        // ─────────────────────────────────────────────
+        // CONTINUE TO MAIN CHAT
+        // ─────────────────────────────────────────────
         function continueToMainChat() {
-            if (!currentUser) { alert("Pehle login karlo main page par!"); return; }
+            if (!currentUser) {
+                showToast("Bhai, aage baat karne ke liye pehle homepage par ja kar login karlo!", 'error');
+                setTimeout(() => { window.location.href = 'index.html'; }, 2000); // 2 second baad bhejenge
+                return;
+            }
+
+            if (!rawBotReply) {
+                showToast("Pehle AI se explain karwao, tab chat mein le jaayenge!", 'error');
+                return;
+            }
+
+            const continueBtn = document.getElementById('continue-btn');
+            continueBtn.innerText = "Chat prepare ho rahi hai... ⏳";
+            continueBtn.disabled = true;
+
             const newChatId = "attendance_" + Date.now();
             const msgs = [
-                { role: 'user', text: "Bhai meri attendance analyze karo." },
-                { role: 'bot', text: document.getElementById('ai-text').innerText },
-                { role: 'bot', text: "Haa bhai, ab btao?? Aage kya janna hai attendance ke baare mein ya kuch aur? 😊" }
+                { role: 'user', text: `Meri attendance analyze karke plan batao. Mera data: ${mathAnalysis}` },
+                { role: 'bot', text: rawBotReply },
+                { role: 'bot', text: "Haa bhai, ab btao?? Aage kya janna hai attendance ke baare mein ya kuch aur plan banana hai? 😊" }
             ];
 
-            database.ref('userChats/' + currentUser.uid + '/' + newChatId).set({
-                title: "📅 Attendance Talk",
-                messages: msgs
-            }).then(() => {
-                localStorage.setItem('activeChatId', newChatId);
-                window.location.href = 'index.html';
-            });
+            database.ref('userChats/' + currentUser.uid + '/' + newChatId)
+                .set({
+                    title: "📅 Attendance Planning",
+                    messages: msgs
+                })
+                .then(() => {
+                    localStorage.setItem('activeChatId', newChatId);
+                    window.location.href = 'index.html';
+                })
+                .catch((err) => {
+                    console.error("Firebase save error:", err);
+                    continueBtn.innerText = "💬 Continue Chat with AI";
+                    continueBtn.disabled = false;
+                    showToast("Chat save nahi ho paya. Internet check karo!", 'error'); // 🔥 Alert hata diya!
+                });
         }
     </script>
 </body>
+
 </html>

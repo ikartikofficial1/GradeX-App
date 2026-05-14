@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kharcha Manager - GradeX</title>
+    <title>Expense Manager - GradeX</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -27,9 +27,10 @@
             --card-bg: #241514; --card-shadow: rgba(0, 0, 0, 0.4);
         }
 
-        body { background-color: var(--bg-body); color: var(--text-main); font-family: "Lexend Deca", sans-serif; min-height: 100vh; display: flex; flex-direction: column; transition: 0.3s; }
-        .top-navbar { padding: 20px 30px; border-bottom: 1px solid rgba(192, 133, 82, 0.15); }
-        .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px var(--card-shadow); }
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: "Lexend Deca", sans-serif; min-height: 100vh; display: flex; flex-direction: column; transition: background-color 0.3s ease, color 0.3s ease; }
+        
+        .top-navbar { padding: 20px 30px; border-bottom: 1px solid rgba(192, 133, 82, 0.15); display: flex; justify-content: flex-start; align-items: center;}
+        .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
         .back-btn:hover { background: var(--light-brown); color: white; transform: translateX(-3px); }
 
         .main-container { flex-grow: 1; display: flex; justify-content: center; padding: 30px 20px; }
@@ -58,6 +59,7 @@
         
         /* Custom Scrollbar for list */
         .transaction-list::-webkit-scrollbar { width: 5px; }
+        .transaction-list::-webkit-scrollbar-track { background: transparent; }
         .transaction-list::-webkit-scrollbar-thumb { background: rgba(192, 133, 82, 0.3); border-radius: 10px; }
 
         .txn-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid transparent; }
@@ -102,6 +104,36 @@
 </head>
 
 <body>
+    <script>
+        (function() {
+            function updateThemeUI(themeValue) {
+                const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = themeValue === "dark" || (themeValue === "system" && prefersDarkOS);
+                
+                if (isDark) document.body.classList.add("dark-theme");
+                else document.body.classList.remove("dark-theme");
+            }
+
+            // 1. Initial Load (Runs instantly before page draws)
+            const savedTheme = localStorage.getItem("theme") || "system";
+            updateThemeUI(savedTheme);
+
+            // 2. Listen for Live OS Theme Changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem("theme") === "system") {
+                    updateThemeUI("system");
+                }
+            });
+
+            // 3. CROSS-TAB SYNCHRONIZATION
+            // Listens to changes from index.html and applies instantly!
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') {
+                    updateThemeUI(e.newValue || "system");
+                }
+            });
+        })();
+    </script>
     <div class="top-navbar">
         <a href="tools.html" class="back-btn"><span>←</span> Back to Tools</a>
     </div>
@@ -151,19 +183,17 @@
         const database = firebase.database();
         let currentUser = null;
 
-        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
-
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
-                loadTransactionsRealtime(); // User aate hi data load karna shuru
+                loadTransactionsRealtime(); // Load data once logged in
             } else {
-                alert("Pehle login karlo bhai!");
+                alert("Please log in first, my friend!");
                 window.location.href = 'index.html';
             }
         });
 
-        // 🔥 LOGIC 1: ADD TRANSACTION KAISE HOGA 🔥
+        // 🔥 LOGIC 1: ADD TRANSACTION 🔥
         function addTransaction(type) {
             const amountInput = document.getElementById('txn-amount');
             const reasonInput = document.getElementById('txn-reason');
@@ -171,19 +201,19 @@
             const amount = parseFloat(amountInput.value);
             const reason = reasonInput.value.trim();
 
-            if (!amount || amount <= 0) return alert("Bhai koi theek sa amount daal!");
-            if (!reason) return alert("Paisa kahan gaya/kahan se aaya, wo reason toh likh de!");
+            if (!amount || amount <= 0) return alert("Please enter a valid amount!");
+            if (!reason) return alert("Please enter a reason for this transaction!");
 
             const txnId = "txn_" + Date.now();
             
-            // Firebase me entry save karna
+            // Save entry to Firebase
             database.ref('userFinance/' + currentUser.uid + '/transactions/' + txnId).set({
-                type: type, // 'credit' ya 'debit'
+                type: type, // 'credit' or 'debit'
                 amount: amount,
                 reason: reason,
                 timestamp: Date.now()
             }).then(() => {
-                // Save hone ke baad dabbe khali kar do
+                // Clear input boxes after saving
                 amountInput.value = "";
                 reasonInput.value = "";
                 amountInput.focus();
@@ -201,8 +231,7 @@
                 let totalBalance = 0;
 
                 if (data) {
-                    // Firebase ke random keys ko Array me convert karke Time ke hisaab se Sort kar rahe hain
-                    // Taki sabse nayi entry sabse upar dikhe
+                    // Convert Firebase objects to an Array and sort by Time (newest first)
                     const transactionsArray = Object.keys(data).map(key => data[key]).sort((a, b) => b.timestamp - a.timestamp);
 
                     transactionsArray.forEach(txn => {
@@ -223,7 +252,7 @@
                         const dateObj = new Date(txn.timestamp);
                         const dateStr = dateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
-                        // 3. List me add karna
+                        // 3. Add to List
                         listArea.innerHTML += `
                             <div class="txn-item ${bgClass}">
                                 <div>
@@ -235,10 +264,10 @@
                         `;
                     });
                 } else {
-                    listArea.innerHTML = `<div class="text-center opacity-50 mt-3">Koi kharcha nahi! Paise bacha raha hai bhai! 💰</div>`;
+                    listArea.innerHTML = `<div class="text-center opacity-50 mt-3">No transactions yet. Start tracking your expenses! 💰</div>`;
                 }
 
-                // Final Balance ko UI par update karna
+                // Update Final Balance on UI
                 balanceDisplay.innerText = "₹" + totalBalance.toLocaleString('en-IN');
             });
         }

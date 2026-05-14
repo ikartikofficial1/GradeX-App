@@ -7,10 +7,7 @@
     <title>CGPA Calculator - GradeX</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* 🔥 THEME VARIABLES 🔥 */
@@ -26,7 +23,7 @@
             --card-shadow: rgba(140, 90, 60, 0.08);
         }
 
-        /* 🌑 DARK THEME (Automatically apply if user set it in chat) 🌑 */
+        /* 🌑 DARK THEME 🌑 */
         body.dark-theme {
             --bg-body: #1c1110;
             --text-main: #e6dfd8;
@@ -213,31 +210,324 @@
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 500px) {
-            .calculator-card {
-                padding: 25px;
-            }
-
-            .stat-value {
-                font-size: 26px;
-            }
+            .calculator-card { padding: 25px; }
+            .stat-value { font-size: 26px; }
         }
+        /* ═══════════════════════════════════════ */
+/* 🔥 PREMIUM UI — CGPA CALCULATOR CSS    */
+/* ═══════════════════════════════════════ */
+
+/* ── Remove number input arrows ── */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Card max-width wider for college mode ── */
+.calculator-card { max-width: 620px !important; }
+
+/* ── Mode Toggle ── */
+.mode-toggle-wrapper {
+    display: flex;
+    background: var(--bg-body);
+    border-radius: 14px;
+    padding: 5px;
+    border: 1px solid rgba(192, 133, 82, 0.18);
+    margin-bottom: 24px;
+    gap: 4px;
+}
+.mode-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-family: "Lexend Deca", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 10px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+.mode-btn:hover { opacity: 0.85; }
+.mode-btn.active {
+    background: var(--med-brown);
+    color: white;
+    opacity: 1;
+    box-shadow: 0 2px 10px rgba(140, 90, 60, 0.25);
+}
+
+/* ── Mode description text ── */
+.mode-desc {
+    font-size: 13.5px;
+    opacity: 0.7;
+    text-align: center;
+    margin-bottom: 22px;
+    line-height: 1.6;
+}
+
+/* ── Subject Row (College Mode) ── */
+.subject-row {
+    background: var(--bg-body);
+    border: 1.5px solid rgba(192, 133, 82, 0.15);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+.subject-row:hover {
+    border-color: rgba(192, 133, 82, 0.35);
+    box-shadow: 0 2px 12px rgba(140, 90, 60, 0.06);
+}
+.subject-row:focus-within {
+    border-color: var(--light-brown);
+    box-shadow: 0 0 0 3px rgba(192, 133, 82, 0.08);
+}
+
+/* ── Subject row inner inputs ── */
+.subject-row .custom-input {
+    padding: 10px 12px;
+    font-size: 13.5px;
+    border-radius: 9px;
+    border-width: 1.5px;
+    margin-bottom: 0;
+    font-family: "Lexend Deca", sans-serif;
+}
+
+/* ── Subject row labels ── */
+.subject-row .sub-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* ── Remove button ── */
+.remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 15px;
+    cursor: pointer;
+    opacity: 0.3;
+    transition: all 0.2s;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin-top: 20px;
+}
+.remove-btn:hover {
+    opacity: 1;
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.08);
+    transform: scale(1.1);
+}
+
+/* ── Add Subject Button ── */
+.add-subject-btn {
+    background: rgba(192, 133, 82, 0.06);
+    border: 1.5px dashed rgba(192, 133, 82, 0.35);
+    color: var(--med-brown);
+    width: 100%;
+    padding: 11px;
+    border-radius: 12px;
+    font-family: "Lexend Deca", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-bottom: 16px;
+    letter-spacing: 0.2px;
+}
+.add-subject-btn:hover {
+    background: rgba(192, 133, 82, 0.12);
+    border-color: var(--light-brown);
+    transform: translateY(-1px);
+}
+.add-subject-btn:active { transform: translateY(0); }
+
+/* ── Subject count badge ── */
+.subject-count-badge {
+    display: inline-block;
+    background: rgba(192, 133, 82, 0.12);
+    color: var(--med-brown);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* ── Breakdown Table ── */
+.breakdown-wrap {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(192, 133, 82, 0.18);
+}
+.breakdown-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--med-brown);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+.breakdown-table {
+    width: 100%;
+    font-size: 13px;
+    border-collapse: collapse;
+}
+.breakdown-table th {
+    opacity: 0.5;
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 6px 8px 0;
+    text-align: center;
+    border-bottom: 1px solid rgba(192, 133, 82, 0.15);
+}
+.breakdown-table th:first-child { text-align: left; }
+.breakdown-table td {
+    padding: 9px 6px 9px 0;
+    text-align: center;
+    border-bottom: 1px solid rgba(192, 133, 82, 0.07);
+    vertical-align: middle;
+}
+.breakdown-table td:first-child { 
+    text-align: left; 
+    font-weight: 500;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.breakdown-table tr:last-child td { border-bottom: none; }
+
+/* ── Grade chips ── */
+.grade-chip {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 11.5px;
+    background: rgba(140, 90, 60, 0.1);
+    color: var(--med-brown);
+    letter-spacing: 0.3px;
+}
+.grade-chip.outstanding { background: rgba(46, 204, 113, 0.12); color: #1a8a4a; }
+.grade-chip.excellent   { background: rgba(52, 152, 219, 0.12); color: #1a6fa3; }
+.grade-chip.fail        { background: rgba(231, 76, 60, 0.1);   color: #c0392b; }
+
+body.dark-theme .grade-chip.outstanding { color: #2ecc71; background: rgba(46, 204, 113, 0.15); }
+body.dark-theme .grade-chip.excellent   { color: #5dade2; background: rgba(52, 152, 219, 0.15); }
+body.dark-theme .grade-chip.fail        { color: #e74c3c; background: rgba(231, 76, 60, 0.15); }
+
+/* ── Formula row in table footer ── */
+.formula-row td {
+    padding-top: 12px !important;
+    font-size: 12px;
+    opacity: 0.65;
+    border-top: 1.5px solid rgba(192, 133, 82, 0.2) !important;
+    border-bottom: none !important;
+    font-weight: 600;
+}
+
+/* ── Scale note below result ── */
+.scale-note {
+    font-size: 11px;
+    opacity: 0.45;
+    text-align: center;
+    margin-top: 14px;
+    line-height: 1.5;
+    letter-spacing: 0.1px;
+}
+
+/* ── Result box upgrades ── */
+.result-box {
+    border-left: 3px solid var(--light-brown);
+    border-radius: 16px 16px 16px 13px;
+}
+.stat-label { letter-spacing: 1.2px; font-size: 11px; }
+.stat-value { 
+    font-size: 30px; 
+    background: linear-gradient(135deg, var(--med-brown), var(--light-brown));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── Smooth row entrance animation ── */
+@keyframes rowSlideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.subject-row { animation: rowSlideIn 0.2s ease; }
+
+/* ── Mobile fixes ── */
+@media (max-width: 600px) {
+    .calculator-card { padding: 20px 16px !important; }
+    .mode-btn { font-size: 12px; padding: 9px 6px; }
+    .subject-row { padding: 12px; }
+    .subject-row .custom-input { padding: 9px 10px; font-size: 13px; }
+    .stat-value { font-size: 24px; }
+    .breakdown-table { font-size: 12px; }
+    .breakdown-table th,
+    .breakdown-table td { padding: 7px 4px 7px 0; }
+    .add-subject-btn { font-size: 13px; padding: 10px; }
+}
     </style>
 </head>
 
 <body>
+    <script>
+        (function() {
+            function updateThemeUI(themeValue) {
+                const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = themeValue === "dark" || (themeValue === "system" && prefersDarkOS);
+                
+                if (isDark) document.body.classList.add("dark-theme");
+                else document.body.classList.remove("dark-theme");
+            }
 
+            // 1. Initial Load (Runs instantly before page draws)
+            const savedTheme = localStorage.getItem("theme") || "system";
+            updateThemeUI(savedTheme);
+
+            // 2. Listen for Live OS Theme Changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem("theme") === "system") {
+                    updateThemeUI("system");
+                }
+            });
+
+            // 3. CROSS-TAB SYNCHRONIZATION
+            // Listens to changes from index.html and applies instantly!
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') {
+                    updateThemeUI(e.newValue || "system");
+                }
+            });
+        })();
+    </script>
     <div class="top-navbar">
         <a href="tools.html" class="back-btn">
             <span>←</span> Back to Tools
@@ -249,15 +539,32 @@
             <div class="tool-icon">📊</div>
             <h2 class="tool-title">Performance Calculator</h2>
 
-            <div class="input-group-custom">
-                <label>Total Marks</label>
-                <input type="number" id="total-marks" class="custom-input" placeholder="e.g., 500">
+            <!-- Replace your inputs section with this -->
+<div id="subjects-container">
+                <div class="subject-row" id="subject-1">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-5">
+                            <span class="sub-label">Subject</span>
+                            <input type="text" class="custom-input" id="sub-name-1" placeholder="e.g. Maths">
+                        </div>
+                        <div class="col-3">
+                            <span class="sub-label">Marks %</span>
+                            <input type="number" class="custom-input" id="sub-marks-1" placeholder="78" min="0" max="100">
+                        </div>
+                        <div class="col-3">
+                            <span class="sub-label">Credits</span>
+                            <input type="number" class="custom-input" id="sub-credits-1" placeholder="4" min="1" max="6">
+                        </div>
+                        <div class="col-1 d-flex">
+                            <button class="remove-btn" onclick="removeSubject(1)" title="Remove">✕</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="input-group-custom">
-                <label>Marks Obtained</label>
-                <input type="number" id="obtained-marks" class="custom-input" placeholder="e.g., 420">
-            </div>
+<button onclick="addSubject()" class="reset-btn" style="margin-top: 10px;">
+  + Add Subject
+</button>
 
             <button class="calc-btn" onclick="calculateScore()">Calculate Now</button>
             <button class="reset-btn" onclick="resetCalculator()">Reset</button>
@@ -290,96 +597,542 @@
         </div>
     </div>
 
-    <script>
-        // 🔥 DARK MODE SYNC (Agar chat dark hai, toh ye page bhi dark khulega) 🔥
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-theme');
+ <script>
+        // ─────────────────────────────────────────────
+        // FIREBASE INIT
+        // ─────────────────────────────────────────────
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
+            authDomain: "my-gemini-bot-gradex.firebaseapp.com",
+            databaseURL: "https://my-gemini-bot-gradex-default-rtdb.firebaseio.com/",
+            projectId: "my-gemini-bot-gradex",
+            storageBucket: "my-gemini-bot-gradex.firebasestorage.app",
+            messagingSenderId: "979133444805",
+            appId: "1:979133444805:web:e1bc587482362365e2b6ac"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+        const database = firebase.database();
+        let currentUser = null;
+        auth.onAuthStateChanged(user => { currentUser = user; });
+ 
+        // ─────────────────────────────────────────────
+        // STATE
+        // ─────────────────────────────────────────────
+        let mathAnalysis = "";
+        let rawBotReply = "";
+ 
+        // ─────────────────────────────────────────────
+        // CORE ATTENDANCE LOGIC (Pure functions — easy to test)
+        // ─────────────────────────────────────────────
+ 
+        /**
+         * Calculate how many MORE classes a student can bunk
+         * while STILL staying at or above the target %.
+         *
+         * Derivation:
+         *   After bunking B more classes:
+         *     attended / (total + B) >= target/100
+         *   => attended >= target/100 * (total + B)
+         *   => attended - target/100 * total >= target/100 * B
+         *   => B <= (attended - target/100 * total) / (target/100)
+         *
+         * Note: future classes still happen — we only bunk them,
+         * total keeps rising. This formula correctly handles that.
+         *
+         * @param {number} attended
+         * @param {number} total
+         * @param {number} targetPct  (0–100)
+         * @returns {number} max bunks allowed (0 if already at/below target)
+         */
+        function calcMaxBunks(attended, total, targetPct) {
+            const t = targetPct / 100;
+            const bunks = Math.floor((attended - t * total) / t);
+            return Math.max(0, bunks);
         }
-
-        // 🔥 ENTER KEY LISTENER 🔥
-        document.getElementById('total-marks').addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') calculateScore();
-        });
-        document.getElementById('obtained-marks').addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') calculateScore();
-        });
-
-        // 🔥 CALCULATION ENGINE 🔥
-        function calculateScore() {
-            const total = parseFloat(document.getElementById('total-marks').value);
-            const obtained = parseFloat(document.getElementById('obtained-marks').value);
-
-            const resultArea = document.getElementById('result-area');
-            const errorMsg = document.getElementById('error-msg');
-            const successData = document.getElementById('success-data');
-
-            resultArea.style.display = 'block';
-
-            // Validations
-            if (isNaN(total) || isNaN(obtained)) {
-                successData.style.display = 'none';
-                errorMsg.style.display = 'block';
-                errorMsg.innerText = "Dost, dono boxes mein numbers daalna zaroori hai!";
-                return;
+ 
+        /**
+         * Calculate how many CONSECUTIVE classes a student must attend
+         * (without missing any) to reach the target %.
+         *
+         * Derivation:
+         *   After attending N more consecutive classes:
+         *     (attended + N) / (total + N) >= target/100
+         *   => attended + N >= target/100 * (total + N)
+         *   => attended + N >= target/100 * total + target/100 * N
+         *   => N - target/100 * N >= target/100 * total - attended
+         *   => N * (1 - target/100) >= target/100 * total - attended
+         *   => N >= (target/100 * total - attended) / (1 - target/100)
+         *
+         * @param {number} attended
+         * @param {number} total
+         * @param {number} targetPct  (0–100)
+         * @returns {number} classes needed (0 if already at/above target)
+         */
+        function calcClassesNeeded(attended, total, targetPct) {
+            const t = targetPct / 100;
+            if (t >= 1) return Infinity; // target = 100% is impossible to recover
+            const needed = Math.ceil((t * total - attended) / (1 - t));
+            return Math.max(0, needed);
+        }
+ 
+        /**
+         * What % will the student have after attending N more consecutive classes?
+         * (Used to show projected recovery %)
+         */
+        function projectedPercent(attended, total, extraAttended) {
+            const newAttended = attended + extraAttended;
+            const newTotal = total + extraAttended;
+            return (newAttended / newTotal) * 100;
+        }
+ 
+        /**
+         * What % will the student have after bunking N more classes?
+         */
+        function percentAfterBunks(attended, total, bunks) {
+            const newTotal = total + bunks;
+            return newTotal === 0 ? 0 : (attended / newTotal) * 100;
+        }
+ 
+        // ─────────────────────────────────────────────
+        // INPUT VALIDATION
+        // ─────────────────────────────────────────────
+        function validateInputs(total, attended, target) {
+            if (isNaN(total) || isNaN(attended) || isNaN(target)) {
+                return "Saari fields bharo bhai! Koi field khali nahi rehni chahiye.";
+            }
+            if (!Number.isInteger(total) || !Number.isInteger(attended)) {
+                return "Classes sirf whole numbers mein hoti hain — decimal mat daalo!";
             }
             if (total <= 0) {
-                successData.style.display = 'none';
-                errorMsg.style.display = 'block';
-                errorMsg.innerText = "Total marks 0 nahi ho sakte bhai!";
+                return "Total classes kam se kam 1 honi chahiye!";
+            }
+            if (attended < 0) {
+                return "Attended classes negative nahi ho sakti!";
+            }
+            if (attended > total) {
+                return "Attended classes, total classes se zyada nahi ho sakti bhai!";
+            }
+            if (target <= 0 || target >= 100) {
+                return "Target percentage 1% aur 99% ke beech honi chahiye!";
+            }
+            return null; // null = no error
+        }
+ 
+        // ─────────────────────────────────────────────
+        // MAIN CALCULATE FUNCTION
+        // ─────────────────────────────────────────────
+        function calculateAttendance() {
+            const totalRaw = document.getElementById('total-classes').value.trim();
+            const attendedRaw = document.getElementById('attended-classes').value.trim();
+            const targetRaw = document.getElementById('target-percent').value.trim();
+ 
+            const total    = Number(totalRaw);
+            const attended = Number(attendedRaw);
+            const target   = Number(targetRaw);
+ 
+            // Validate
+            const error = validateInputs(total, attended, target);
+            if (error) {
+                alert(error);
                 return;
             }
-            if (obtained > total) {
-                successData.style.display = 'none';
-                errorMsg.style.display = 'block';
-                errorMsg.innerText = "Aise kaise? Obtained marks total se zyada kaise aa gaye? 😂";
+ 
+            const currentPercent = (attended / total) * 100;
+            const isSafe = currentPercent >= target;
+            const isEdge = isSafe && (currentPercent - target) < 2; // within 2% of target
+ 
+            // ── UI Reset ──
+            document.getElementById('result-area').style.display = 'block';
+            document.getElementById('ai-analysis').style.display = 'none';
+            document.getElementById('continue-btn').style.display = 'none';
+            document.getElementById('ai-text').innerHTML = '';
+ 
+            const explainBtn = document.getElementById('explain-btn');
+            explainBtn.style.display = 'block';
+            explainBtn.disabled = false;
+            explainBtn.innerText = "🤔 Explain me how? Kya karu?";
+ 
+            // ── Percent Circle ──
+            document.getElementById('res-percent').innerText = currentPercent.toFixed(1) + "%";
+            const circle = document.getElementById('res-circle');
+ 
+            // ── Action Text & Color ──
+            let actionText = "";
+            let statsHTML  = "";
+ 
+            if (isSafe) {
+                const maxBunks = calcMaxBunks(attended, total, target);
+ 
+                if (isEdge || maxBunks === 0) {
+                    // Exactly at target — zero buffer
+                    actionText = `⚠️ Bilkul boundary pe khada hai! Ek bhi bunk aur tu danger zone mein!`;
+                    circle.style.borderColor = "var(--warning-yellow)";
+ 
+                    const pctAfter1Bunk = percentAfterBunks(attended, total, 1).toFixed(1);
+                    statsHTML = `
+                        <div class="stat-item">
+                            <div class="stat-label">Current %</div>
+                            <div class="stat-value warning">${currentPercent.toFixed(1)}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Safe Bunks Left</div>
+                            <div class="stat-value warning">${maxBunks} class${maxBunks === 1 ? '' : 'es'}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">% After 1 Bunk</div>
+                            <div class="stat-value danger">${pctAfter1Bunk}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Target</div>
+                            <div class="stat-value">${target}%</div>
+                        </div>
+                    `;
+                } else {
+                    // Comfortably safe
+                    actionText = `✅ Safe Zone! Tu ${maxBunks} aur classes bunk kar sakta hai.`;
+                    circle.style.borderColor = "var(--safe-green)";
+ 
+                    // Show % after using half the buffer (to feel realistic)
+                    const halfBunks     = Math.floor(maxBunks / 2);
+                    const pctAfterHalf  = percentAfterBunks(attended, total, halfBunks).toFixed(1);
+                    const pctAfterAll   = percentAfterBunks(attended, total, maxBunks).toFixed(1);
+                    statsHTML = `
+                        <div class="stat-item">
+                            <div class="stat-label">Current %</div>
+                            <div class="stat-value safe">${currentPercent.toFixed(1)}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Max Bunks Available</div>
+                            <div class="stat-value safe">${maxBunks} classes</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">% After ${halfBunks} Bunks</div>
+                            <div class="stat-value">${pctAfterHalf}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">% If All Bunks Used</div>
+                            <div class="stat-value warning">${pctAfterAll}%</div>
+                        </div>
+                    `;
+                }
+            } else {
+                // Danger zone
+                const needed = calcClassesNeeded(attended, total, target);
+                actionText = `🚨 Danger! Tujhe lagatar ${needed} classes attend karni padengi bina ek bhi miss kiye.`;
+                circle.style.borderColor = "var(--danger-red)";
+ 
+                // Show projected % after attending 10, 20, and 'needed' classes
+                const pctAfter10     = projectedPercent(attended, total, Math.min(10, needed)).toFixed(1);
+                const pctAfterNeeded = projectedPercent(attended, total, needed).toFixed(1);
+                const gap            = (target - currentPercent).toFixed(1);
+                statsHTML = `
+                    <div class="stat-item">
+                        <div class="stat-label">Current %</div>
+                        <div class="stat-value danger">${currentPercent.toFixed(1)}%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Gap to Target</div>
+                        <div class="stat-value danger">-${gap}%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Classes Needed</div>
+                        <div class="stat-value danger">${needed} consecutive</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">% After ${Math.min(10, needed)} Classes</div>
+                        <div class="stat-value warning">${pctAfter10}%</div>
+                    </div>
+                `;
+            }
+ 
+            document.getElementById('res-action').innerText = actionText;
+            document.getElementById('stats-grid').innerHTML = statsHTML;
+ 
+            // ── Build mathAnalysis for AI prompt ──
+            const maxBunks = isSafe ? calcMaxBunks(attended, total, target) : 0;
+            const needed   = !isSafe ? calcClassesNeeded(attended, total, target) : 0;
+            mathAnalysis = `
+Student Attendance Data:
+- Total classes held: ${total}
+- Classes attended: ${attended}
+- Current percentage: ${currentPercent.toFixed(2)}%
+- Target percentage: ${target}%
+- Status: ${isSafe ? (isEdge || maxBunks === 0 ? "AT EDGE (0 buffer)" : `SAFE ZONE`) : "DANGER ZONE"}
+${isSafe
+    ? `- Maximum additional classes student can bunk (while staying ≥${target}%): ${maxBunks}
+- Percentage after using all ${maxBunks} bunks: ${percentAfterBunks(attended, total, maxBunks).toFixed(2)}%`
+    : `- Consecutive classes student must attend without missing any to reach ${target}%: ${needed}
+- Projected % after attending ${needed} consecutive classes: ${projectedPercent(attended, total, needed).toFixed(2)}%`
+}
+- Summary: ${actionText}
+            `.trim();
+        }
+ 
+        // ─────────────────────────────────────────────
+        // AI EXPLAIN
+        // ─────────────────────────────────────────────
+        async function explainWithAI() {
+            const aiArea    = document.getElementById('ai-analysis');
+            const aiText    = document.getElementById('ai-text');
+            const aiLoading = document.getElementById('ai-loading');
+            const continueBtn = document.getElementById('continue-btn');
+            const explainBtn  = document.getElementById('explain-btn');
+ 
+            aiArea.style.display = 'block';
+            aiLoading.style.display = 'flex';
+            aiText.innerHTML = `<span style="color: var(--light-brown); font-weight: 500; font-style: italic;">Wait, check kar raha hu...</span>`;
+            explainBtn.disabled = true;
+            explainBtn.innerText = "Processing... ⏳";
+            rawBotReply = "";
+ 
+            const userName = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
+ 
+            const prompt = `
+You are not an AI tool. You are not an attendance calculator.
+ 
+You are ${userName}'s most trusted college senior — 
+someone who has personally navigated the brutal attendance game, 
+knows every rule, every loophole, every mistake students make, 
+and genuinely wants this person to come out on top.
+ 
+THE EXACT NUMBERS (already verified and calculated for you):
+${mathAnalysis}
+ 
+════════════════════════════════════════
+🧠 BEFORE YOU WRITE — THE INTERNAL SCAN
+════════════════════════════════════════
+ 
+Read the numbers silently. Then feel the real situation:
+ 
+→ How serious is this actually?
+   Calculate the precise gap between current % and target %.
+   Is this a minor course correction or a genuine crisis?
+ 
+→ What does this attendance % tell you about this student's college life?
+   Someone at 45% isn't lazy — they're probably overwhelmed, stressed, or dealing with something real.
+   Someone at 73% when target is 75% is one bad week away from trouble.
+   Someone at 85% is safe but needs to know exactly how much buffer they have.
+ 
+→ What is the PRECISE math behind their situation?
+   The numbers above are already calculated. Use them directly — don't recalculate.
+   Reference them in every section.
+ 
+→ What are the REAL RISKS they might not be thinking about?
+   Sick days? Festivals? College events? Last-minute leaves?
+   Factor real life into this — not just raw numbers.
+ 
+Only after this full scan — begin writing.
+ 
+════════════════════════════════════════
+📝 TONE & LANGUAGE
+════════════════════════════════════════
+ 
+Write exactly like a college senior who's been through this.
+Language: Natural Hinglish — real, warm, zero corporate fluff.
+Tone: Senior bhaiya energy — honest, caring, practical.
+Format: Markdown (##, **, -) but every line feels human and real.
+ 
+Never start with: "Based on your attendance data" or "It appears that"
+ 
+════════════════════════════════════════
+⚡ SECTION 1 — SEEDHA BAAT: TERI ACTUAL SITUATION
+════════════════════════════════════════
+ 
+## ⚡ Teri Actual Situation — Koi Sugarcoat Nahi
+ 
+Open with ONE honest line that captures the real vibe of these numbers.
+Then reference the EXACT numbers from the data above — show the math transparently.
+ 
+════════════════════════════════════════
+📅 SECTION 2 — REAL LIFE RISK ASSESSMENT
+════════════════════════════════════════
+ 
+## 📅 Real Life Risks Jo Tu Bhool Raha Hai
+ 
+Based on their numbers, identify REAL hidden risks:
+- Illness, festivals, project deadlines, psychology trap of "I'm safe so I'll bunk more"
+- Always recommend a SAFE buffer = (max bunks - 3) or similar — not the mathematical maximum
+ 
+════════════════════════════════════════
+🗓️ SECTION 3 — WEEK-BY-WEEK PLAN
+════════════════════════════════════════
+ 
+## 🗓️ Aage Ka Concrete Plan
+ 
+NOT generic advice. Week-by-week based on ACTUAL numbers.
+If danger: calculate what % they'll have after 1 week, 2 weeks of full attendance.
+If safe: how to maintain and when to recalculate.
+Give them a FINISH LINE — specific.
+ 
+════════════════════════════════════════
+🧠 SECTION 4 — SMART STRATEGIES
+════════════════════════════════════════
+ 
+## 🧠 Chalaaki Ke Saath Manage Karna
+ 
+Real strategies: priority subject approach, smart bunk distribution, medical leave awareness, weekly tracking habit.
+ 
+════════════════════════════════════════
+🔥 SECTION 5 — EK BAAT SEEDHA DIL SE
+════════════════════════════════════════
+ 
+## 🔥 Ek Baat — Seedha Teri Situation Ke Baare Mein
+ 
+End with something real and specific — not motivational poster lines.
+Make them feel: "Yaar isko exactly meri situation samajh aayi."
+ 
+════════════════════════════════════════
+⚠️ ABSOLUTE NEVER-DO LIST
+════════════════════════════════════════
+ 
+❌ Never give generic advice without specific numbers
+❌ Never recalculate — use the numbers provided above directly
+❌ Never use robotic phrases like "Based on your data"
+❌ Never end with "Hope this helps!" or "Best of luck!"
+❌ Never ignore real-life risks
+ 
+Minimum length: 500-700 words. Every section: mathematically precise AND humanly warm.
+`;
+ 
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: prompt,
+                        userName: userName
+                    })
+                });
+ 
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+ 
+                // SSE Streaming
+                const reader  = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let isFirstChunk = true;
+                let buffer = "";
+ 
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+ 
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split("\n");
+ 
+                    // Keep last incomplete line in buffer
+                    buffer = lines.pop();
+ 
+                    for (const line of lines) {
+                        if (!line.startsWith("data: ")) continue;
+                        const payload = line.substring(6).trim();
+                        if (!payload || payload === "[DONE]") continue;
+ 
+                        try {
+                            const json = JSON.parse(payload);
+ 
+                            // Handle error from API
+                            if (json.error) {
+                                aiLoading.style.display = 'none';
+                                aiText.innerHTML = `<span class='text-danger fw-bold'>Error: ${json.error.message || json.error}</span>`;
+                                explainBtn.innerText = "🤔 Explain me how? Kya karu?";
+                                explainBtn.disabled = false;
+                                return;
+                            }
+ 
+                            // Gemini response structure
+                            const textChunk = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+                            if (textChunk) {
+                                if (isFirstChunk) {
+                                    aiLoading.style.display = 'none';
+                                    aiText.innerHTML = "";
+                                    isFirstChunk = false;
+                                }
+                                rawBotReply += textChunk;
+                                aiText.innerHTML = marked.parse(rawBotReply);
+                            }
+                        } catch (parseErr) {
+                            // Partial JSON line — skip silently
+                        }
+                    }
+                }
+ 
+                // Handle anything left in buffer after stream ends
+                if (buffer.startsWith("data: ")) {
+                    try {
+                        const json = JSON.parse(buffer.substring(6).trim());
+                        const textChunk = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (textChunk) {
+                            rawBotReply += textChunk;
+                            aiText.innerHTML = marked.parse(rawBotReply);
+                        }
+                    } catch (_) { /* ignore */ }
+                }
+ 
+                // If stream ended but nothing was written (empty response)
+                if (isFirstChunk) {
+                    aiLoading.style.display = 'none';
+                    aiText.innerHTML = `<span class='text-danger fw-bold'>AI ne koi response nahi diya. Dobara try karo!</span>`;
+                    explainBtn.innerText = "🤔 Try Again";
+                    explainBtn.disabled = false;
+                    return;
+                }
+ 
+                explainBtn.style.display = "none";
+                continueBtn.style.display = 'block';
+ 
+            } catch (err) {
+                console.error("Streaming Error:", err);
+                aiLoading.style.display = 'none';
+                aiText.innerHTML = `<span class='text-danger fw-bold'>Backend se connect nahi ho paya yaar! Network check kar lo.</span>`;
+                explainBtn.innerText = "🤔 Try Again";
+                explainBtn.disabled = false;
+            }
+        }
+ 
+        // ─────────────────────────────────────────────
+        // CONTINUE TO MAIN CHAT
+        // ─────────────────────────────────────────────
+        function continueToMainChat() {
+            if (!currentUser) {
+                alert("Bhai, aage baat karne ke liye pehle homepage par ja kar login karlo!");
+                window.location.href = 'index.html';
                 return;
             }
-            if (obtained < 0) {
-                successData.style.display = 'none';
-                errorMsg.style.display = 'block';
-                errorMsg.innerText = "Negative marks laaya hai kya? 0 se upar daal!";
+ 
+            if (!rawBotReply) {
+                alert("Pehle AI se explain karwao, tab chat mein le jaayenge!");
                 return;
             }
-
-            // Calculations
-            let percentage = (obtained / total) * 100;
-
-            let cgpa = percentage / 9.5;
-            if (cgpa > 10) cgpa = 10; 
-
-            // Determine Grade
-            let grade = "";
-            let emoji = "";
-            if (percentage >= 90) { grade = "A+ (Outstanding)"; emoji = "🌟"; }
-            else if (percentage >= 80) { grade = "A (Excellent)"; emoji = "🔥"; }
-            else if (percentage >= 70) { grade = "B+ (Very Good)"; emoji = "🚀"; }
-            else if (percentage >= 60) { grade = "B (Good)"; emoji = "👍"; }
-            else if (percentage >= 40) { grade = "C (Average)"; emoji = "📚"; }
-            else { grade = "Fail (Needs Work)"; emoji = "💔"; }
-
-            // Update UI
-            errorMsg.style.display = 'none';
-            successData.style.display = 'block';
-
-            document.getElementById('res-percent').innerText = percentage.toFixed(2) + "%";
-            document.getElementById('res-cgpa').innerText = cgpa.toFixed(1);
-            document.getElementById('res-grade').innerText = grade;
-            document.getElementById('res-emoji').innerText = emoji;
-        } // <-- Yahan calculateScore khatam hua!
-
-        // 🔥 RESET ENGINE 🔥
-        function resetCalculator() {
-            // Inputs khali karna
-            document.getElementById('total-marks').value = '';
-            document.getElementById('obtained-marks').value = '';
-            
-            // Result box gayab karna
-            document.getElementById('result-area').style.display = 'none';
-            document.getElementById('error-msg').style.display = 'none';
-            document.getElementById('success-data').style.display = 'none';
-            
-            // Cursor wapas pehle dabbe me le aana taaki user direct type kar sake
-            document.getElementById('total-marks').focus();
+ 
+            const continueBtn = document.getElementById('continue-btn');
+            continueBtn.innerText = "Chat prepare ho rahi hai... ⏳";
+            continueBtn.disabled = true;
+ 
+            const newChatId = "attendance_" + Date.now();
+            const msgs = [
+                { role: 'user', text: `Meri attendance analyze karke plan batao. Mera data: ${mathAnalysis}` },
+                { role: 'bot',  text: rawBotReply },
+                { role: 'bot',  text: "Haa bhai, ab btao?? Aage kya janna hai attendance ke baare mein ya kuch aur plan banana hai? 😊" }
+            ];
+ 
+            database.ref('userChats/' + currentUser.uid + '/' + newChatId)
+                .set({
+                    title: "📅 Attendance Planning",
+                    messages: msgs
+                })
+                .then(() => {
+                    localStorage.setItem('activeChatId', newChatId);
+                    window.location.href = 'index.html';
+                })
+                .catch((err) => {
+                    console.error("Firebase save error:", err);
+                    continueBtn.innerText = "💬 Continue Chat with AI";
+                    continueBtn.disabled = false;
+                    alert("Chat save nahi ho paya. Internet check karo aur dobara try karo!");
+                });
         }
     </script>
 </body>

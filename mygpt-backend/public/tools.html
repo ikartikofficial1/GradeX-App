@@ -42,7 +42,7 @@
         .top-navbar { 
             padding: 20px 30px; 
             display: flex; 
-            justify-content: space-between; 
+            justify-content: flex-start; 
             align-items: center; 
             border-bottom: 1px solid rgba(192, 133, 82, 0.15); 
             background-color: var(--bg-body);
@@ -54,9 +54,6 @@
         
         .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 10px var(--card-shadow); }
         .back-btn:hover { background: var(--light-brown); color: white; transform: translateX(-3px); }
-        
-        .theme-toggle-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
-        .theme-toggle-btn:hover { background: var(--light-brown); color: white; transform: scale(1.05); }
 
         /* 🛠️ MAIN CONTAINER */
         .main-container { padding: 40px 20px 60px; max-width: 1200px; margin: 0 auto; }
@@ -161,16 +158,44 @@
 </head>
 
 <body>
+    <script>
+        (function() {
+            function updateThemeUI(themeValue) {
+                const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = themeValue === "dark" || (themeValue === "system" && prefersDarkOS);
+                
+                if (isDark) document.body.classList.add("dark-theme");
+                else document.body.classList.remove("dark-theme");
+            }
 
+            // 1. Initial Load (Runs instantly before the page is fully drawn)
+            const savedTheme = localStorage.getItem("theme") || "system";
+            updateThemeUI(savedTheme);
+
+            // 2. Listen for Live OS Theme Changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem("theme") === "system") {
+                    updateThemeUI("system");
+                }
+            });
+
+            // 3. CROSS-TAB SYNCHRONIZATION
+            // Listens to changes from index.html and applies instantly!
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') {
+                    updateThemeUI(e.newValue || "system");
+                }
+            });
+        })();
+    </script>
     <div class="top-navbar">
         <a href="index.html" class="back-btn"><span>←</span> Back to Chat</a>
-        <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
     </div>
 
     <div class="main-container">
         <div class="page-header">
             <h1 class="page-title">🛠️ GradeX Arsenal</h1>
-            <p class="page-subtitle">Tumhari academic aur college life ko hack karne ke liye sabhi premium tools ek jagah.</p>
+            <p class="page-subtitle">All the premium tools you need to hack your academic and college life, in one place.</p>
         </div>
 
         <div class="row g-4 justify-content-center">
@@ -179,7 +204,7 @@
                 <div class="tool-card delay-1">
                     <div class="icon-circle"><span>🧠</span></div>
                     <h3 class="tool-name">AI Performance Analyzer</h3>
-                    <p class="tool-description">Apne subjects aur marks manually enter karo, AI tumhe reality check aur deep diagnosis dega.</p>
+                    <p class="tool-description">Manually enter your subjects and marks, and the AI will give you a reality check and a deep diagnosis.</p>
                     <a href="analyzer.html" class="launch-btn">Launch Tool 🚀</a>
                 </div>
             </div>
@@ -188,7 +213,7 @@
                 <div class="tool-card delay-2">
                     <div class="icon-circle"><span>🤖</span></div>
                     <h3 class="tool-name">Auto-Strategy Builder</h3>
-                    <p class="tool-description">Bina type kiye apne Cloud Vault se data sync karo aur AI se Master Study Plan banwao.</p>
+                    <p class="tool-description">Sync data from your Cloud Vault without typing and let AI build your Master Study Plan.</p>
                     <a href="auto-analyzer.html" class="launch-btn">Launch Tool 🚀</a>
                 </div>
             </div>
@@ -197,7 +222,7 @@
                 <div class="tool-card delay-3">
                     <div class="icon-circle"><span>📄</span></div>
                     <h3 class="tool-name">Resume Roaster & Builder</h3>
-                    <p class="tool-description">Pehle strict HR bankar tumhara resume roast hoga, phir Career Coach bankar theek hoga.</p>
+                    <p class="tool-description">First, your resume gets roasted by a strict HR, then rebuilt by an expert Career Coach.</p>
                     <a href="resume.html" class="launch-btn">Launch Tool 🚀</a>
                 </div>
             </div>
@@ -206,8 +231,8 @@
                 <div class="tool-card delay-4">
                     <div class="icon-circle"><span>💸</span></div>
                     <h3 class="tool-name">Pocket Money Manager</h3>
-                    <p class="tool-description">Hostel aur college ke daily kharcho ka hisaab. Live balance aur Red/Green transaction history.</p>
-                    <a href="expense.html" class="launch-btn">Launch Tool 🚀</a>
+                    <p class="tool-description">Track your daily hostel and college expenses. Live balance and Red/Green transaction history.</p>
+                    <a href="Deep-expense-tracker.html" class="launch-btn">Launch Tool 🚀</a>
                 </div>
             </div>
 
@@ -215,7 +240,7 @@
                 <div class="tool-card delay-5">
                     <div class="icon-circle"><span>⏳</span></div>
                     <h3 class="tool-name">Time vs Syllabus Hacker</h3>
-                    <p class="tool-description">Sirf din aur topics batao. 80/20 rule ke hisaab se AI batayega kya ratna hai aur kya chhodna hai.</p>
+                    <p class="tool-description">Just enter the days left and topics. Using the 80/20 rule, AI tells you exactly what to study and skip.</p>
                     <a href="syllabus.html" class="launch-btn">Launch Tool 🚀</a>
                 </div>
             </div>
@@ -224,7 +249,7 @@
                 <div class="tool-card delay-6">
                     <div class="icon-circle"><span>📊</span></div>
                     <h3 class="tool-name">Attendance Manager</h3>
-                    <p class="tool-description">Target set karo aur dekho kitni classes lagatar attend karni hain. Bunk safe-zone check karo.</p>
+                    <p class="tool-description">Set your target and see how many consecutive classes you need to attend. Check your bunk safe-zone.</p>
                     <a href="attendance.html" class="launch-btn">Launch Tool 🚀</a>
                 </div>
             </div>
@@ -233,7 +258,7 @@
                 <div class="tool-card delay-7">
                     <div class="icon-circle"><span>🗄️</span></div>
                     <h3 class="tool-name">My Academic Vault</h3>
-                    <p class="tool-description">Apne subjects aur marks ko permanently cloud me save karo taaki baaki tools unhe use kar sakein.</p>
+                    <p class="tool-description">Permanently save your subjects and marks in the cloud so other tools can use them seamlessly.</p>
                     <a href="vault.html" class="launch-btn">Launch Tool 🚀</a>
                 </div>
             </div>
@@ -242,34 +267,12 @@
                 <div class="tool-card delay-8">
                     <div class="icon-circle"><span>🎯</span></div>
                     <h3 class="tool-name">Target CGPA Predictor</h3>
-                    <p class="tool-description">Check karo ki apni dream company ke cut-off tak pahunchne ke liye bache hue sems me kitni mehnat chahiye.</p>
+                    <p class="tool-description">Check how much effort you need in the remaining semesters to reach your dream company's cut-off.</p>
                     <a href="cgpa.html" class="launch-btn">Launch Tool 🚀</a>
                 </div>
             </div>
 
         </div>
     </div>
-
-    <script>
-        function applyTheme(theme) {
-            const btn = document.getElementById('theme-btn');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-                btn.innerText = "☀️";
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.body.classList.remove('dark-theme');
-                btn.innerText = "🌙";
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        if (localStorage.getItem('theme') === 'dark') applyTheme('dark');
-
-        function toggleTheme() {
-            if (document.body.classList.contains('dark-theme')) applyTheme('light');
-            else applyTheme('dark');
-        }
-    </script>
 </body>
 </html>

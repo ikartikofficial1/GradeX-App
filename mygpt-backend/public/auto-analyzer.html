@@ -7,56 +7,267 @@
     <title>Auto AI Strategy - GradeX</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
+        /* 🔥 THEME VARIABLES 🔥 */
         :root {
-            --bg-body: #FFF8F0; --text-main: #2c1a18;
-            --light-brown: #C08552; --med-brown: #8C5A3C; --dark-brown: #4B2E2B;
-            --card-bg: #ffffff; --card-shadow: rgba(140, 90, 60, 0.08);
+            --bg-body: #FFF8F0;
+            --text-main: #2c1a18;
+            --light-brown: #C08552;
+            --med-brown: #8C5A3C;
+            --dark-brown: #4B2E2B;
+            --card-bg: #ffffff;
+            --card-shadow: rgba(140, 90, 60, 0.08);
         }
 
         body.dark-theme {
-            --bg-body: #1c1110; --text-main: #e6dfd8;
-            --card-bg: #241514; --card-shadow: rgba(0, 0, 0, 0.4);
+            --bg-body: #1c1110;
+            --text-main: #e6dfd8;
+            --card-bg: #241514;
+            --card-shadow: rgba(0, 0, 0, 0.4);
         }
 
-        body { background-color: var(--bg-body); color: var(--text-main); font-family: "Lexend Deca", sans-serif; min-height: 100vh; display: flex; flex-direction: column; transition: 0.3s; }
-        .top-navbar { padding: 20px 30px; border-bottom: 1px solid rgba(192, 133, 82, 0.15); }
-        .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px var(--card-shadow); }
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: "Lexend Deca", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
 
-        .main-container { flex-grow: 1; display: flex; justify-content: center; padding: 30px 20px; }
-        .analyzer-card { background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px var(--card-shadow); border: 1px solid rgba(192, 133, 82, 0.15); width: 100%; max-width: 800px; animation: fadeInUp 0.5s ease; }
+        /* 🔝 NAVBAR */
+        .top-navbar {
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(192, 133, 82, 0.15);
+        }
 
-        .data-box { background: rgba(192, 133, 82, 0.05); border: 1px dashed rgba(192, 133, 82, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14.5px; }
-        
-        .analyze-btn { background-color: var(--med-brown); color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-weight: 600; font-size: 16px; transition: 0.3s; box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2); }
-        .analyze-btn:hover:not(:disabled) { background-color: var(--dark-brown); transform: translateY(-2px); }
-        .analyze-btn:disabled { background-color: #d4c5ba; cursor: not-allowed; transform: none; }
+        .back-btn {
+            background: var(--card-bg);
+            border: 1px solid rgba(192, 133, 82, 0.3);
+            color: var(--text-main);
+            padding: 8px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px var(--card-shadow);
+            transition: all 0.3s ease;
+        }
 
-        .ai-result-box { margin-top: 30px; background: rgba(192, 133, 82, 0.05); border-left: 4px solid var(--light-brown); border-radius: 12px; padding: 25px; display: none; font-size: 15.5px; line-height: 1.7; }
-        
+        .back-btn:hover {
+            background: var(--light-brown);
+            color: white;
+            transform: translateX(-3px);
+        }
+
+        /* 🛠️ MAIN CONTAINER */
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            padding: 30px 20px;
+        }
+
+        .analyzer-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px var(--card-shadow);
+            border: 1px solid rgba(192, 133, 82, 0.15);
+            width: 100%;
+            max-width: 800px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .data-box {
+            background: rgba(192, 133, 82, 0.05);
+            border: 1px dashed rgba(192, 133, 82, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14.5px;
+        }
+
+        .analyze-btn {
+            background-color: var(--med-brown);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2);
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            background-color: var(--dark-brown);
+            transform: translateY(-2px);
+        }
+
+        .analyze-btn:disabled {
+            background-color: #d4c5ba;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .ai-result-box {
+            margin-top: 30px;
+            background: rgba(192, 133, 82, 0.05);
+            border-left: 4px solid var(--light-brown);
+            border-radius: 12px;
+            padding: 25px;
+            display: none;
+            font-size: 15.5px;
+            line-height: 1.7;
+        }
+
         /* GEMINI LOADER */
-        .loader-container { display: flex; justify-content: center; align-items: center; position: relative; width: 50px; height: 50px; margin: 20px auto; }
-        .spinner-ring { position: absolute; width: 100%; height: 100%; border: 3px solid rgba(192, 133, 82, 0.2); border-top-color: var(--light-brown); border-radius: 50%; animation: spin 1s linear infinite; }
-        .loader-logo { width: 25px; height: 25px; object-fit: contain; animation: pulse 1.5s ease-in-out infinite; }
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+        }
+
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid rgba(192, 133, 82, 0.2);
+            border-top-color: var(--light-brown);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-logo {
+            width: 25px;
+            height: 25px;
+            object-fit: contain;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
 
         /* CONTINUE CHAT BUTTON */
-        .continue-btn { background-color: transparent; border: 2px solid var(--med-brown); color: var(--med-brown); width: 100%; padding: 14px; border-radius: 16px; font-weight: 600; font-size: 16px; margin-top: 25px; transition: 0.3s; display: none; }
-        .continue-btn:hover { background-color: var(--med-brown); color: white; transform: translateY(-2px); }
+        .continue-btn {
+            background-color: transparent;
+            border: 2px solid var(--med-brown);
+            color: var(--med-brown);
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 25px;
+            transition: 0.3s;
+            display: none;
+        }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.8; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .continue-btn:hover {
+            background-color: var(--med-brown);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        #ai-content h3,
+        #ai-content h4 {
+            color: var(--med-brown);
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        #ai-content strong {
+            color: var(--light-brown);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <script>
+        (function () {
+            function updateThemeUI(themeValue) {
+                const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = themeValue === "dark" || (themeValue === "system" && prefersDarkOS);
+
+                if (isDark) document.body.classList.add("dark-theme");
+                else document.body.classList.remove("dark-theme");
+            }
+
+            // 1. Initial Load (Runs instantly before page draws)
+            const savedTheme = localStorage.getItem("theme") || "system";
+            updateThemeUI(savedTheme);
+
+            // 2. Listen for Live OS Theme Changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem("theme") === "system") {
+                    updateThemeUI("system");
+                }
+            });
+
+            // 3. CROSS-TAB SYNCHRONIZATION
+            // Listens to changes from index.html and applies instantly!
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') {
+                    updateThemeUI(e.newValue || "system");
+                }
+            });
+        })();
+    </script>
     <div class="top-navbar">
         <a href="tools.html" class="back-btn"><span>←</span> Back to Chat</a>
     </div>
@@ -64,10 +275,11 @@
     <div class="main-container">
         <div class="analyzer-card">
             <h2 class="text-center fw-bold mb-3" style="color: var(--med-brown);">🤖 Master Auto-Strategy</h2>
-            <p class="text-center opacity-75 mb-4">Tumhara Vault data padh kar AI ek deep, detailed aur personalized Action Plan banayega.</p>
+            <p class="text-center opacity-75 mb-4">The AI will read your Vault data to create a deep, detailed, and
+                personalized Action Plan.</p>
 
             <div class="data-box" id="vault-data-preview">
-                <span class="opacity-75">Cloud Vault se data sync ho raha hai... ☁️</span>
+                <span class="opacity-75">Syncing data from Cloud Vault... ☁️</span>
             </div>
 
             <button id="generate-btn" class="analyze-btn" onclick="generateStrategy()" disabled>
@@ -77,16 +289,19 @@
             <div id="result-area" class="ai-result-box">
                 <div id="loading-spinner" class="loader-container" style="display: none;">
                     <div class="spinner-ring"></div>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" class="loader-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg"
+                        class="loader-logo" alt="AI">
                 </div>
                 <div id="ai-content"></div>
 
-                <button id="continue-btn" class="continue-btn" onclick="continueToMainChat()">💬 Continue Chatting with AI</button>
+                <button id="continue-btn" class="continue-btn" onclick="continueToMainChat()">💬 Continue Chatting with
+                    AI</button>
             </div>
         </div>
     </div>
 
     <script>
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
             authDomain: "my-gemini-bot-gradex.firebaseapp.com",
@@ -99,19 +314,17 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
         const database = firebase.database();
-        
-        let currentUser = null;
-        let fetchedMarksString = ""; 
-        let savedAiResponse = ""; // Chat history ke liye
 
-        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+        let currentUser = null;
+        let fetchedMarksString = "";
+        let rawBotReply = "";
 
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
                 fetchVaultData();
             } else {
-                alert("Pehle login karlo bhai!");
+                alert("Please log in first, my friend!");
                 window.location.href = 'index.html';
             }
         });
@@ -122,10 +335,10 @@
 
             database.ref('userMarks/' + currentUser.uid).once('value').then((snapshot) => {
                 const data = snapshot.val();
-                
+
                 if (data) {
                     let displayHtml = "<strong>Your Academic Vault Data:</strong><br>";
-                    fetchedMarksString = ""; 
+                    fetchedMarksString = "";
 
                     Object.keys(data).forEach(id => {
                         let sub = data[id].name;
@@ -135,9 +348,9 @@
                     });
 
                     previewBox.innerHTML = displayHtml;
-                    genBtn.disabled = false; 
+                    genBtn.disabled = false;
                 } else {
-                    previewBox.innerHTML = `<span class="text-danger">Tumhara Vault khali hai! Pehle 'My Academic Vault' me jakar apne subjects aur marks save karo.</span>`;
+                    previewBox.innerHTML = `<span class="text-danger">Your Vault is empty! First, go to 'My Academic Vault' and save your subjects and marks.</span>`;
                     genBtn.innerText = "Vault is empty";
                 }
             });
@@ -156,62 +369,312 @@
             resultArea.style.display = 'block';
             aiContent.style.display = 'none';
             spinner.style.display = 'flex';
+            rawBotReply = "";
 
-            const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
+            const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Friend";
 
-            // 🔥 THE MASTER PROMPT (Deep Detail Engineering) 🔥
+            // 🔥 FULL ENGLISH PROMPT 🔥
             const secretInstruction = `
-            Mere Academic Vault mein ye marks save hain: [${fetchedMarksString}].
-            
-            Mera ekdam best friend aur ek expert Academic Mentor bankar in marks ka "Deep Detailed Diagnosis" karo. 
-            Mujhe ek lamba, detailed, aur pyaar bhara response chahiye jo mujhe sach me help kare.
-            
-            Ye cheezein cover karna:
-            1. Har subject ko detail me analyze karo (Weak aur Strong points).
-            2. Ekdam practical "Weekly Routine" bana kar do (Ki mujhe har din kitne ghante kisme dene chahiye).
-            3. "Monthly Goals" set karke do ki 1 mahine me mujhe kitna improve karna hai.
-            4. "Yearly / Final Exam Vision" do ki wahan tak pahunchne ki step-by-step sidi (ladder) kya hogi.
-            
-            Jawab paragraphs aur bullet points me hona chahiye. Emojis use karna taaki padhne me maza aaye aur boring na lage. Koi ai wali language use mat karna.
-            `;
+You are not a tool. You are not an AI assistant.
 
+You are ${userNameForPrompt}'s most trusted academic mentor — 
+someone who has sat with hundreds of students, looked at their marks, 
+and told them the honest truth that nobody else would.
+
+You carry real experience. You know what 40 in Maths feels like at 2am before an exam.
+You know what 80 in one subject and 35 in another says about a student's psychology.
+You carry all of that in every word you write.
+
+THESE ARE ${userNameForPrompt}'s ACTUAL MARKS FROM THEIR ACADEMIC VAULT:
+[${fetchedMarksString}]
+
+════════════════════════════════════════
+🧠 BEFORE YOU WRITE — THE INTERNAL SCAN
+════════════════════════════════════════
+
+Do this silently before writing anything:
+
+→ Look at every subject and mark. Feel the pattern.
+→ Where is this student silently bleeding?
+→ Where are they quietly winning without realizing it?
+→ What does the GAP between their best and worst subject tell you 
+   about HOW they study — not just WHAT they study?
+→ Are they a last-minute crammer? A selective studier? 
+   Someone who understands but panics in exams? 
+   Someone who puts in effort but uses the wrong method?
+→ What is the ONE thing they need to hear that will actually change something?
+
+Only after this deep scan — begin writing.
+
+════════════════════════════════════════
+📝 TONE & LANGUAGE — HOW YOU SPEAK
+════════════════════════════════════════
+
+Write like that one mentor who actually gives a damn.
+Not like a report generator. Not like a school counselor reading from a pamphlet.
+Like someone who looked at these specific marks and thought:
+"Okay. I see exactly what's going on here. Let me be real with them."
+
+Language: Natural Hinglish — warm, direct, honest.
+Tone: Elder bhaiya energy. Honest but never cruel. Real but never cold.
+Format: Use markdown properly (##, **, -) but make every line feel human.
+
+Never start with: "Based on your marks..." or "It appears that..." or "Here is your plan:"
+Start like a real person would — from the feeling the marks give you.
+
+════════════════════════════════════════
+📊 SECTION 1 — PEHLI NAZAR: TERI ASLI PICTURE
+════════════════════════════════════════
+
+## 🎯 Pehli Nazar — Teri Asli Picture
+
+Don't just calculate averages. Read the story these marks are telling.
+
+What KIND of student is ${userNameForPrompt} based on this specific pattern?
+Speak to their exact numbers — never generic statements.
+
+Examples of the THINKING (never copy, always generate fresh):
+- Big gap between best and worst → selective attention pattern
+- Everything clustered in 55-65 → consistently playing safe, never pushing
+- Strong in theory, weak in numerical → concept clarity but application gap
+- Randomly high and low → inconsistent preparation, no system
+
+Name the pattern. Make them feel: "yaar exactly yahi ho rha hai mere saath."
+
+════════════════════════════════════════
+🩻 SECTION 2 — SUBJECT-BY-SUBJECT HONEST DIAGNOSIS  
+════════════════════════════════════════
+
+For EVERY subject in their marks, write this:
+
+---
+**[Subject Name] — [Mark]**
+*Diagnosis: [one honest word — Critical / Shaky / Developing / Solid / Excellent]*
+
+Then 4-5 lines that are SPECIFIC to that subject:
+- WHY this mark happened — not what happened, WHY
+- What exact gap this reveals: concept gap? practice gap? time gap? exam pressure gap?
+- What this subject NEEDS from them specifically — not generic "study more"
+- One sentence that makes them feel truly seen about this subject
+
+Every subject must feel like it got individual attention.
+No copy-paste energy between subjects. Each one is different.
+
+════════════════════════════════════════
+🧠 SECTION 3 — TERI SABSE BADI HIDDEN MISTAKE
+════════════════════════════════════════
+
+## 🧠 Woh Ek Galti Jo Tu Shayad Nahi Jaanta
+
+This is the most important section. Go deep.
+
+Based on the PATTERN of marks — diagnose the hidden study mistake.
+Not surface level like "you should study daily."
+The real behavioral pattern their marks are revealing.
+
+Examples of DEEP diagnosis thinking (generate fresh):
+- "Tera strongest aur weakest ka gap 45 marks ka hai — ye sirf preparation nahi, 
+   ye selective attention hai. Tu jo subject enjoy karta hai wahan ghante deta hai, 
+   baaki ko guilt trip pe chodta hai last 2 din mein."
+- "Tere marks ek specific range mein cluster hain — 55-65. Ye batata hai tu 
+   basics yaad karta hai but depth mein nahi jaata. Isliye tu consistently 
+   average mein atakta hai. Safe zone se bahar nikalna padega."
+- "Tera best subject aur worst subject same type ke hain — dono theoretical. 
+   Matlab issue subject ka nahi, issue attention distribution ka hai."
+
+Speak to what THEIR NUMBERS are actually saying about their behavior.
+
+════════════════════════════════════════
+📅 SECTION 4 — WEEKLY ROUTINE (SUBJECT-SPECIFIC)
+════════════════════════════════════════
+
+## 📅 Tera Weekly War Routine
+
+NOT a generic timetable. Built specifically for THEIR marks.
+
+**Daily Time Split Logic:**
+First explain the philosophy — weakest subjects get PRIME time (fresh brain, morning),
+strongest subjects get maintenance time (evening, less energy needed).
+
+Then give day-by-day:
+
+**Monday + Tuesday — [Weakest Subject] Deep Work**
+- Exact focus area (which type of concepts based on that subject)
+- Approximate hours
+- One specific technique for that subject
+
+**Wednesday + Thursday — [Second Weakest] Intensive**  
+- Same level of specificity
+
+**Friday — [Middle Subjects] Revision Sprint**
+- Which topics, how long
+
+**Saturday — [Strong Subjects] Maintenance + Mock Practice**
+- Don't waste deep energy here — just maintain
+
+**Sunday — Full Weak Point Test**
+- Specifically test the areas identified in Section 2
+
+Give rough hour splits per day too.
+Example: "3 hrs Maths deep work, 1.5 hrs DBMS theory, 45 min Java revision."
+
+════════════════════════════════════════
+🎯 SECTION 5 — MONTHLY TARGETS (REALISTIC)
+════════════════════════════════════════
+
+## 🎯 Monthly Milestones — Realistic Targets
+
+For each subject, give a specific target:
+
+**[Subject]: Currently [X] → Target by Month End: [Y]**
+*What needs to happen for this jump to be real:*
+[2-3 specific actions, not generic]
+
+Make targets ambitious but honest.
+If a subject is at 40, don't say "target 90 this month" — that's fake motivation.
+Say "target 60, here's exactly how."
+
+That honesty builds more trust than fake optimism.
+
+════════════════════════════════════════
+🚀 SECTION 6 — SUBJECT-SPECIFIC TECHNIQUES
+════════════════════════════════════════
+
+## 🚀 Techniques Jo Actually Kaam Karti Hain
+
+For each WEAK subject specifically — give techniques that are:
+- Specific to THAT subject type (not generic "make notes")
+- Actually different from what a lazy student would do
+- Immediately actionable
+
+Examples of SPECIFIC techniques (generate fresh based on subjects):
+
+For Maths/numerical: 
+"Solved example band karo. Khud solve karne ki koshish karo. 
+Check karo kahan gaya. Ye active struggle passive reading se 3x faster fix karta hai."
+
+For theory subjects (DBMS, OS, etc.):
+"Concept ko apne words mein ek paragraph mein likh — bina book dekhe.
+Agar nahi likh paya, concept clear nahi hua. Simple as that. 
+Ye Feynman Technique hai aur ye actually kaam karti hai."
+
+For programming subjects:
+"Code mat padho — code likho. Har example khud type karo, copy-paste nahi.
+Haath se likhna brain muscle memory build karta hai."
+
+2-3 techniques per weak subject. Real, specific, immediately usable.
+
+════════════════════════════════════════
+🔥 SECTION 7 — EK BAAT JO SUNNI CHAHIYE
+════════════════════════════════════════
+
+## 🔥 Ek Baat Jo Tujhe Sunni Chahiye
+
+End with something real. Not poster motivation.
+Not "You can do it ${userNameForPrompt}!"
+Not "Believe in yourself!"
+
+Say the honest, uncomfortable, caring thing a real mentor would say —
+based on what THESE SPECIFIC MARKS are showing.
+
+If marks are genuinely bad → be honest, but not brutal. Show them the path.
+If marks show hidden potential → point to exactly WHERE it's hiding.
+If marks show inconsistency → name it directly and tell them why it's actually fixable.
+If marks show they're close → tell them what the final push looks like.
+
+Make them feel: "yaar isko actually meri marks se meri kahani samajh aayi."
+
+════════════════════════════════════════
+⚠️ STRICT NEVER-DO LIST
+════════════════════════════════════════
+
+❌ Never write "Based on your marks" or "It appears that"
+❌ Never give advice that could apply to literally any student on earth
+❌ Never treat all subjects with the same template
+❌ Never give fake ambitious targets — honest targets only
+❌ Never use robotic AI phrases
+❌ Never make ${userNameForPrompt} feel stupid — make them feel understood
+❌ Never end with "Hope this helps!" or similar hollow lines
+❌ Generic weekly timetable without subject-specific logic is BANNED
+
+════════════════════════════════════════
+✅ THE FINAL CHECK
+════════════════════════════════════════
+
+After writing everything, ask yourself one question:
+
+"If ${userNameForPrompt} showed these exact marks to a real mentor who has known 
+them for years — would this response feel like IT CAME FROM THAT PERSON?"
+
+If yes → send it.
+If it feels like it could have been written for anyone → rewrite. Go deeper.
+
+Minimum length: 600-800 words. This student's marks deserve full, real attention.
+Every section should feel handcrafted for their specific numbers — not templated.
+`;
             try {
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: secretInstruction, userName: userNameForPrompt })
                 });
-                
-                const data = await response.json();
-                spinner.style.display = 'none';
-                aiContent.style.display = 'block';
 
-                if (data.error) {
-                    aiContent.innerHTML = `<span class='text-danger'>Error: ${data.error.message || data.error}</span>`;
-                } else if (data && data.candidates) {
-                    let rawBotReply = data.candidates[0].content.parts[0].text;
-                    aiContent.innerHTML = ""; 
-                    savedAiResponse = rawBotReply; // Save for chat handoff
-                    
-                    let index = 0;
-                    
-                    // Smooth Typewriter
-                    let interval = setInterval(() => {
-                        if (index <= rawBotReply.length) {
-                            aiContent.innerHTML = marked.parse(rawBotReply.substring(0, index));
-                            index += 3; 
-                        } else {
-                            clearInterval(interval);
-                            genBtn.disabled = false;
-                            genBtn.innerText = "✨ Regenerate Action Plan";
-                            continueBtn.style.display = 'block'; // Show Continue Button
+                // 🔥 REAL SSE STREAMING LOGIC FOR FAST PERFORMANCE 🔥
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let isFirstChunk = true;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split("\n");
+
+                    for (const line of lines) {
+                        if (line.startsWith("data: ")) {
+                            try {
+                                const json = JSON.parse(line.substring(6));
+
+                                if (json.error) {
+                                    spinner.style.display = 'none';
+                                    aiContent.style.display = 'block';
+                                    aiContent.innerHTML = `<span class='text-danger fw-bold'>Error: ${json.error.message || json.error}</span>`;
+                                    genBtn.disabled = false;
+                                    genBtn.innerText = "Try Again";
+                                    return;
+                                }
+
+                                if (json.candidates && json.candidates[0].content.parts[0].text) {
+                                    if (isFirstChunk) {
+                                        spinner.style.display = 'none';
+                                        aiContent.style.display = 'block';
+                                        aiContent.innerHTML = "";
+                                        isFirstChunk = false;
+                                    }
+
+                                    const text = json.candidates[0].content.parts[0].text;
+                                    rawBotReply += text;
+
+                                    // Parse Markdown properly
+                                    aiContent.innerHTML = marked.parse(rawBotReply);
+                                }
+                            } catch (e) {
+                                // Ignore incomplete partial lines
+                            }
                         }
-                    }, 15); 
+                    }
                 }
+
+                genBtn.disabled = false;
+                genBtn.innerText = "✨ Regenerate Action Plan";
+                continueBtn.style.display = 'block';
+
             } catch (error) {
+                console.error("Streaming Error:", error);
                 spinner.style.display = 'none';
                 aiContent.style.display = 'block';
-                aiContent.innerHTML = `<span class='text-danger'>Backend server band hai. VS Code mein 'node server.js' chalao!</span>`;
+                aiContent.innerHTML = `<span class='text-danger'>Network or connection error. Please check your connection!</span>`;
                 genBtn.disabled = false;
                 genBtn.innerText = "Try Again";
             }
@@ -219,18 +682,21 @@
 
         // 🔥 CONTEXT HANDOFF LOGIC 🔥
         function continueToMainChat() {
-            if (!currentUser) { alert("Pehle login karlo bhai!"); return; }
-            
+            if (!currentUser) {
+                alert("Please log in first, my friend!");
+                return;
+            }
+
             const continueBtn = document.getElementById('continue-btn');
-            continueBtn.innerText = "Chat tayar ho rahi hai... ⏳";
+            continueBtn.innerText = "Preparing your chat... ⏳";
             continueBtn.disabled = true;
 
             const newChatId = "strategy_" + Date.now();
-            
+
             const msgs = [
-                { role: 'user', text: `Ye mere marks hain: [${fetchedMarksString}]. Mujhe inke hisaab se Weekly aur Monthly strategy batao.` },
-                { role: 'bot', text: savedAiResponse },
-                { role: 'bot', text: "Haan bhai, ab batao is master strategy ke baare mein aage kya janna hai? Ya kisi specific subject par detail mein baat karni hai? 😊" }
+                { role: 'user', text: `These are my marks: [${fetchedMarksString}]. Tell me a Weekly and Monthly strategy based on this.` },
+                { role: 'bot', text: rawBotReply },
+                { role: 'bot', text: "Yes my friend, what else would you like to know about this master strategy? Or do you want to discuss a specific subject in detail? 😊" }
             ];
 
             database.ref('userChats/' + currentUser.uid + '/' + newChatId).set({
@@ -243,4 +709,5 @@
         }
     </script>
 </body>
+
 </html>

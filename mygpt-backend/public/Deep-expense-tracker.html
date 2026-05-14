@@ -34,11 +34,9 @@
 
         body { background-color: var(--bg-body); color: var(--text-main); font-family: "Lexend Deca", sans-serif; min-height: 100vh; transition: 0.3s; }
         
-        .top-navbar { padding: 20px 30px; border-bottom: 1px solid rgba(192, 133, 82, 0.15); display: flex; justify-content: space-between; align-items: center;}
-        .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
+        .top-navbar { padding: 20px 30px; border-bottom: 1px solid rgba(192, 133, 82, 0.15); display: flex; justify-content: flex-start; align-items: center;}
+        .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
         .back-btn:hover { background: var(--light-brown); color: white; transform: translateX(-3px); }
-        .theme-toggle-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
-        .theme-toggle-btn:hover { background: var(--light-brown); color: white; transform: scale(1.05); }
 
         .main-container { padding: 30px 20px; max-width: 1000px; margin: 0 auto; animation: fadeInUp 0.5s ease; }
 
@@ -184,9 +182,8 @@
             .btn-row { flex-direction: column; } 
             .dash-amt { font-size: 28px; } 
             
-            .top-navbar { flex-direction: row; justify-content: space-between; padding: 15px 20px; gap: 0;}
+            .top-navbar { flex-direction: row; justify-content: flex-start; padding: 15px 20px; gap: 0;}
             .back-btn { width: auto; font-size: 14px; padding: 6px 15px; }
-            .theme-toggle-btn { padding: 6px 12px; font-size: 16px; }
             
             .dash-header-row { flex-direction: column; justify-content: center; text-align: center; gap: 15px;}
             .time-toggles { margin: 0 auto; width: 100%; justify-content: center; display: flex;}
@@ -205,13 +202,119 @@
             .pdf-btn { padding: 8px 12px; font-size: 16px; justify-content: center;}
             .pdf-text, .filter-text { display: none; } 
         }
+        @media (max-width: 768px) {
+    /* ---- Already existing rules ---- */
+    .btn-row { flex-direction: column; }
+    .dash-amt { font-size: 26px; }
+    .top-navbar { flex-direction: row; justify-content: flex-start; padding: 12px 16px; gap: 0; }
+    .back-btn { width: auto; font-size: 13px; padding: 6px 14px; }
+    .dash-header-row { flex-direction: column; justify-content: center; text-align: center; gap: 10px; }
+    .time-toggles { margin: 0 auto; width: 100%; justify-content: center; display: flex; }
+    .time-btn { flex: 1; text-align: center; }
+    .budget-section .d-flex { flex-direction: column; align-items: center !important; gap: 8px; text-align: center; }
+    #budget-edit { flex-direction: column; margin-top: 8px; }
+    .form-section h5 { text-align: center; margin-bottom: 14px !important; }
+    .list-header { flex-direction: row; justify-content: space-between; align-items: center; gap: 10px; }
+    .list-header h5 { font-size: 16px; margin: 0; }
+    .pdf-btn { padding: 7px 10px; font-size: 15px; justify-content: center; }
+    .pdf-text, .filter-text { display: none; }
+
+    /* ---- NAYE FIXES: Tight spacing for short devices ---- */
+
+    /* Main wrapper ka padding kam karo */
+    .main-container { padding: 14px 12px; }
+
+    /* Dashboard cards compact */
+    .dashboard-grid { gap: 10px; margin-bottom: 10px; }
+    .dash-card { padding: 14px 10px; border-radius: 14px; }
+    .dash-title { font-size: 12px; }
+    .dash-compare { font-size: 11px; padding: 3px 8px; }
+
+    /* Wallet badges slim */
+    .wallet-overview { gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .wallet-badge { font-size: 11px; padding: 5px 10px; }
+
+    /* Budget section tight */
+    .budget-section { padding: 12px 14px; margin-bottom: 16px; }
+    .progress { height: 9px; margin-top: 7px; }
+    .budget-warning { font-size: 12px; margin-top: 6px; }
+
+    /* Form section tight */
+    .form-section { padding: 16px 14px; border-radius: 16px; margin-bottom: 16px; }
+    .custom-input, .custom-select { padding: 11px 14px; font-size: 14px; margin-bottom: 10px; border-radius: 10px; }
+    .dropdown-selected { padding: 11px 14px; font-size: 14px; }
+    .dropdown-wrapper { margin-bottom: 10px; }
+    .btn-action { padding: 11px; font-size: 14px; border-radius: 10px; }
+
+    /* Transaction list section tight */
+    .list-section { padding: 14px 10px; border-radius: 16px; }
+    .list-header { margin-bottom: 12px; }
+
+    /* Individual transaction item compact */
+    .txn-item { padding: 10px 6px; margin-bottom: 8px; border-radius: 10px; }
+    .txn-left { gap: 10px; padding-right: 8px; }
+
+    /* Icon smaller */
+    .txn-cat-icon { 
+        width: 38px; 
+        height: 38px; 
+        font-size: 18px; 
+        padding: 7px; 
+        border-radius: 50%; 
+    }
+
+    /* Text sizes down */
+    .txn-note { font-size: 13px; line-height: 1.3; }
+    .txn-date { font-size: 11px; margin-top: 3px; gap: 5px; }
+    .wallet-tag { font-size: 8px; padding: 1px 5px; }
+    .txn-amt { font-size: 14px; margin-bottom: 3px; }
+    .del-btn { font-size: 11px; }
+    .edit-txn-btn { font-size: 11px; }
+
+    /* Badge */
+    .badge { font-size: 9px !important; }
+
+    /* Undo toast mobile */
+    .undo-toast { padding: 18px 22px 14px; min-width: 200px; border-radius: 14px; }
+    .undo-msg { font-size: 14px; }
+    .undo-btn { padding: 8px 22px; font-size: 13px; }
+}
     </style>
 </head>
 
 <body>
+    <script>
+        (function() {
+            function updateThemeUI(themeValue) {
+                const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = themeValue === "dark" || (themeValue === "system" && prefersDarkOS);
+                
+                if (isDark) document.body.classList.add("dark-theme");
+                else document.body.classList.remove("dark-theme");
+            }
+
+            // 1. Initial Load (Runs instantly before page draws)
+            const savedTheme = localStorage.getItem("theme") || "system";
+            updateThemeUI(savedTheme);
+
+            // 2. Listen for Live OS Theme Changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem("theme") === "system") {
+                    updateThemeUI("system");
+                }
+            });
+
+            // 3. CROSS-TAB SYNCHRONIZATION
+            // Listens to changes from index.html and applies instantly!
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') {
+                    updateThemeUI(e.newValue || "system");
+                }
+            });
+        })();
+    </script>
     <div class="top-navbar">
-        <a href="expense.html" class="back-btn"><span>←</span> Basic Tracker</a>
-        <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+        <a href="tools.html" class="back-btn"><span>←</span> Back to Tools</a>
     </div>
 
     <div class="undo-toast" id="undo-toast">
@@ -227,7 +330,7 @@
             
             <div class="mb-3">
                 <label class="fw-bold mb-1" style="font-size: 13px; opacity:0.8;">Search Name/Note</label>
-                <input type="text" id="modal-search" class="custom-input mb-0" placeholder="e.g. Rahul, Canteen...">
+                <input type="text" id="modal-search" class="custom-input mb-0" placeholder="e.g. Lunch, Coffee...">
             </div>
             
             <div class="row mb-3">
@@ -277,7 +380,7 @@
             </div>
 
             <div class="d-flex gap-3">
-                <button class="btn-action btn-income" onclick="applySearchFilters()">Apply Filters 🚀</button>
+                <button class="btn-action btn-income" onclick="applySearchFilters()">Apply Filters</button>
                 <button class="btn-action" style="background: rgba(192, 133, 82, 0.1); color: var(--med-brown); border: 1px solid var(--med-brown);" onclick="resetSearchFilters()">Clear</button>
             </div>
         </div>
@@ -404,31 +507,13 @@
                 </div>
             </div>
             <div id="deep-txn-list">
-                <div class="text-center opacity-50 mt-3">Loading deep records... ☁️</div>
+                <div class="text-center opacity-50 mt-3">Loading records... ☁️</div>
             </div>
         </div>
 
     </div>
 
     <script>
-        function applyTheme(theme) {
-            const btn = document.getElementById('theme-btn');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-                if(btn) btn.innerText = "☀️";
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.body.classList.remove('dark-theme');
-                if(btn) btn.innerText = "🌙";
-                localStorage.setItem('theme', 'light');
-            }
-        }
-        if (localStorage.getItem('theme') === 'dark') applyTheme('dark');
-        function toggleTheme() {
-            if (document.body.classList.contains('dark-theme')) applyTheme('light');
-            else applyTheme('dark');
-        }
-
         const firebaseConfig = {
             apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
             authDomain: "my-gemini-bot-gradex.firebaseapp.com",
@@ -456,7 +541,7 @@
         let fSearchQuery = "";
         let fType = "All";
         let fCategory = "All";
-        let fWallet = "All"; // NEW WALLET FILTER
+        let fWallet = "All"; 
         let fStartDate = "";
         let fEndDate = "";
 
@@ -484,7 +569,7 @@
             fSearchQuery = document.getElementById('modal-search').value.trim().toLowerCase();
             fType = document.getElementById('modal-type').value;
             fCategory = document.getElementById('modal-category').value;
-            fWallet = document.getElementById('modal-wallet').value; // GET WALLET FILTER
+            fWallet = document.getElementById('modal-wallet').value; 
             fStartDate = document.getElementById('modal-start-date').value;
             fEndDate = document.getElementById('modal-end-date').value;
 
@@ -528,7 +613,7 @@
 
         function saveNewBudget() {
             let newBudg = parseFloat(document.getElementById('new-budget-input').value);
-            if(!newBudg || newBudg <= 0) return alert("Sahi budget amount daalo bhai!");
+            if(!newBudg || newBudg <= 0) return alert("Please enter a valid budget amount!");
             
             database.ref('userFinance/' + currentUser.uid + '/settings/monthlyBudget').set(newBudg).then(() => {
                 toggleBudgetEdit(false);
@@ -609,12 +694,12 @@
             if(isUndoActive) return; 
             const amt = parseFloat(document.getElementById('dp-amount').value);
             const cat = document.getElementById('dp-category').value;
-            const wallet = document.getElementById('dp-wallet').value; // Get Wallet
+            const wallet = document.getElementById('dp-wallet').value; 
             let note = document.getElementById('dp-note').value.trim();
 
-            if (!amt || amt <= 0) return alert("Valid amount daalo bhai!");
-            if (!cat) return alert("Bhai Category select karna zaroori hai!");
-            if (!wallet) return alert("Bhai Wallet select karna zaroori hai!");
+            if (!amt || amt <= 0) return alert("Please enter a valid amount!");
+            if (!cat) return alert("Please select a category!");
+            if (!wallet) return alert("Please select a wallet!");
             if (!note) note = cat.split(" ")[0]; 
 
             const txnId = "deep_" + Date.now();
@@ -624,7 +709,6 @@
                 lastAction = { type: 'add', id: txnId, data: payload };
                 showUndoToast("✅ Entry Added Successfully!");
                 
-                // Clear only amount and note, keep category and wallet as they were for quick multi-entry
                 document.getElementById('dp-amount').value = "";
                 document.getElementById('dp-note').value = "";
             });
@@ -632,7 +716,7 @@
 
         function deleteTxn(txnId) {
             if(isUndoActive) return; 
-            if(confirm("Bhai sach me ye entry delete karni hai?")) {
+            if(confirm("Are you sure you want to delete this entry?")) {
                 database.ref('userFinance/' + currentUser.uid + '/transactions/' + txnId).once('value').then(snap => {
                     const dataToSave = snap.val();
                     if(dataToSave) {
@@ -658,7 +742,7 @@
 
         function saveTxnName(id, oldReason) {
             const newName = document.getElementById(`edit-input-${id}`).value.trim();
-            if(!newName) return alert("Bhai naam khali nahi chhod sakte!");
+            if(!newName) return alert("Name cannot be empty!");
             
             if(newName === oldReason) { toggleTxnEdit(id, false); return; }
 
@@ -737,7 +821,7 @@
             globalTransactionsData.forEach(txn => {
                 
                 // 📊 Global Wallet Calculation (Independent of Filters)
-                let txnWallet = txn.wallet || 'Cash'; // Default to Cash for old entries
+                let txnWallet = txn.wallet || 'Cash'; 
                 if(txn.type === 'credit') {
                     if(txnWallet === 'Cash') wCash += txn.amount;
                     else if(txnWallet === 'UPI') wUpi += txn.amount;
@@ -752,7 +836,7 @@
                 const catLabel = txn.category ? txn.category.split(" ")[0] : 'General';
                 if (fCategory !== 'All' && catLabel !== fCategory) return; 
                 if (fType !== 'All' && txn.type !== fType) return;
-                if (fWallet !== 'All' && txnWallet !== fWallet) return; // Wallet Filter
+                if (fWallet !== 'All' && txnWallet !== fWallet) return; 
 
                 if (fSearchQuery !== "") {
                     const reasonLower = txn.reason.toLowerCase();
@@ -862,7 +946,7 @@
 
         window.jsPDF = window.jspdf.jsPDF;
         function downloadPDF() {
-            if(globalTransactionsFiltered.length === 0) return alert("Bhai list me koi transaction nahi hai PDF banane ke liye!");
+            if(globalTransactionsFiltered.length === 0) return alert("There are no transactions to generate a PDF!");
             
             const doc = new jsPDF();
             

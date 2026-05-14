@@ -30,13 +30,10 @@
 
         body { background-color: var(--bg-body); color: var(--text-main); font-family: "Lexend Deca", sans-serif; min-height: 100vh; display: flex; flex-direction: column; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        /* Navbar with Dark Mode Toggle */
-        .top-navbar { padding: 20px 30px; border-bottom: 1px solid rgba(192, 133, 82, 0.15); display: flex; justify-content: space-between; align-items: center; }
+        /* Navbar */
+        .top-navbar { padding: 20px 30px; border-bottom: 1px solid rgba(192, 133, 82, 0.15); display: flex; justify-content: flex-start; align-items: center; }
         .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
         .back-btn:hover { background: var(--light-brown); color: white; transform: translateX(-3px); }
-        
-        .theme-toggle-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
-        .theme-toggle-btn:hover { background: var(--light-brown); color: white; transform: scale(1.05); }
 
         .main-container { flex-grow: 1; display: flex; justify-content: center; padding: 30px 20px; }
         .tool-card { background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px var(--card-shadow); border: 1px solid rgba(192, 133, 82, 0.15); width: 100%; max-width: 800px; animation: fadeInUp 0.5s ease; }
@@ -61,8 +58,8 @@
             font-size: 15.5px; 
             line-height: 1.7; 
             border: 1px solid rgba(192, 133, 82, 0.2); 
-            max-height: 500px; /* Scrolling enable karne ke liye */
-            overflow-y: auto; /* Y axis pe scroll */
+            max-height: 500px; 
+            overflow-y: auto; 
         }
         
         /* THEME BASED SCROLLBAR */
@@ -71,10 +68,10 @@
         .ai-result-box::-webkit-scrollbar-track { background: rgba(192, 133, 82, 0.1); border-radius: 10px; }
 
         /* Markdown Styling */
-        .ai-result-box h3 { font-weight: 700; margin-top: 25px; margin-bottom: 15px; font-size: 20px; }
-        .ai-result-box h3:first-child { margin-top: 0; }
-        .ai-result-box hr { border-color: rgba(192, 133, 82, 0.3); margin: 25px 0; }
-        .ai-result-box ul { padding-left: 20px; margin-bottom: 15px; }
+        #ai-content h3 { font-weight: 700; margin-top: 25px; margin-bottom: 15px; font-size: 20px; color: var(--med-brown); }
+        #ai-content h3:first-child { margin-top: 0; }
+        #ai-content hr { border-color: rgba(192, 133, 82, 0.3); margin: 25px 0; }
+        #ai-content ul { padding-left: 20px; margin-bottom: 15px; }
 
         .loader-container { display: flex; justify-content: center; align-items: center; position: relative; width: 60px; height: 60px; margin: 30px auto; }
         .spinner-ring { position: absolute; width: 100%; height: 100%; border: 4px solid rgba(192, 133, 82, 0.2); border-top-color: var(--light-brown); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -90,15 +87,43 @@
 </head>
 
 <body>
+    <script>
+        (function() {
+            function updateThemeUI(themeValue) {
+                const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = themeValue === "dark" || (themeValue === "system" && prefersDarkOS);
+                
+                if (isDark) document.body.classList.add("dark-theme");
+                else document.body.classList.remove("dark-theme");
+            }
+
+            // 1. Initial Load
+            const savedTheme = localStorage.getItem("theme") || "system";
+            updateThemeUI(savedTheme);
+
+            // 2. Listen for Live OS Theme Changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem("theme") === "system") {
+                    updateThemeUI("system");
+                }
+            });
+
+            // 3. CROSS-TAB SYNCHRONIZATION
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') {
+                    updateThemeUI(e.newValue || "system");
+                }
+            });
+        })();
+    </script>
     <div class="top-navbar">
         <a href="tools.html" class="back-btn"><span>←</span> Back To Tools</a>
-        <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
     </div>
 
     <div class="main-container">
         <div class="tool-card">
             <h2 class="text-center fw-bold mb-2" style="color: var(--med-brown);">📄 AI Resume Roaster & Builder</h2>
-            <p class="text-center opacity-75 mb-4">Tumhara boring resume pehle ruthlessly roast hoga, aur phir Google-level par rebuild hoga.</p>
+            <p class="text-center opacity-75 mb-4">Your boring resume will be ruthlessly roasted, and then rebuilt to FAANG-level standards.</p>
 
             <div class="input-group-custom">
                 <label>Target Job Role</label>
@@ -115,7 +140,7 @@
             <div id="result-area" class="ai-result-box">
                 <div id="loading-spinner" class="loader-container" style="display: none;">
                     <div class="spinner-ring"></div>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" class="loader-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" class="loader-logo" alt="AI">
                 </div>
                 <div id="ai-content"></div>
 
@@ -142,26 +167,6 @@
 
         auth.onAuthStateChanged(user => { currentUser = user; });
 
-        function applyTheme(theme) {
-            const btn = document.getElementById('theme-btn');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-                btn.innerText = "☀️";
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.body.classList.remove('dark-theme');
-                btn.innerText = "🌙";
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        if (localStorage.getItem('theme') === 'dark') applyTheme('dark');
-
-        function toggleTheme() {
-            if (document.body.classList.contains('dark-theme')) applyTheme('light');
-            else applyTheme('dark');
-        }
-
         async function processResume() {
             const role = document.getElementById('job-role').value.trim();
             const text = document.getElementById('resume-text').value.trim();
@@ -171,39 +176,229 @@
             const spinner = document.getElementById('loading-spinner');
             const continueBtn = document.getElementById('continue-btn');
 
-            if (!role || !text) return alert("Bhai, Role aur Resume text dono daalna zaroori hai!");
+            if (!role || !text) return alert("Please enter both the target job role and your resume text!");
 
             roastBtn.disabled = true;
-            roastBtn.innerText = "AI is tearing your resume apart... 😈";
+            roastBtn.innerText = "AI is analyzing and roasting your resume... 😈";
             continueBtn.style.display = 'none';
             resultArea.style.display = 'block';
             aiContent.style.display = 'none';
             spinner.style.display = 'flex';
+            savedAiResponse = "";
 
-            const userName = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
+            const userName = currentUser ? currentUser.displayName.split(" ")[0] : "Friend";
 
-            const secretPrompt = `
-            User ka Target Job Role hai: "${role}".
-            Aur ye raha uska current Resume Text: "${text}"
+            // 🔥 FULL ENGLISH PROFESSIONAL PROMPT 🔥
+         const secretPrompt = `
+You are not an AI tool. You are not a resume template generator.
 
-            Tujhe ek hi response mein 2 alag-alag personas mein act karna hai. Jawab strictly in 2 sections me hona chahiye:
+You are two real people in one response — and both of them genuinely care about 
+${userName}'s future, even if one of them shows it brutally.
 
-            ### 🔥 THE ROAST (Strict HR Mode)
-            Ekdum frustrated aur strict FAANG HR ban ja jisne aaj 500 bekar resumes reject kiye hain. 
-            - User ke resume me kya kachra hai, cliches (jaise hardworking, team player, communication skills), aur weak action verbs ko point out kar.
-            - Brutally aur sarcastically roast kar. (Hindi/Hinglish me, thoda funny aur kadwa sach bol jisse ego hit ho par reality samajh aaye).
+TARGET JOB ROLE: "${role}"
+${userName}'s CURRENT RESUME TEXT: "${text}"
 
-            ---
+════════════════════════════════════════
+🧠 BEFORE YOU WRITE — THE INTERNAL SCAN
+════════════════════════════════════════
 
-            ### 🛠️ THE REBUILD (Career Coach Mode)
-            Ab ekdam empathetic aur expert Silicon Valley Career Coach ban ja.
-            - Upar ki galtiyon ko sudhar kar, user ke resume points ko Google ke 'XYZ Formula' (Accomplished [X] as measured by [Y], by doing [Z]) me rewrite kar.
-            - Kam se kam 3-4 ekdum placement-ready, professional bullet points de jo user direct copy-paste kar sake.
-            - ATS pass karne ke liye 5 strong Action Verbs ki list de.
-            
-            Format strictly Markdown me rakhna.
-            `;
+Read this resume like a FAANG recruiter who has 8 seconds per resume.
+Then read it again like a career coach who wants this person to actually get the job.
 
+Silently analyze:
+→ What is the FIRST impression this resume gives in 8 seconds?
+→ What would an ATS (Applicant Tracking System) do with this resume?
+   Which keywords are missing for "${role}"? Which would trigger rejection?
+→ What are the 3 biggest red flags a FAANG/MNC recruiter would immediately spot?
+→ What is the hidden potential in this resume that bad writing is burying?
+→ What does this person actually HAVE — skills, projects, experience — 
+   that just needs to be rewritten properly?
+
+Only after this scan — begin writing. Two sections. Two personas.
+
+════════════════════════════════════════
+🔥 SECTION 1 — THE ROAST
+Persona: The Ruthlessly Honest FAANG Recruiter
+════════════════════════════════════════
+
+### 🔥 The Roast — Strict FAANG Recruiter Mode
+
+Set the scene first — one punchy line about the overall first impression.
+Not generic. Specific to THIS resume. What is the ONE thing that screams 
+"reject" the loudest?
+
+Then go through these specific failure points:
+
+**⚠️ The ATS Problem**
+Explain exactly which keywords are missing for "${role}" that ATS systems 
+at Google, Amazon, Microsoft, etc. would scan for.
+Name the specific missing terms. Be blunt.
+"An ATS at Amazon would have already rejected this before a human saw it — 
+because the words [X, Y, Z] are completely absent."
+
+**⚠️ The Cliché Graveyard**
+Find every generic, meaningless phrase in their resume.
+"Hardworking", "good communication skills", "team player", "passionate" —
+name them specifically from THEIR text.
+Tell them exactly WHY these phrases are resume poison:
+"Every single candidate writes 'hardworking'. It means nothing. 
+A FAANG recruiter sees this and thinks: you have nothing real to show, 
+so you're filling space with adjectives."
+
+**⚠️ The Weak Action Verb Problem**
+Point out specifically which action verbs they used (or didn't use).
+"'Did', 'worked on', 'helped with' — these are intern diary entries, 
+not achievement statements. They show tasks, not impact."
+
+**⚠️ The Missing Numbers Problem**
+Point out that there are zero metrics, zero quantification.
+"Where are the numbers? FAANG hiring managers are trained to look for impact.
+'Built a website' means nothing. 'Built a website that reduced load time by 40%' 
+— that gets a second look."
+
+**⚠️ The Bullet Point Depth Problem** (if applicable)
+If their bullets are one-liners with no context — name it.
+"These bullets tell me WHAT you did. They don't tell me WHY it mattered 
+or WHAT CHANGED because of you. That's the entire difference between 
+a resume that gets read and one that gets binned."
+
+End The Roast section with ONE honest line — not cruel, but real:
+Something like: "The good news? Everything here is fixable. 
+Let's actually fix it."
+
+════════════════════════════════════════
+🛠️ SECTION 2 — THE REBUILD
+Persona: Elite Silicon Valley Career Coach
+════════════════════════════════════════
+
+### 🛠️ The Rebuild — FAANG-Ready Version
+
+Start with the philosophy — one paragraph on what separates a resume 
+that gets callbacks from one that gets ignored.
+Make it feel like real insider knowledge, not generic advice.
+
+---
+
+**📊 What FAANG/MNC Recruiters Actually Look For in "${role}"**
+
+Give 4-5 specific things that recruiters for THIS specific role scan for:
+- Which technical skills/keywords are non-negotiable
+- What kind of projects signal real ability vs. tutorial-following
+- What soft skills actually matter for this role (and how to show them with proof, not words)
+- What the ideal candidate profile looks like for this role
+
+This section should feel like insider knowledge — because it is.
+
+---
+
+**🔑 The ATS Keywords ${userName} Must Add**
+
+List 8-10 specific keywords/phrases that ATS systems at top companies 
+use to filter "${role}" applications.
+Not generic. Role-specific. Technology-specific where applicable.
+
+Example format:
+- **[Keyword]** — why this matters for "${role}" at top companies
+
+---
+
+**✅ The Rebuilt Bullet Points — Google's XYZ Formula**
+
+Take their ACTUAL experience/projects from the resume text 
+and rewrite them using Google's XYZ Formula:
+*"Accomplished [X] as measured by [Y], by doing [Z]"*
+
+Write minimum 4-5 rebuilt bullet points.
+Each one should:
+- Start with a powerful action verb
+- Include a metric or measurable outcome (even estimated ones)
+- Clearly show impact, not just activity
+- Be specific to their actual experience, not invented
+
+Show the BEFORE and AFTER for each one:
+**Before:** [their original line]
+**After:** [rebuilt FAANG-ready version]
+
+This is the most important part — make each transformation dramatic and clear.
+
+---
+
+**💪 Power Action Verbs for "${role}" (ATS-Optimized)**
+
+Give 10 strong action verbs specifically chosen for this role.
+Not a generic list. Role-specific.
+For each verb, give a mini example of how to use it:
+- **[Verb]** — *"[Verb]ed [something specific to their role/skills]..."*
+
+---
+
+**🎯 The Profile Summary — Rewritten**
+
+Write a 3-4 line professional summary for ${userName} 
+based on what they actually have in their resume.
+Make it punchy, keyword-rich, and role-specific.
+This goes at the top of their resume.
+
+Format: Write it as a direct copy-pasteable paragraph.
+"Results-driven [role] with experience in [X, Y, Z]..."
+
+---
+
+**📋 The Final Checklist — Before You Submit**
+
+Give 6-8 specific things to verify before submitting this resume:
+Not generic advice. Things specific to "${role}" applications at top companies.
+
+Example:
+- [ ] Does your resume have quantified metrics in at least 70% of bullets?
+- [ ] Is your most relevant experience/project in the top half of the resume?
+- [Etc. — make these specific and actionable]
+
+---
+
+**🚀 One Last Real Talk**
+
+End with something honest and specific — 
+based on what you actually saw in their resume.
+
+If they have hidden potential → show them exactly where it is and 
+what it looks like when properly written.
+If they need significant work → be honest, but show them the exact path.
+If they're actually closer than they think → tell them that specifically.
+
+Make ${userName} feel: "Yaar, isko actually meri resume samajh aayi — 
+aur ab mujhe pata hai exactly kya karna hai."
+
+════════════════════════════════════════
+⚠️ ABSOLUTE NEVER-DO LIST
+════════════════════════════════════════
+
+❌ Never invent experience or skills they didn't mention
+❌ Never give generic bullet points that could apply to anyone
+❌ Never use robotic phrases like "Based on your resume" or "It appears that"
+❌ Never give ATS keywords that aren't specific to "${role}"
+❌ Never make the roast feel mean-spirited — it should sting but motivate
+❌ Never skip the Before/After transformation — that's the core value
+❌ Never end with hollow lines like "Good luck!" or "Hope this helps!"
+❌ Generic action verb lists that aren't role-specific are banned
+
+════════════════════════════════════════
+✅ THE FINAL CHECK
+════════════════════════════════════════
+
+After writing everything, ask yourself:
+
+"If ${userName} took Section 2 and applied it directly to their resume — 
+would it actually pass an ATS filter and get a second look from a 
+real FAANG/MNC recruiter for '${role}'?"
+
+If yes → this is good. Send it.
+If it's still generic → rewrite. Go deeper into their specific text and role.
+
+Minimum length: 700-900 words. 
+Every line should feel handcrafted for THIS person's resume and THIS role.
+Format strictly in Markdown. Make it scannable and clean.
+`;
             try {
                 const response = await fetch('/api/chat', {
                     method: 'POST',
@@ -211,74 +406,96 @@
                     body: JSON.stringify({ message: secretPrompt, userName: userName })
                 });
                 
-                const data = await response.json();
-                spinner.style.display = 'none';
-                
-                // 🔥 THE FIX: MAKE SURE CONTENT BOX IS VISIBLE 🔥
-                aiContent.style.display = 'block'; 
+                // 🔥 REAL SSE STREAMING LOGIC FOR FAST PERFORMANCE 🔥
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let isFirstChunk = true;
 
-                if (data.error) {
-                    aiContent.innerHTML = `<span class='text-danger fw-bold'>API Error: ${data.error.message || data.error}</span>`;
-                    roastBtn.disabled = false; roastBtn.innerText = "Try Again";
-                    return;
-                }
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                if (data && data.candidates) {
-                    let reply = data.candidates[0].content.parts[0].text;
-                    savedAiResponse = reply;
-                    aiContent.innerHTML = ""; 
-                    
-                    if (currentUser) {
-                        const resumeId = "resume_" + Date.now();
-                        database.ref('userResumes/' + currentUser.uid + '/' + resumeId).set({
-                            targetRole: role,
-                            oldResume: text,
-                            aiFeedback: reply,
-                            timestamp: Date.now()
-                        });
-                    }
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split("\n");
 
-                    let index = 0;
-                    let interval = setInterval(() => {
-                        if (index <= reply.length) {
-                            aiContent.innerHTML = marked.parse(reply.substring(0, index));
-                            // Scroll to bottom dynamically as it types
-                            resultArea.scrollTop = resultArea.scrollHeight; 
-                            index += 5; 
-                        } else {
-                            clearInterval(interval);
-                            roastBtn.disabled = false;
-                            roastBtn.innerText = "🔥 Roast Another Resume";
-                            continueBtn.style.display = 'block';
-                            // Make sure continue button is visible by scrolling all the way down
-                            resultArea.scrollTop = resultArea.scrollHeight; 
+                    for (const line of lines) {
+                        if (line.startsWith("data: ")) {
+                            try {
+                                const json = JSON.parse(line.substring(6));
+                                
+                                if (json.error) {
+                                    spinner.style.display = 'none';
+                                    aiContent.style.display = 'block';
+                                    aiContent.innerHTML = `<span class='text-danger fw-bold'>API Error: ${json.error.message || json.error}</span>`;
+                                    roastBtn.disabled = false;
+                                    roastBtn.innerText = "Try Again";
+                                    return;
+                                }
+
+                                if (json.candidates && json.candidates[0].content.parts[0].text) {
+                                    if (isFirstChunk) {
+                                        spinner.style.display = 'none';
+                                        aiContent.style.display = 'block';
+                                        aiContent.innerHTML = "";
+                                        isFirstChunk = false;
+                                    }
+
+                                    const chunkText = json.candidates[0].content.parts[0].text;
+                                    savedAiResponse += chunkText;
+                                    
+                                    // Parse Markdown properly in real-time
+                                    aiContent.innerHTML = marked.parse(savedAiResponse);
+                                    resultArea.scrollTop = resultArea.scrollHeight;
+                                }
+                            } catch (e) {
+                                // Ignore incomplete partial lines
+                            }
                         }
-                    }, 15);
+                    }
                 }
+
+                // Save to database once streaming is complete
+                if (currentUser) {
+                    const resumeId = "resume_" + Date.now();
+                    database.ref('userResumes/' + currentUser.uid + '/' + resumeId).set({
+                        targetRole: role,
+                        oldResume: text,
+                        aiFeedback: savedAiResponse,
+                        timestamp: Date.now()
+                    });
+                }
+
+                roastBtn.disabled = false;
+                roastBtn.innerText = "🔥 Roast Another Resume";
+                continueBtn.style.display = 'block';
+                resultArea.scrollTop = resultArea.scrollHeight;
+
             } catch (error) {
+                console.error("Streaming Error:", error);
                 spinner.style.display = 'none';
-                
-                // 🔥 THE FIX: SHOW CONTENT BOX EVEN ON CATCH ERROR 🔥
                 aiContent.style.display = 'block'; 
-                aiContent.innerHTML = `<span class='text-danger fw-bold'>Connection Error: Lagta hai backend server band hai. VS Code mein 'node server.js' chalao!</span>`;
-                
+                aiContent.innerHTML = `<span class='text-danger fw-bold'>Connection Error: Cannot connect to backend. Please check your network or server!</span>`;
                 roastBtn.disabled = false; 
                 roastBtn.innerText = "Try Again";
             }
         }
 
+        // 🔥 CONTEXT HANDOFF LOGIC 🔥
         function continueToMainChat() {
-            if (!currentUser) { alert("Pehle login karlo bhai!"); return; }
+            if (!currentUser) { 
+                alert("Please log in first, my friend!"); 
+                return; 
+            }
             
             const continueBtn = document.getElementById('continue-btn');
-            continueBtn.innerText = "Creating Chat... ⏳";
+            continueBtn.innerText = "Preparing your chat... ⏳";
             continueBtn.disabled = true;
 
             const newChatId = "resumechat_" + Date.now();
             const msgs = [
-                { role: 'user', text: `Ye mera resume tha:\n${document.getElementById('resume-text').value}\nRole: ${document.getElementById('job-role').value}` },
+                { role: 'user', text: `Here is my original resume text:\n${document.getElementById('resume-text').value}\n\nTarget Role: ${document.getElementById('job-role').value}\n\nHelp me improve it further.` },
                 { role: 'bot', text: savedAiResponse },
-                { role: 'bot', text: "Haa bhai, ab batao is resume mein aage kya theek karna hai? Kya koi aur point add karna chahte ho? 😊" }
+                { role: 'bot', text: "Yes my friend, what else would you like to fix in this resume? Is there any specific skill or point you want to add? 😊" }
             ];
 
             database.ref('userChats/' + currentUser.uid + '/' + newChatId).set({

@@ -50,11 +50,12 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* NAVBAR WITH TOGGLE FIX (Left & Right Split) */
+        /* NAVBAR (Cleaned up, no theme button here anymore) */
         .top-navbar {
             padding: 20px 30px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
+            /* Aligns back button to the left */
             align-items: center;
             border-bottom: 1px solid rgba(192, 133, 82, 0.15);
         }
@@ -78,27 +79,6 @@
             background: var(--light-brown);
             color: white;
             transform: translateX(-3px);
-        }
-
-        .theme-toggle-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--input-border);
-            color: var(--text-main);
-            padding: 8px 15px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px var(--card-shadow);
-            transition: 0.3s;
-        }
-
-        .theme-toggle-btn:hover {
-            background: var(--light-brown);
-            color: white;
-            transform: scale(1.05);
         }
 
         .main-container {
@@ -267,31 +247,89 @@
         }
 
         @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
+            0% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 600px) {
-            .analyzer-card { padding: 25px; }
-            .tool-icon { font-size: 35px; }
-            .tool-title { font-size: 22px; }
-            .top-navbar { padding: 15px 20px; }
-            .ai-result-box { padding: 15px 10px 15px 15px; font-size: 14.5px; }
+            .analyzer-card {
+                padding: 25px;
+            }
+
+            .tool-icon {
+                font-size: 35px;
+            }
+
+            .tool-title {
+                font-size: 22px;
+            }
+
+            .top-navbar {
+                padding: 15px 20px;
+            }
+
+            .ai-result-box {
+                padding: 15px 10px 15px 15px;
+                font-size: 14.5px;
+            }
         }
     </style>
 </head>
 
 <body>
+    <script>
+        (function () {
+            function updateThemeUI(themeValue) {
+                const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = themeValue === "dark" || (themeValue === "system" && prefersDarkOS);
 
+                if (isDark) document.body.classList.add("dark-theme");
+                else document.body.classList.remove("dark-theme");
+            }
+
+            // 1. Initial Load (Runs instantly before page draws)
+            const savedTheme = localStorage.getItem("theme") || "system";
+            updateThemeUI(savedTheme);
+
+            // 2. Listen for Live OS Theme Changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem("theme") === "system") {
+                    updateThemeUI("system");
+                }
+            });
+
+            // 3. CROSS-TAB SYNCHRONIZATION
+            // Listens to changes from index.html and applies instantly!
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') {
+                    updateThemeUI(e.newValue || "system");
+                }
+            });
+        })();
+    </script>
     <div class="top-navbar">
         <a href="tools.html" class="back-btn"><span>←</span> Back to Tools</a>
-        <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
     </div>
 
     <div class="main-container">
@@ -308,7 +346,8 @@
 
             <div id="result-area" class="ai-result-box">
                 <div id="ai-content" class="typing-content"></div>
-                <button id="continue-btn" class="continue-btn" onclick="continueInMainChat()">💬 Continue Chatting with AI</button>
+                <button id="continue-btn" class="continue-btn" onclick="continueInMainChat()">💬 Continue Chatting with
+                    AI</button>
             </div>
         </div>
     </div>
@@ -333,27 +372,6 @@
             else currentUser = null;
         });
 
-        // 🔥 THEME LOGIC 🔥
-        function applyTheme(theme) {
-            const btn = document.getElementById('theme-btn');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-                btn.innerText = "☀️";
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.body.classList.remove('dark-theme');
-                btn.innerText = "🌙";
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        if (localStorage.getItem('theme') === 'dark') applyTheme('dark');
-
-        function toggleTheme() {
-            if (document.body.classList.contains('dark-theme')) applyTheme('light');
-            else applyTheme('dark');
-        }
-
         let savedUserPrompt = "";
         let savedAiResponse = "";
 
@@ -371,36 +389,189 @@
             analyzeBtn.innerText = "Dimaag laga raha hu... ⏳";
             continueBtn.style.display = 'none';
             resultArea.style.display = 'block';
-            
+
             // Initial Loading Text
             aiContent.innerHTML = `<span style="color: var(--light-brown); font-weight: bold; font-style: italic; animation: pulse 1.5s infinite;">⏳ Marks deeply analyze ho rahe hain...</span>`;
-            
+
             const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
 
             const secretInstruction = `
-            Tu GradeX ka ek Highly Dedicated, Expert Academic Mentor aur bada bhai hai.
-            Tera ek hi maqsad hai: Sirf aur sirf Student ke Subjects aur Marks ko deeply analyze karna.
-            
-            USER INPUT: "${inputData}"
+You are not a generic AI tool. You are ${userNameForPrompt}'s personal academic mentor — 
+someone who has seen hundreds of students struggle, fail, bounce back, and succeed. 
+You carry that experience in every word you write.
 
-            Tujhe is input ko dhyan se padhna hai aur in 2 Scenarios mein se ek ko STRICTLY follow karna hai:
+USER HAS SHARED THESE MARKS: "${inputData}"
 
-            ❌ SCENARIO 1 (Agar input mein KOI marks nahi hain / Off-topic hai):
-            Agar user ne sirf 'Hi', 'Hello', ya koi random sawal pucha hai jisme academic marks nahi hain:
-            - Apna jawab EXACTLY is emoji se shuru kar: 🛑
-            - Usko ek witty aur funny reply de.
-            - Usko clearly samjha de ki "Ye ek Performance Analyzer Tool hai".
+════════════════════════════════════════
+🛑 SCENARIO 1 — IF NO MARKS FOUND
+════════════════════════════════════════
 
-            ✅ SCENARIO 2 (Agar input mein Subjects aur Marks hain):
-            Tujhe ekdum PhD level ki deep, lamba aur extremely detailed analysis karni hai. Kam se kam 300-500 words ka jawab de. Is structure ko strictly follow kar:
-            1. 🔬 Macro & Micro Reality Check.
-            2. 🧠 Psychological & Strategic Diagnosis.
-            3. 📅 The 7-Day Micro-Schedule.
-            4. 🚀 Pro-Level Execution Techniques.
-            5. 🔥 Motivation.
+If the input has no subjects or marks (just greetings, random text, off-topic):
+- Start your reply with exactly: 🛑
+- Be witty and warm, not robotic.
+- Tell them this tool is specifically for analyzing academic marks.
 
-            Bhasha human, friendly aur Hinglish rakh. Markdown (**, -, \`\`) se properly format kar.
-            `;
+════════════════════════════════════════
+✅ SCENARIO 2 — IF MARKS ARE PRESENT
+════════════════════════════════════════
+
+BEFORE WRITING A SINGLE WORD — do this internally:
+
+1. Look at every subject and mark carefully.
+2. Feel the pattern. Where is this student bleeding? Where are they quietly winning?
+3. What kind of student is this — the one who gave up on one subject? 
+   The one who's strong in theory but weak in application? 
+   The one who studies hard but the wrong way?
+4. What is the ONE thing they need to hear that no generic AI would say?
+
+Only after this deep scan, begin writing.
+
+════════════════════════════════════════
+📝 HOW TO WRITE — THE TONE & FEEL
+════════════════════════════════════════
+
+Write like a mentor who genuinely gives a damn.
+Not like a report. Not like a marksheet analysis.
+Like someone sitting across the table, looking at their marks, 
+and saying: "Okay. I see exactly what's happening here. Let me break this down for you."
+
+Language: Natural Hinglish — warm, direct, real.
+Tone: Senior bhaiya energy. Honest but never harsh. Real but never cold.
+Format: Use markdown (**, ##, -) but make it FEEL human, not robotic.
+
+════════════════════════════════════════
+🔬 THE ANALYSIS STRUCTURE (FOLLOW THIS EXACTLY)
+════════════════════════════════════════
+
+## 🎯 Pehli Nazar — Teri Asli Picture
+
+Start here. Look at the overall pattern.
+Don't just say "your average is X". 
+Tell them what KIND of student they are based on this specific pattern.
+
+Example thinking (never copy this, always generate fresh from their actual marks):
+- If Maths is 40 and Java is 80 → "Tu logically strong hai, par calculation-heavy 
+  cheezein teri Achilles heel hain — ye pattern main pehchanta hu."
+- If everything is 55-65 → "Ye marks teri consistency dikhate hain — tu consistently 
+  average hai, which means tu consistently SAFE khel raha hai. Safe khelna band kar."
+- Speak to THEIR specific numbers. Never generic.
+
+---
+
+## 🩻 Subject-By-Subject Honest Diagnosis
+
+For EACH subject, give:
+
+**[Subject Name] — [Mark]/100**
+*Status: [one honest word — Critical / Shaky / Decent / Strong / Excellent]*
+
+Then 3-4 lines that are SPECIFIC to that subject:
+- WHY this mark happened (not what happened, WHY)
+- What exact gap this mark reveals — concept gap? practice gap? time gap? confidence gap?
+- The ONE most important thing to fix in this subject
+
+Make each subject feel like it's getting individual attention.
+Not a copy-paste template. Different diagnosis for every subject.
+
+---
+
+## 🧠 Teri Sabse Badi Study Mistake (Jo Tu Shayad Nahi Jaanta)
+
+This section is the most important one.
+
+Based on the PATTERN of marks, diagnose the hidden study mistake.
+Not surface-level. Go deep.
+
+Examples of deep diagnosis (generate fresh based on actual marks):
+- "Tera strongest subject aur weakest subject ka gap 40+ marks ka hai. 
+  Ye sirf preparation ka issue nahi — ye selective attention ka issue hai. 
+  Tu jo subject pasand karta hai uspe ghante deta hai, baaki ko last minute pe chhodta hai."
+- "Tere marks ek specific range mein cluster hain — ye batata hai ki tu 
+  exam ke 2 din pehle padhna shuru karta hai. Tu basic concepts yaad karta hai 
+  but depth mein nahi jaata, isliye 60s mein atakta hai, 80s nahi aate."
+- Speak to what the NUMBERS are actually saying about their study behavior.
+
+---
+
+## 📅 Tera 7-Day War Plan (Subject-Specific, Not Generic)
+
+Day-by-day schedule based on THEIR weakest subjects.
+
+Format:
+**Day 1-2: [Weakest Subject] — Foundation Fix**
+- Specific action (not "read chapter 1" — which type of concepts, which approach)
+
+**Day 3-4: [Second Priority Subject]**
+- Specific action
+
+**Day 5: [Middle Ground Subjects] — Revision Sprint**
+**Day 6: [Strong Subjects] — Just Maintain, Don't Waste Time Here**
+**Day 7: Full Mock + Weak Point Targeting**
+
+For each day, give a rough time split too.
+Example: "3 hours deep work on Maths, 1 hour Java revision, 30 min DBMS theory scan."
+
+---
+
+## 🚀 Subject-Specific Study Techniques (The Real Stuff)
+
+This is where you go beyond what any general AI says.
+
+For each WEAK subject specifically:
+- Exact technique that works for THAT subject type
+  (not generic "make notes" — specific method)
+
+Examples of specific techniques:
+- For Maths/numerical subjects: "Pehle solved examples band karke khud solve karne ki 
+  koshish kar. Check kar. Ye active recall method passive reading se 3x faster fix karta hai."
+- For theory subjects like DBMS: "Concept ko ek 8-year-old ko samjhane ki tarah 
+  apne words mein likh. Agar nahi likh paya toh concept clear nahi hua — 
+  simple as that."
+- For programming subjects: "Code mat padh — code likh. Har example ko khud type kar, 
+  copy-paste mat kar. Haath se likhne se brain muscle memory build karta hai."
+
+Give 2-3 such techniques per weak subject. Real, specific, actionable.
+
+---
+
+## 🔥 Ek Baat Jo Tujhe Sunni Chahiye
+
+End with something real. Not motivational poster lines.
+Not "You can do it!" 
+Something honest and human that a real mentor would say — 
+based on what their specific marks are showing.
+
+If marks are genuinely bad: be honest about it, but not brutal.
+If marks show potential: point to exactly where that potential is hiding.
+If marks show inconsistency: name it directly.
+
+Make them feel: "Yaar, isko actually meri marks se meri story samajh aayi."
+
+════════════════════════════════════════
+⚠️ THINGS YOU MUST NEVER DO
+════════════════════════════════════════
+
+❌ Never give generic advice like "study daily" or "make a timetable" without specifics
+❌ Never treat all subjects the same way
+❌ Never give the same structure you'd give to anyone else's marks
+❌ Never be harsh or demotivating — honest but always warm
+❌ Never use robotic AI phrases like "Based on your input" or "It appears that"
+❌ Never skip the subject-specific part and give only general tips
+❌ Never make the student feel stupid — make them feel understood
+
+════════════════════════════════════════
+✅ THE ONE FINAL CHECK
+════════════════════════════════════════
+
+After writing everything, ask yourself:
+"Agar ${userNameForPrompt} yahi marks kisi real mentor ko dikhata — 
+would this response feel like that mentor actually looked at THEIR marks specifically?"
+
+If yes → this is good. Send it.
+If it feels generic → rewrite. Go deeper into their specific numbers.
+
+Minimum response length: 500-700 words. This student deserves full attention.
+`;
 
             try {
                 const response = await fetch('/api/chat', {
@@ -426,7 +597,7 @@
                         if (line.startsWith("data: ")) {
                             try {
                                 const json = JSON.parse(line.substring(6));
-                                
+
                                 if (json.error) {
                                     aiContent.innerHTML = `<span class='text-danger fw-bold'>Error: ${json.error.message || json.error}</span>`;
                                     resetButton();
@@ -441,7 +612,7 @@
 
                                     const text = json.candidates[0].content.parts[0].text;
                                     rawBotReply += text;
-                                    
+
                                     aiContent.innerHTML = marked.parse(rawBotReply);
                                     resultArea.scrollTop = resultArea.scrollHeight;
                                 }
@@ -459,7 +630,7 @@
                     continueBtn.style.display = 'block';
                     resultArea.scrollTop = resultArea.scrollHeight;
                 }
-                
+
                 resetButton();
 
             } catch (error) {

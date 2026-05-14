@@ -14,42 +14,202 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
     <style>
+        /* 🔥 THEME VARIABLES 🔥 */
         :root {
-            --bg-body: #FFF8F0; --text-main: #2c1a18;
-            --light-brown: #C08552; --med-brown: #8C5A3C; --dark-brown: #4B2E2B;
-            --card-bg: #ffffff; --card-shadow: rgba(140, 90, 60, 0.08);
+            --bg-body: #FFF8F0; 
+            --text-main: #2c1a18;
+            --light-brown: #C08552; 
+            --med-brown: #8C5A3C; 
+            --dark-brown: #4B2E2B;
+            --card-bg: #ffffff; 
+            --card-shadow: rgba(140, 90, 60, 0.08);
         }
 
         body.dark-theme {
-            --bg-body: #1c1110; --text-main: #e6dfd8;
-            --card-bg: #241514; --card-shadow: rgba(0, 0, 0, 0.4);
+            --bg-body: #1c1110; 
+            --text-main: #e6dfd8;
+            --card-bg: #241514; 
+            --card-shadow: rgba(0, 0, 0, 0.4);
         }
 
-        body { background-color: var(--bg-body); color: var(--text-main); font-family: "Lexend Deca", sans-serif; min-height: 100vh; transition: 0.3s; }
-        .top-navbar { padding: 20px 30px; border-bottom: 1px solid rgba(192, 133, 82, 0.15); }
-        .back-btn { background: var(--card-bg); border: 1px solid rgba(192, 133, 82, 0.3); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; }
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            font-family: "Lexend Deca", sans-serif; 
+            min-height: 100vh; 
+            transition: background-color 0.3s ease, color 0.3s ease; 
+        }
 
-        .main-container { padding: 40px 20px; max-width: 800px; margin: 0 auto; }
-        .vault-card { background: var(--card-bg); padding: 30px; border-radius: 24px; box-shadow: 0 10px 40px var(--card-shadow); border: 1px solid rgba(192, 133, 82, 0.15); }
+        /* 🔝 NAVBAR */
+        .top-navbar { 
+            padding: 20px 30px; 
+            border-bottom: 1px solid rgba(192, 133, 82, 0.15); 
+            display: flex; 
+            justify-content: flex-start; 
+            align-items: center; 
+        }
+
+        .back-btn { 
+            background: var(--card-bg); 
+            border: 1px solid rgba(192, 133, 82, 0.3); 
+            color: var(--text-main); 
+            padding: 8px 20px; 
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-weight: 600; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 4px 10px var(--card-shadow); 
+        }
+
+        .back-btn:hover { 
+            background: var(--light-brown); 
+            color: white; 
+            transform: translateX(-3px); 
+        }
+
+        /* 🛠️ MAIN CONTAINER */
+        .main-container { 
+            padding: 40px 20px; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .vault-card { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 40px var(--card-shadow); 
+            border: 1px solid rgba(192, 133, 82, 0.15); 
+        }
         
-        .input-box { background: var(--bg-body); border: 1px solid rgba(192, 133, 82, 0.3); border-radius: 12px; padding: 12px; color: var(--text-main); width: 100%; }
-        .btn-save { background: var(--med-brown); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; }
+        /* 📝 INPUTS & BUTTONS */
+        .input-box { 
+            background: var(--bg-body); 
+            border: 2px solid rgba(192, 133, 82, 0.3); 
+            border-radius: 12px; 
+            padding: 12px 18px; 
+            color: var(--text-main); 
+            width: 100%; 
+            transition: all 0.3s ease; 
+            outline: none;
+        }
+
+        .input-box:focus {
+            border-color: var(--light-brown);
+            box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1);
+        }
+
+        .btn-save { 
+            background: var(--med-brown); 
+            color: white; 
+            border: none; 
+            padding: 12px 25px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2);
+        }
+
+        .btn-save:hover {
+            background: var(--dark-brown);
+            transform: translateY(-2px);
+        }
         
+        /* 📋 LIST STYLES */
         .marks-list { margin-top: 30px; }
-        .subject-item { background: rgba(192, 133, 82, 0.05); padding: 15px 20px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(192, 133, 82, 0.1); }
-        .btn-delete { color: #ff4d4d; cursor: pointer; font-weight: bold; border: none; background: none; }
+        
+        .subject-item { 
+            background: rgba(192, 133, 82, 0.05); 
+            padding: 15px 20px; 
+            border-radius: 15px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border: 1px solid rgba(192, 133, 82, 0.1); 
+            transition: all 0.2s ease;
+        }
+
+        .subject-item:hover {
+            background: rgba(192, 133, 82, 0.1);
+            border-color: rgba(192, 133, 82, 0.3);
+        }
+
+        .btn-delete { 
+            color: #e74c3c; 
+            cursor: pointer; 
+            font-weight: bold; 
+            border: none; 
+            background: rgba(231, 76, 60, 0.1); 
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #e74c3c;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile tweaks */
+        @media (max-width: 768px) {
+            .top-navbar { padding: 15px 20px; }
+            .vault-card { padding: 25px 20px; }
+        }
     </style>
 </head>
 
 <body>
+
+    <script>
+        (function() {
+            function updateThemeUI(themeValue) {
+                const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = themeValue === "dark" || (themeValue === "system" && prefersDarkOS);
+                
+                if (isDark) document.body.classList.add("dark-theme");
+                else document.body.classList.remove("dark-theme");
+            }
+
+            // 1. Initial Load (Runs instantly before page draws)
+            const savedTheme = localStorage.getItem("theme") || "system";
+            updateThemeUI(savedTheme);
+
+            // 2. Listen for Live OS Theme Changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem("theme") === "system") {
+                    updateThemeUI("system");
+                }
+            });
+
+            // 3. CROSS-TAB SYNCHRONIZATION
+            // Listens to changes from index.html and applies instantly!
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') {
+                    updateThemeUI(e.newValue || "system");
+                }
+            });
+        })();
+    </script>
     <div class="top-navbar">
         <a href="tools.html" class="back-btn"><span>←</span> Back To Tools</a>
     </div>
 
     <div class="main-container">
         <div class="vault-card">
-            <h2 class="text-center mb-4 fw-bold" style="color: var(--med-brown);">📁 My Academic Vault</h2>
-            <p class="text-center opacity-75 mb-4">Apne subjects aur marks yahan hamesha ke liye save karlo.</p>
+            <h2 class="text-center mb-3 fw-bold" style="color: var(--med-brown);">📁 My Academic Vault</h2>
+            <p class="text-center opacity-75 mb-4">Permanently save your subjects and marks in the cloud so your AI tools can analyze them later.</p>
 
             <div class="row g-3">
                 <div class="col-md-5">
@@ -59,11 +219,11 @@
                     <input type="number" id="sub-marks" class="input-box" placeholder="Marks (e.g. 85)">
                 </div>
                 <div class="col-md-3">
-                    <button class="btn-save w-100" onclick="addSubject()">Add Item</button>
+                    <button class="btn-save w-100" onclick="addSubject()">Add Record</button>
                 </div>
             </div>
 
-            <div id="loading-text" class="text-center mt-4" style="display:none;">Cloud se sync ho raha hai... ☁️</div>
+            <div id="loading-text" class="text-center mt-4 opacity-75" style="display:none; font-weight: 500;">Syncing with Cloud... ☁️</div>
 
             <div class="marks-list" id="marks-display-area">
                 </div>
@@ -71,6 +231,7 @@
     </div>
 
     <script>
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyAYZi5fvboG6OCr8QtD8y2S29sRPDK4cd4",
             authDomain: "my-gemini-bot-gradex.firebaseapp.com",
@@ -90,18 +251,20 @@
                 currentUser = user;
                 loadUserMarks();
             } else {
-                alert("Pehle login karo bhai!");
+                alert("Please log in on the main chat page first, my friend!");
                 window.location.href = 'index.html';
             }
         });
 
-        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+        // Add Enter key listener for convenience
+        document.getElementById('sub-name').addEventListener('keypress', function(e) { if(e.key === 'Enter') addSubject(); });
+        document.getElementById('sub-marks').addEventListener('keypress', function(e) { if(e.key === 'Enter') addSubject(); });
 
         function addSubject() {
             const name = document.getElementById('sub-name').value.trim();
             const marks = document.getElementById('sub-marks').value.trim();
 
-            if(!name || !marks) return alert("Dono dabba bharo!");
+            if(!name || !marks) return alert("Please fill in both the subject name and your marks!");
 
             const subjectId = "sub_" + Date.now();
             database.ref('userMarks/' + currentUser.uid + '/' + subjectId).set({
@@ -110,11 +273,13 @@
             }).then(() => {
                 document.getElementById('sub-name').value = "";
                 document.getElementById('sub-marks').value = "";
+                document.getElementById('sub-name').focus();
             });
         }
 
         function loadUserMarks() {
             document.getElementById('loading-text').style.display = 'block';
+            
             database.ref('userMarks/' + currentUser.uid).on('value', (snapshot) => {
                 document.getElementById('loading-text').style.display = 'none';
                 const data = snapshot.val();
@@ -126,21 +291,23 @@
                         displayArea.innerHTML += `
                             <div class="subject-item">
                                 <div>
-                                    <span class="fw-bold">${data[id].name}</span>: 
-                                    <span style="color: var(--light-brown)">${data[id].marks}</span>
+                                    <span class="fw-bold" style="font-size: 16px;">${data[id].name}</span>: 
+                                    <span style="color: var(--light-brown); font-weight: 700; font-size: 16px;">${data[id].marks}</span>
                                 </div>
-                                <button class="btn-delete" onclick="deleteSubject('${id}')">✕</button>
+                                <button class="btn-delete" onclick="deleteSubject('${id}')" title="Delete record">✕</button>
                             </div>
                         `;
                     });
                 } else {
-                    displayArea.innerHTML = "<p class='text-center opacity-50'>Abhi koi data nahi hai. Shuruat karo!</p>";
+                    displayArea.innerHTML = "<p class='text-center opacity-50 mt-4'>No data available yet. Start adding your subjects above! 📚</p>";
                 }
             });
         }
 
         function deleteSubject(id) {
-            database.ref('userMarks/' + currentUser.uid + '/' + id).remove();
+            if(confirm("Are you sure you want to delete this record?")) {
+                database.ref('userMarks/' + currentUser.uid + '/' + id).remove();
+            }
         }
     </script>
 </body>

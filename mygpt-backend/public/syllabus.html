@@ -7,8 +7,9 @@
     <title>Syllabus & Time Calculator - GradeX</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
@@ -37,81 +38,368 @@
             --card-shadow: rgba(0, 0, 0, 0.4);
         }
 
-        body { background-color: var(--bg-body); color: var(--text-main); font-family: "Lexend Deca", sans-serif; min-height: 100vh; display: flex; flex-direction: column; transition: background-color 0.3s ease, color 0.3s ease; }
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: "Lexend Deca", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
 
-        /* NAVBAR WITH TOGGLE */
-        .top-navbar { padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(192, 133, 82, 0.15); }
-        .back-btn { background: var(--card-bg); border: 1px solid var(--input-border); color: var(--text-main); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 10px var(--card-shadow); }
-        .back-btn:hover { background: var(--light-brown); color: white; transform: translateX(-3px); }
-        
-        .theme-toggle-btn { background: var(--card-bg); border: 1px solid var(--input-border); color: var(--text-main); padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--card-shadow); transition: 0.3s; }
-        .theme-toggle-btn:hover { background: var(--light-brown); color: white; transform: scale(1.05); }
+        /* NAVBAR */
+        .top-navbar {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            border-bottom: 1px solid rgba(192, 133, 82, 0.15);
+        }
 
-        .main-container { flex-grow: 1; display: flex; justify-content: center; padding: 30px 20px; }
+        .back-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            padding: 8px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px var(--card-shadow);
+        }
 
-        .analyzer-card { background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px var(--card-shadow); border: 1px solid var(--input-border); width: 100%; max-width: 750px; animation: fadeInUp 0.5s ease; display: flex; flex-direction: column;}
+        .back-btn:hover {
+            background: var(--light-brown);
+            color: white;
+            transform: translateX(-3px);
+        }
 
-        .tool-icon { font-size: 45px; text-align: center; margin-bottom: 10px; }
-        .tool-title { text-align: center; font-weight: 700; color: var(--med-brown); margin-bottom: 10px; }
-        .tool-desc { text-align: center; font-size: 15px; opacity: 0.8; margin-bottom: 30px; }
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            padding: 30px 20px;
+        }
 
-        .input-group-custom { margin-bottom: 20px; }
-        .input-group-custom label { font-weight: 600; margin-bottom: 8px; display: block; opacity: 0.9; }
-        
-        .custom-input { background-color: var(--input-bg); border: 2px solid var(--input-border); color: var(--text-main); border-radius: 16px; padding: 16px 20px; font-size: 15.5px; width: 100%; transition: all 0.3s; }
-        .custom-textarea { background-color: var(--input-bg); border: 2px solid var(--input-border); color: var(--text-main); border-radius: 16px; padding: 18px 20px; font-size: 15.5px; width: 100%; transition: all 0.3s; resize: none; min-height: 120px; line-height: 1.6; }
-        .custom-input:focus, .custom-textarea:focus { border-color: var(--light-brown); outline: none; box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1); }
-        
+        .analyzer-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px var(--card-shadow);
+            border: 1px solid var(--input-border);
+            width: 100%;
+            max-width: 750px;
+            animation: fadeInUp 0.5s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-icon {
+            font-size: 45px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .tool-title {
+            text-align: center;
+            font-weight: 700;
+            color: var(--med-brown);
+            margin-bottom: 10px;
+        }
+
+        .tool-desc {
+            text-align: center;
+            font-size: 15px;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        .input-group-custom {
+            margin-bottom: 20px;
+        }
+
+        .input-group-custom label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            opacity: 0.9;
+        }
+
+        .custom-input {
+            background-color: var(--input-bg);
+            border: 2px solid var(--input-border);
+            color: var(--text-main);
+            border-radius: 16px;
+            padding: 16px 20px;
+            font-size: 15.5px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .custom-textarea {
+            background-color: var(--input-bg);
+            border: 2px solid var(--input-border);
+            color: var(--text-main);
+            border-radius: 16px;
+            padding: 18px 20px;
+            font-size: 15.5px;
+            width: 100%;
+            transition: all 0.3s;
+            resize: none;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .custom-input:focus,
+        .custom-textarea:focus {
+            border-color: var(--light-brown);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(192, 133, 82, 0.1);
+        }
+
         /* 🔥 CUSTOM SCROLLBARS 🔥 */
-        .custom-textarea::-webkit-scrollbar, .ai-result-box::-webkit-scrollbar { width: 8px; }
-        .custom-textarea::-webkit-scrollbar-track, .ai-result-box::-webkit-scrollbar-track { background: rgba(192, 133, 82, 0.05); border-radius: 10px; margin: 10px 0; }
-        .custom-textarea::-webkit-scrollbar-thumb, .ai-result-box::-webkit-scrollbar-thumb { background: rgba(192, 133, 82, 0.4); border-radius: 10px; }
-        .custom-textarea::-webkit-scrollbar-thumb:hover, .ai-result-box::-webkit-scrollbar-thumb:hover { background: var(--light-brown); }
+        .custom-textarea::-webkit-scrollbar,
+        .ai-result-box::-webkit-scrollbar {
+            width: 8px;
+        }
 
-        .analyze-btn { background-color: var(--med-brown); color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-weight: 600; font-size: 16px; transition: 0.3s; box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2); }
-        .analyze-btn:hover:not(:disabled) { background-color: var(--dark-brown); transform: translateY(-2px); color: white; }
-        .analyze-btn:disabled { background-color: #d4c5ba; cursor: not-allowed; transform: none; }
+        .custom-textarea::-webkit-scrollbar-track,
+        .ai-result-box::-webkit-scrollbar-track {
+            background: rgba(192, 133, 82, 0.05);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
 
-        .continue-btn { background-color: transparent; border: 2px solid var(--med-brown); color: var(--med-brown); width: 100%; padding: 14px; border-radius: 16px; font-weight: 600; font-size: 16px; margin-top: 20px; transition: 0.3s; display: none; }
-        .continue-btn:hover { background-color: var(--med-brown); color: white; transform: translateY(-2px); }
+        .custom-textarea::-webkit-scrollbar-thumb,
+        .ai-result-box::-webkit-scrollbar-thumb {
+            background: rgba(192, 133, 82, 0.4);
+            border-radius: 10px;
+        }
 
-        .ai-result-box { margin-top: 30px; background: rgba(192, 133, 82, 0.05); border: 1px solid rgba(192, 133, 82, 0.2); border-radius: 20px; padding: 25px 20px 25px 25px; display: none; animation: fadeInUp 0.4s ease; font-size: 15.5px; line-height: 1.7; max-height: 450px; overflow-y: auto; overflow-x: hidden; }
-        .ai-result-box h3, .ai-result-box h4 { color: var(--med-brown); font-weight: 600; margin-top: 20px; margin-bottom: 10px; }
-        .ai-result-box h3:first-child { margin-top: 0; }
-        .ai-result-box strong { color: var(--light-brown); }
-        .ai-result-box ul { padding-left: 20px; margin-bottom: 15px; }
+        .custom-textarea::-webkit-scrollbar-thumb:hover,
+        .ai-result-box::-webkit-scrollbar-thumb:hover {
+            background: var(--light-brown);
+        }
 
-        .loader-container { display: flex; justify-content: center; align-items: center; position: relative; width: 50px; height: 50px; margin: 20px auto; }
-        .spinner-ring { position: absolute; width: 100%; height: 100%; border: 3px solid rgba(192, 133, 82, 0.2); border-top-color: var(--light-brown); border-radius: 50%; animation: spin 1s linear infinite; }
-        .loader-logo { width: 25px; height: 25px; object-fit: contain; animation: pulse 1.5s ease-in-out infinite; }
+        .analyze-btn {
+            background-color: var(--med-brown);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(140, 90, 60, 0.2);
+        }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.8; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .analyze-btn:hover:not(:disabled) {
+            background-color: var(--dark-brown);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .analyze-btn:disabled {
+            background-color: #d4c5ba;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .continue-btn {
+            background-color: transparent;
+            border: 2px solid var(--med-brown);
+            color: var(--med-brown);
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: 0.3s;
+            display: none;
+        }
+
+        .continue-btn:hover {
+            background-color: var(--med-brown);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .ai-result-box {
+            margin-top: 30px;
+            background: rgba(192, 133, 82, 0.05);
+            border: 1px solid rgba(192, 133, 82, 0.2);
+            border-radius: 20px;
+            padding: 25px 20px 25px 25px;
+            display: none;
+            animation: fadeInUp 0.4s ease;
+            font-size: 15.5px;
+            line-height: 1.7;
+            max-height: 450px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .ai-result-box h3,
+        .ai-result-box h4 {
+            color: var(--med-brown);
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .ai-result-box h3:first-child {
+            margin-top: 0;
+        }
+
+        .ai-result-box strong {
+            color: var(--light-brown);
+        }
+
+        .ai-result-box ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+        }
+
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid rgba(192, 133, 82, 0.2);
+            border-top-color: var(--light-brown);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-logo {
+            width: 25px;
+            height: 25px;
+            object-fit: contain;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* 100% Responsiveness Fixes */
         @media (max-width: 600px) {
-            .analyzer-card { padding: 25px; }
-            .tool-icon { font-size: 35px; }
-            .tool-title { font-size: 22px; }
-            .top-navbar { padding: 15px 20px; }
-            .ai-result-box { padding: 15px 10px 15px 15px; font-size: 14.5px; }
+            .analyzer-card {
+                padding: 25px;
+            }
+
+            .tool-icon {
+                font-size: 35px;
+            }
+
+            .tool-title {
+                font-size: 22px;
+            }
+
+            .top-navbar {
+                padding: 15px 20px;
+            }
+
+            .ai-result-box {
+                padding: 15px 10px 15px 15px;
+                font-size: 14.5px;
+            }
         }
     </style>
 </head>
 
 <body>
 
+    <script>
+        (function () {
+            function updateThemeUI(themeValue) {
+                const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = themeValue === "dark" || (themeValue === "system" && prefersDarkOS);
+
+                if (isDark) document.body.classList.add("dark-theme");
+                else document.body.classList.remove("dark-theme");
+            }
+
+            // 1. Initial Load
+            const savedTheme = localStorage.getItem("theme") || "system";
+            updateThemeUI(savedTheme);
+
+            // 2. Listen for Live OS Theme Changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem("theme") === "system") {
+                    updateThemeUI("system");
+                }
+            });
+
+            // 3. CROSS-TAB SYNCHRONIZATION
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') {
+                    updateThemeUI(e.newValue || "system");
+                }
+            });
+        })();
+    </script>
     <div class="top-navbar">
         <a href="tools.html" class="back-btn"><span>←</span> Back to Tools</a>
-        <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
     </div>
 
     <div class="main-container">
         <div class="analyzer-card">
             <div class="tool-icon">⏳</div>
             <h2 class="tool-title">Time vs Syllabus Hacker</h2>
-            <p class="tool-desc">Batao kya kya padhna baaki hai aur din kitne bache hain. AI tumhe batayega kya ratna hai aur kya chhodna hai!</p>
+            <p class="tool-desc">Enter your pending syllabus and remaining days. The AI will strategically tell you
+                exactly what to cram and what to skip!</p>
 
             <div class="input-group-custom">
                 <label>Days Left for Exam 📆</label>
@@ -120,7 +408,8 @@
 
             <div class="input-group-custom">
                 <label>Syllabus / Topics to Cover 📚</label>
-                <textarea id="topics-input" class="custom-textarea" placeholder="Example:&#10;DBMS: Normalization, SQL, Indexing&#10;OS: Deadlock, Paging, Threads&#10;Maths: Integration..."></textarea>
+                <textarea id="topics-input" class="custom-textarea"
+                    placeholder="Example:&#10;DBMS: Normalization, SQL, Indexing&#10;OS: Deadlock, Paging, Threads&#10;Maths: Integration..."></textarea>
             </div>
 
             <button id="analyze-btn" class="analyze-btn" onclick="startStrategy()">🚀 Build Master Study Plan</button>
@@ -128,11 +417,13 @@
             <div id="result-area" class="ai-result-box">
                 <div id="loading-spinner" class="loader-container" style="display: none;">
                     <div class="spinner-ring"></div>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" alt="AI Logo" class="loader-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" alt="AI Logo"
+                        class="loader-logo">
                 </div>
                 <div id="ai-content" class="typing-content" style="display: none;"></div>
-                
-                <button id="continue-btn" class="continue-btn" onclick="continueInMainChat()">💬 Discuss this Plan with AI</button>
+
+                <button id="continue-btn" class="continue-btn" onclick="continueInMainChat()">💬 Discuss this Plan with
+                    AI</button>
             </div>
         </div>
     </div>
@@ -157,79 +448,291 @@
             else currentUser = null;
         });
 
-        // 🔥 THEME LOGIC 🔥
-        function applyTheme(theme) {
-            const btn = document.getElementById('theme-btn');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-                btn.innerText = "☀️";
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.body.classList.remove('dark-theme');
-                btn.innerText = "🌙";
-                localStorage.setItem('theme', 'light');
-            }
-        }
-        if (localStorage.getItem('theme') === 'dark') applyTheme('dark');
-        function toggleTheme() {
-            if (document.body.classList.contains('dark-theme')) applyTheme('light');
-            else applyTheme('dark');
-        }
-
         let savedUserPrompt = "";
         let savedAiResponse = "";
 
         async function startStrategy() {
             const days = document.getElementById('days-input').value.trim();
             const topics = document.getElementById('topics-input').value.trim();
-            
+
             const analyzeBtn = document.getElementById('analyze-btn');
             const resultArea = document.getElementById('result-area');
             const aiContent = document.getElementById('ai-content');
             const loadingSpinner = document.getElementById('loading-spinner');
             const continueBtn = document.getElementById('continue-btn');
 
-            if (!days || !topics) { alert("Bhai, Din aur Syllabus dono daalna zaroori hai!"); return; }
-            if (days <= 0) { alert("Exams khatam ho gaye kya bhai? 0 se zyada din daal!"); return; }
+            if (!days || !topics) {
+                alert("Please enter both the number of days left and your syllabus topics!");
+                return;
+            }
+            if (days <= 0) {
+                alert("Are your exams already over? Please enter a valid number of days greater than 0!");
+                return;
+            }
 
             // UI Adjustments
             analyzeBtn.disabled = true;
-            analyzeBtn.innerText = "Internet khangaal raha hu... ⏳";
+            analyzeBtn.innerText = "Analyzing academic data... ⏳";
             continueBtn.style.display = 'none';
             resultArea.style.display = 'block';
             aiContent.style.display = 'none';
             loadingSpinner.style.display = 'flex';
 
-            const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Dost";
+            const userNameForPrompt = currentUser ? currentUser.displayName.split(" ")[0] : "Friend";
 
-            // 🔥 THE PARETO PRINCIPLE (80/20) GUARDRAIL PROMPT 🔥
+            // 🔥 THE PARETO PRINCIPLE (80/20) GUARDRAIL PROMPT (Fully English) 🔥
             const secretInstruction = `
-            Tu GradeX ka ek Highly Dedicated, Expert Exam Strategist aur bada bhai hai.
-            Tera maqsad hai student ke bache hue syllabus aur time ko analyze karke ek 'Smart Study Plan' banana jisse wo kam time me pass ho sake (80/20 Pareto Principle).
-            
-            USER INPUT:
-            Days Left: "${days}"
-            Topics to Cover: "${topics}"
+You are not a generic study planner. You are not a timetable generator.
 
-            Tujhe is input ko dhyan se padhna hai aur in 2 Scenarios mein se ek ko STRICTLY follow karna hai:
+You are ${userNameForPrompt}'s battle-hardened exam strategist — 
+someone who has helped hundreds of students go from "main toh pakka fail hounga" 
+to actually clearing their exams. You've seen what works under real pressure.
+You carry that experience in every word you write.
 
-            ❌ SCENARIO 1 (Agar input mein Syllabus nahi hai ya faltu baat hai):
-            Agar user ne sirf 'Hi', 'Hello', 'Tum kon ho', ya koi random baat likhi hai jisme padhai ke topics nahi hain:
-            - Apna jawab EXACTLY is emoji se shuru kar: 🛑
-            - Usko ek witty aur funny reply de. (e.g. "🛑 Bhai exam sar pe hain aur tu mujhse timepass kar raha hai? Yahan syllabus aur bache hue din daal...")
-            - Usko clearly samjha de ki faltu baat ke liye 'Back to Chat' daba kar wahan aaja.
+THE SITUATION:
+- Days Remaining: ${days} days
+- Syllabus to Cover: "${topics}"
 
-            ✅ SCENARIO 2 (Agar input mein Topics aur Days hain):
-            Agar input me sach mein topics hain, toh tujhe 🛑 EMOJI KA USE BILKUL NAHI KARNA HAI.
-            Tera apna internet/academic database use karke in topics ka Post-Mortem kar. Kam se kam 300-500 words ka Deep Action Plan bana. Structure ye hoga:
-            1. 🚨 **High-Yield vs Low-Yield (MOST IMPORTANT):** In topics me se sabse zyada repeat hone wale aur important topics (High Yield) alag nikal, aur non-important (Low Yield) alag kar. Bata ki inme se kin topics ko CHHODNA hai ya upar se dekhna hai taaki time bache.
-            2. ⏳ **Daily Target Breakdown:** ${days} din ke hisaab se math laga aur bata ki roz kitne ghante padhna padega. Kis din kaunsa 'High-Yield' topic uthana hai.
-            3. 🧠 **Hacks for specific topics:** In specific topics ko jaldi yaad karne ki tricks bata (jaise kisi me flowchart banana hai, kisi me sirf formula rattne hain).
-            4. 🔥 **Motivation:** End me ek aisi aag lagane wali line bol jisse padhne ka man kare.
+════════════════════════════════════════
+🛑 SCENARIO 1 — OFF-TOPIC INPUT
+════════════════════════════════════════
 
-            Bhasha ekdum human, friendly aur Hinglish rakh. Jawab ko Markdown se sundar format kar.
-            `;
+If the input has no real academic topics or days (just greetings, random text):
+- Start with exactly: 🛑
+- Be witty and warm, not robotic
+- Remind them this tool is specifically for exam planning
 
+════════════════════════════════════════
+🧠 BEFORE YOU WRITE — THE INTERNAL SCAN
+════════════════════════════════════════
+
+Read everything silently first. Then feel:
+
+→ How much time pressure is this person actually under?
+   ${days} days — is this a comfortable buffer or a genuine emergency?
+   
+→ How heavy is this syllabus REALLY?
+   Count the subjects. Count the topics per subject.
+   Calculate roughly how many hours each topic needs.
+   Compare that to available study hours (assume 6-8 hrs/day max — real humans need sleep).
+   
+→ What is the gap between what needs to be done and what's realistically possible?
+   Be honest about this gap — not brutal, but real.
+   
+→ Which topics in this syllabus are HIGH-YIELD?
+   (Topics that appear in exams repeatedly, carry more marks, 
+   are prerequisites for other topics, or are conceptually central)
+   
+→ Which topics are LOW-YIELD?
+   (Rarely tested, peripheral, or too time-consuming for the marks they carry)
+
+→ What is the SINGLE BIGGEST RISK in this plan?
+   (Running out of time? Wasting time on wrong topics? Burnout?)
+
+Only after this deep scan — begin writing.
+
+════════════════════════════════════════
+📝 TONE & LANGUAGE
+════════════════════════════════════════
+
+Write like that senior who's been through this exact panic.
+Someone who looks at this syllabus and days and immediately knows 
+what's doable and what's not — and tells it straight.
+
+Language: Natural Hinglish — warm, direct, zero fluff.
+Tone: War-room energy. Calm but urgent. Honest but never demoralizing.
+Format: Markdown (##, **, -) but every line should feel handcrafted.
+
+Never start with: "Here is your study plan" or "Based on your input"
+Start by acknowledging the REAL situation — how tight is this actually?
+
+════════════════════════════════════════
+⚡ SECTION 1 — REALITY CHECK: HONEST SITUATION ASSESSMENT
+════════════════════════════════════════
+
+## ⚡ Pehle Sacchi Baat — Teri Actual Situation
+
+Do the math openly. Show the work.
+
+Calculate:
+- Total topics count across all subjects
+- Realistic hours needed (rough estimate per topic type)
+- Total available study hours (${days} days × 7 hrs/day = X hrs)
+- The GAP — honest gap between what's needed and what's available
+
+Then classify the situation:
+- **If ${days} >= 7 days AND syllabus is manageable:** 
+  "Tera time tight hai but doable hai — agar sahi cheezein sahi order mein padha."
+- **If ${days} is 3-6 days AND syllabus is heavy:**
+  "Main tujhse jhooth nahi bolunga — poora syllabus cover nahi hoga. 
+   Par sahi topics cover karke 70%+ score possible hai. Ye plan wohi karega."
+- **If ${days} is 1-2 days:**
+  "Yaar ye emergency mode hai. Koi pretend nahi karta ki sab normal hai. 
+   Abhi sirf ek kaam — maximum marks, minimum topics. Main bata raha hu exactly kya."
+
+This honesty is what makes ${userNameForPrompt} trust the rest of the plan.
+
+════════════════════════════════════════
+🎯 SECTION 2 — HIGH-YIELD vs SKIP LIST
+════════════════════════════════════════
+
+## 🎯 Kya Padhna Hai, Kya Chhodna Hai — The 80/20 Map
+
+This is the most valuable section. Go deep.
+
+For EACH subject in the syllabus, create this breakdown:
+
+---
+**[Subject Name]**
+
+🔥 **MUST COVER (High-Yield):**
+- [Topic] — *why this is high-yield: frequently tested / high marks / conceptual base*
+- [Topic] — *specific reason*
+
+⚡ **COVER IF TIME ALLOWS (Medium-Yield):**
+- [Topic] — *skim the main concept, skip deep details*
+
+❌ **SKIP COMPLETELY (Low-Yield for ${days} days):**
+- [Topic] — *honest reason: too time-heavy for marks it carries / rarely tested*
+
+---
+
+For every topic in their syllabus — categorize it. No topic left unaddressed.
+Make the reasoning visible — WHY is this high-yield? WHY is this skippable?
+That reasoning is what separates this from a generic list.
+
+════════════════════════════════════════
+📅 SECTION 3 — DAY-BY-DAY WAR PLAN
+════════════════════════════════════════
+
+## 📅 Tera ${days}-Day Exam War Plan
+
+NOT a generic timetable. Built specifically for THIS syllabus and THESE days.
+
+First, state the daily hour target and why:
+"Har din 7 hours — 3 deep work blocks of 90 min each, 
+with 20 min breaks. Isse zyada actually counterproductive hai after Day 2."
+
+Then day by day:
+
+**Day 1 — [Subject/Topic Focus]**
+Morning (2.5 hrs): [Specific topics — exactly which ones]
+Afternoon (2.5 hrs): [Specific topics]
+Evening (2 hrs): [Revision of Day 1 + quick notes]
+*Why this order:* [One line — why these topics on this day]
+
+**Day 2 — [Subject/Topic Focus]**
+[Same structure]
+
+[Continue for all ${days} days]
+
+**Last Day — NO NEW TOPICS**
+Morning: Revision of HIGH-YIELD topics only
+Afternoon: Previous year questions / practice problems  
+Evening: Light revision, early sleep — seriously.
+
+Important: If ${days} is 1-2, compress accordingly. Be real about it.
+Don't make a 7-day plan for a 2-day situation.
+
+════════════════════════════════════════
+🧠 SECTION 4 — TOPIC-SPECIFIC STUDY HACKS
+════════════════════════════════════════
+
+## 🧠 Subject-Specific Techniques Jo Actually Kaam Karti Hain
+
+For each SUBJECT in their syllabus — give techniques that are:
+- Specific to THAT subject's nature (theory vs numerical vs conceptual vs memory-based)
+- Different from what a lazy student would do
+- Immediately usable today
+
+Examples of SPECIFIC techniques (generate fresh based on their actual topics):
+
+For DBMS/OS type subjects:
+"Normalization ke liye diagram mat padh — khud ek messy table bana 
+aur usse normalize karne ki koshish kar. Galtiyan karoge toh concept yaad rahega."
+
+For Maths/Numerical subjects:
+"Formula mat memorize kar. Ek problem solve karo from scratch without formula sheet. 
+Jab galat jaao tab formula dekho. Ye struggle brain mein permanently store karta hai."
+
+For Theory-heavy subjects:
+"Topic ko ek WhatsApp message ki tarah summarize karo — 50 words mein.
+Agar nahi kar paye, concept abhi clear nahi hua."
+
+For Programming subjects:
+"Code mat padho — code likho. Haath se. Copy-paste se kuch nahi seekhoge."
+
+2-3 techniques per subject. Real, specific, time-aware.
+
+════════════════════════════════════════
+⚠️ SECTION 5 — THE BIGGEST MISTAKES TO AVOID
+════════════════════════════════════════
+
+## ⚠️ Ye Galtiyan Mat Karna — Students Yahin Doobte Hain
+
+Based on THIS specific syllabus and time situation — 
+name 3-4 specific traps this student might fall into:
+
+Examples (generate specific to their situation):
+- "Tere paas ${days} din hain aur [X topic] hai — ye topic rabbit hole hai. 
+   Isme ghusoge toh 3 ghante khatam, marks 5. Skip karo."
+- "Raat ko 2 baje tak padhna band karo. Sleep deprivation se 
+   next day retention 40% drop ho jaata hai — ye science hai, motivation nahi."
+- "Ek hi subject ke peeche mat lago kyunki wo acha lag raha hai. 
+   Comfort zone studying real padding nahi hai."
+
+Make these feel like warnings from someone who's watched students make these exact mistakes.
+
+════════════════════════════════════════  
+🔥 SECTION 6 — EK BAAT JO SUNNI CHAHIYE
+════════════════════════════════════════
+
+## 🔥 Ek Baat — Seedha Dil Se
+
+End with something real. Not poster motivation.
+
+If time is genuinely very tight → acknowledge it honestly, 
+then show them that smart strategy beats more hours every time.
+
+If syllabus is heavy but time is okay → tell them the specific advantage they have 
+and exactly what to do with it.
+
+If situation looks manageable → tell them where people with this much time 
+usually go wrong — and how ${userNameForPrompt} can avoid that.
+
+One paragraph. Raw. Real. From the gut.
+Not "You can do it!" — something they'll actually remember sitting in the exam hall.
+
+════════════════════════════════════════
+⚠️ ABSOLUTE NEVER-DO LIST
+════════════════════════════════════════
+
+❌ Never give a generic timetable that ignores the actual topics listed
+❌ Never say "study daily for 8 hours" without specifying what exactly
+❌ Never pretend all topics are equally important — prioritize ruthlessly
+❌ Never give fake optimism when the situation is genuinely tight — be honest
+❌ Never use robotic phrases like "Based on your input" or "It appears that"
+❌ Never leave any topic from their syllabus unaddressed in the High/Medium/Skip list
+❌ Generic motivation lines like "Believe in yourself" are banned
+
+════════════════════════════════════════
+✅ THE FINAL CHECK
+════════════════════════════════════════
+
+After writing everything, ask yourself:
+
+"If ${userNameForPrompt} followed this plan exactly — 
+given THESE specific topics and THESE specific days — 
+would they genuinely be in a better position than if they just 
+opened their books and started randomly?"
+
+If yes → this is good. Send it.
+If it still feels generic → go back. Make the day-plan more specific. 
+Name more topics explicitly. Be more honest about what's skippable.
+
+Minimum length: 600-800 words.
+Every section should feel built for THIS syllabus and THIS deadline — not any student's.
+`;
             try {
                 const response = await fetch('/api/chat', {
                     method: 'POST',
@@ -237,52 +740,70 @@
                     body: JSON.stringify({ message: secretInstruction, userName: userNameForPrompt })
                 });
 
-                const data = await response.json();
-                loadingSpinner.style.display = 'none';
-                aiContent.style.display = 'block';
+                // 🔥 TRUE SSE STREAMING LOGIC 🔥
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let isFirstChunk = true;
+                savedAiResponse = "";
 
-                if (data.error) {
-                    aiContent.innerHTML = `<span class='text-danger fw-bold'>Error: ${data.error.message || data.error}</span>`;
-                    resetButton();
-                    return;
-                }
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                if (data && data.candidates) {
-                    let rawBotReply = data.candidates[0].content.parts[0].text;
-                    aiContent.innerHTML = "";
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split("\n");
 
-                    savedUserPrompt = `Mere paas ${days} din bache hain aur ye syllabus hai:\n${topics}`;
-                    savedAiResponse = rawBotReply;
+                    for (const line of lines) {
+                        if (line.startsWith("data: ")) {
+                            try {
+                                const json = JSON.parse(line.substring(6));
 
-                    let index = 0;
+                                if (json.error) {
+                                    loadingSpinner.style.display = 'none';
+                                    aiContent.style.display = 'block';
+                                    aiContent.innerHTML = `<span class='text-danger fw-bold'>Error: ${json.error.message || json.error}</span>`;
+                                    resetButton();
+                                    return;
+                                }
 
-                    await new Promise((resolve) => {
-                        let typingInterval = setInterval(() => {
-                            if (index <= rawBotReply.length) {
-                                aiContent.innerHTML = marked.parse(rawBotReply.substring(0, index));
-                                resultArea.scrollTop = resultArea.scrollHeight; 
-                                index += 4; 
-                            } else {
-                                clearInterval(typingInterval);
-                                aiContent.innerHTML = marked.parse(rawBotReply);
-                                resultArea.scrollTop = resultArea.scrollHeight;
+                                if (json.candidates && json.candidates[0].content.parts[0].text) {
+                                    if (isFirstChunk) {
+                                        loadingSpinner.style.display = 'none';
+                                        aiContent.style.display = 'block';
+                                        aiContent.innerHTML = "";
+                                        isFirstChunk = false;
+                                    }
 
-                                // Agar reply '🛑' se shuru nahi ho raha (yaani syllabus analysis tha)
-                                if (!rawBotReply.trim().startsWith("🛑")) {
-                                    continueBtn.style.display = 'block';
+                                    const text = json.candidates[0].content.parts[0].text;
+                                    savedAiResponse += text;
+
+                                    aiContent.innerHTML = marked.parse(savedAiResponse);
                                     resultArea.scrollTop = resultArea.scrollHeight;
                                 }
-                                resolve();
+                            } catch (e) {
+                                // Ignore incomplete chunks during streaming
                             }
-                        }, 15);
-                    });
+                        }
+                    }
                 }
+
+                savedUserPrompt = `I have ${days} days left and this is my syllabus:\n${topics}`;
+
+                // Show continue button if it wasn't an off-topic error response
+                if (!savedAiResponse.trim().startsWith("🛑")) {
+                    continueBtn.style.display = 'block';
+                    resultArea.scrollTop = resultArea.scrollHeight;
+                }
+
+                resetButton();
+
             } catch (error) {
+                console.error("Streaming Error:", error);
                 loadingSpinner.style.display = 'none';
                 aiContent.style.display = 'block';
-                aiContent.innerHTML = `<span class='text-danger fw-bold'>Connection Error: Backend server band hai. Apne VS Code terminal me 'node server.js' chalao!</span>`;
+                aiContent.innerHTML = `<span class='text-danger fw-bold'>Connection Error: Cannot connect to the backend server. Please verify your connection or check the server!</span>`;
+                resetButton();
             }
-            resetButton();
         }
 
         function resetButton() {
@@ -293,13 +814,13 @@
 
         function continueInMainChat() {
             if (!currentUser) {
-                alert("Bhai, aage ki chat save karne ke liye pehle login karna padega. Chat page par jaa kar login karo!");
+                alert("Please log in on the main chat page first to save this conversation!");
                 window.location.href = 'index.html';
                 return;
             }
 
             const continueBtn = document.getElementById('continue-btn');
-            continueBtn.innerText = "Chat tayar ho rahi hai... ⏳";
+            continueBtn.innerText = "Preparing Chat... ⏳";
             continueBtn.disabled = true;
 
             const newChatId = "syllabus_" + Date.now();
@@ -307,7 +828,7 @@
             const initialMessages = [
                 { role: 'user', text: savedUserPrompt },
                 { role: 'bot', text: savedAiResponse },
-                { role: 'bot', text: "Haan bhai, ab batao is schedule mein kya dikkat aa rahi hai? Kisi ek topic ko detail mein samjhana hai kya? Main yahin hu! 😊" }
+                { role: 'bot', text: "Yes my friend, what specific issues are you facing with this schedule? Do you need a detailed breakdown of any specific topic? I'm here to help! 😊" }
             ];
 
             database.ref('userChats/' + currentUser.uid + '/' + newChatId).set({
@@ -320,4 +841,5 @@
         }
     </script>
 </body>
+
 </html>
