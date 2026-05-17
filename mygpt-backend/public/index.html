@@ -4635,22 +4635,26 @@
                 }
             };
 
-            recognition.onresult = function (event) {
-                // 🔥 User jaise hi ek shabd bhi bolega ya bol raha hoga, 3-sec timer wapas reset ho jayega!
+           recognition.onresult = function (event) {
+                // 🔥 User jaise hi ek shabd bhi bolega, timer reset ho jayega!
                 resetSilenceTimer(); 
 
+                let finalTranscript = '';
                 let interimTranscript = '';
 
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                // 🔥 BUG FIX: Loop ab hamesha '0' se start hoga Android repeat bug rokne ke liye
+                for (let i = 0; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
-                        sessionFinalText += event.results[i][0].transcript;
+                        finalTranscript += event.results[i][0].transcript;
                     } else {
                         interimTranscript += event.results[i][0].transcript;
                     }
                 }
 
-                let space1 = (originalInputText.length > 0 && sessionFinalText.length > 0 && !sessionFinalText.startsWith(" ")) ? " " : "";
-                userInputBox.value = originalInputText + (originalInputText.length > 0 ? " " : "") + sessionFinalText + interimTranscript;
+                // Purana text (jo mic on hone se pehle tha) + Naya Pakka Text + Kaccha Live Text
+                let spaceNeeded = (originalInputText.length > 0 && finalTranscript.length > 0 && !finalTranscript.startsWith(" ")) ? " " : "";
+                
+                userInputBox.value = originalInputText + spaceNeeded + finalTranscript + interimTranscript;
                 
                 autoResizeInput(); 
             };
