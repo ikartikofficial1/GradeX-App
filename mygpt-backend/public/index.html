@@ -4617,6 +4617,7 @@
                 }, 2000); // Exactly 2000 milliseconds (2 seconds)
             }
 
+            // 1️⃣ NAYA ONSTART (Isme se timer hata diya hai)
             recognition.onstart = function () {
                 isListening = true;
                 micBtn.classList.add('listening');
@@ -4626,7 +4627,8 @@
                 originalInputText = userInputBox.value.trim();
                 sessionFinalText = ""; 
 
-                resetSilenceTimer(); // Mic on hote hi silence detection shuru
+                // ❌ YAHAN SE resetSilenceTimer() HATA DIYA HAI ❌
+                // Ab pehla word aane ka wait karenge
 
                 if (!isMobileDevice) {
                     startVoiceVisualizer(); 
@@ -4635,47 +4637,49 @@
                 }
             };
 
-       recognition.onresult = function (event) {
-    resetSilenceTimer();
+            // 2️⃣ NAYA ONRESULT (Yahan pehli baar timer start hoga)
+            recognition.onresult = function (event) {
+                // ✅ Pehla result aate hi timer shuru (taaki ab se 2 sec ka sannata track ho)
+                resetSilenceTimer(); 
 
-    // ── THE FIX: Rebuild completely from scratch every call ──
-    // Never trust event.resultIndex on Android — it lies.
-    // Instead, walk the FULL results array from 0 on every event.
-    // This is idempotent: calling it 10 times gives the same output as calling it once.
+                let sessionFinals = '';
+                let currentInterim = '';
 
-    let sessionFinals  = '';  // All confirmed words so far this session
-    let currentInterim = '';  // What's being spoken right now (not yet confirmed)
-
-    for (let i = 0; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-            sessionFinals += event.results[i][0].transcript;
-        } else {
-            // Only the LAST non-final result is the live interim —
-            // overwrite, don't append, so only one interim chunk shows at a time
-            currentInterim = event.results[i][0].transcript;
-        }
-    }
-
-    // ── Build the complete textarea value ──
-    const separator = (originalInputText.length > 0 && (sessionFinals + currentInterim).length > 0)
-        ? ' '
-        : '';
-
-    userInputBox.value = originalInputText + separator + sessionFinals + currentInterim;
-
-    autoResizeInput();
-    updateInputIcons();
-};
-
-            recognition.onerror = function (event) {
-                console.error("Voice Error: ", event.error);
-                if (event.error === 'not-allowed') {
-                    showToast("Microphone permission denied. Please allow it in browser settings.", "error");
+                // Loop humesha 0 se chalega taaki Android duplication bug na aaye
+                for (let i = 0; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        sessionFinals += event.results[i][0].transcript;
+                    } else {
+                        currentInterim += event.results[i][0].transcript;
+                    }
                 }
-                stopListening();
+
+                let spaceNeeded = (originalInputText.length > 0 && (sessionFinals + currentInterim).length > 0 && !(sessionFinals + currentInterim).startsWith(" ")) ? " " : "";
+                
+                userInputBox.value = originalInputText + spaceNeeded + sessionFinals + currentInterim;
+                
+                autoResizeInput(); 
             };
 
-            recognition.onend = function () {
+            // 3️⃣ NAYA ONERROR (no-speech se mic band nahi hoga)
+            recognition.onerror = function (event) {
+                console.error("Voice Error: ", event.error);
+                
+                if (event.error === 'not-allowed') {
+                    showToast("Microphone permission denied. Please allow it in browser settings.", "error");
+                    stopListening();
+                } else if (event.error === 'no-speech') {
+                    // ✅ 'no-speech' pe mic chupke se band nahi hoga, bas timer ko refresh karke sunta rahega
+                    resetSilenceTimer();
+                } else if (event.error === 'network') {
+                    showToast("Network issue with voice. Try again!", "error");
+                    stopListening();
+                } else {
+                    stopListening();
+                }
+            };
+
+          recognition.onend = function () {
                 stopListening();
             };
         }
