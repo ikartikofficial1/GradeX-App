@@ -4635,26 +4635,22 @@
                 }
             };
 
-           recognition.onresult = function (event) {
-                // 🔥 User jaise hi ek shabd bhi bolega, timer reset ho jayega!
+         recognition.onresult = function (event) {
+                // 🔥 User jaise hi ek shabd bhi bolega, 3-sec timer wapas reset ho jayega!
                 resetSilenceTimer(); 
 
-                let finalTranscript = '';
-                let interimTranscript = '';
+                let currentSessionText = '';
 
-                // 🔥 BUG FIX: Loop ab hamesha '0' se start hoga Android repeat bug rokne ke liye
+                // 🔥 THE ULTIMATE ANDROID FIX: 
+                // Hum tukdo me add nahi karenge. Hum direct poora current sentence uthayenge.
                 for (let i = 0; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
-                    } else {
-                        interimTranscript += event.results[i][0].transcript;
-                    }
+                    currentSessionText += event.results[i][0].transcript;
                 }
 
-                // Purana text (jo mic on hone se pehle tha) + Naya Pakka Text + Kaccha Live Text
-                let spaceNeeded = (originalInputText.length > 0 && finalTranscript.length > 0 && !finalTranscript.startsWith(" ")) ? " " : "";
+                // Purana text (mic on hone se pehle ka) + Naya fresh sentence
+                let spaceNeeded = (originalInputText.length > 0 && currentSessionText.length > 0 && !currentSessionText.startsWith(" ")) ? " " : "";
                 
-                userInputBox.value = originalInputText + spaceNeeded + finalTranscript + interimTranscript;
+                userInputBox.value = originalInputText + spaceNeeded + currentSessionText;
                 
                 autoResizeInput(); 
             };
