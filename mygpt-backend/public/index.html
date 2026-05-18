@@ -12,7 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link id="code-theme" rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
@@ -993,8 +996,8 @@
         @media (max-width: 768px) {
             .message-bubble {
                 padding: 14px 18px !important;
-                -webkit-touch-callout: none; 
-                -webkit-user-select: none;   
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
                 user-select: none;
             }
 
@@ -1013,9 +1016,12 @@
                 pointer-events: auto;
                 transform: translateY(0) scale(1);
             }
+
             .message-bubble.is-pressing {
-                filter: brightness(0.85); /* Halka sa dark/highlight hoga */
-                transform: scale(0.98); /* Ekdum slight sa daba hua feel aayega */
+                filter: brightness(0.85);
+                /* Halka sa dark/highlight hoga */
+                transform: scale(0.98);
+                /* Ekdum slight sa daba hua feel aayega */
             }
         }
 
@@ -1043,17 +1049,50 @@
             color: var(--light-brown);
         }
 
-        .bot-msg code {
-            background-color: var(--bg-body);
+        /* 📝 INLINE CODE (Chhote keywords ke liye) */
+        .bot-msg p code {
+            background-color: rgba(192, 133, 82, 0.15);
             padding: 2px 6px;
             border-radius: 6px;
-            color: var(--light-brown);
-            font-family: monospace;
+            color: var(--med-brown);
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
         }
 
-        body.dark-theme .bot-msg code {
-            background-color: #2c1a18;
+        body.dark-theme .bot-msg p code {
+            background-color: rgba(255, 255, 255, 0.1);
             color: #FFF8F0;
+        }
+
+       /* 🚀 LIGHT MODE CODE BLOCK */
+        .bot-msg pre {
+            background-color: #f6f8fa !important; /* GitHub Light BG */
+            border-radius: 14px;
+            padding: 16px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .bot-msg pre code {
+            background-color: transparent !important;
+            padding: 0 !important;
+            color: #24292e !important; /* Dark text for light mode */
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            display: block;
+        }
+
+        /* 🌑 DARK MODE CODE BLOCK */
+        body.dark-theme .bot-msg pre {
+            background-color: #0d0d0d !important; /* Deep dark BG */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        body.dark-theme .bot-msg pre code {
+            color: #adbac7 !important; /* Light text for dark mode */
         }
 
         /* No old bridge pseudo-element needed */
@@ -2759,7 +2798,8 @@
             return escapeHTML(value).replace(/\n/g, "<br>");
         }
 
-        // FIX 3: DOMPurify is now imported, so this sanitization actually works
+
+        // TERA PURANA RENDER FUNCTION (Thoda Upgrade kiya hua)
         function renderBotMarkdown(value) {
             let html = "";
             try {
@@ -2864,9 +2904,7 @@
             return database.ref("userChats/" + uid + "/" + chatId).update(payload);
         }
 
-        // =========================================
-        // 🌓 SMART THEME ENGINE
-        // =========================================
+
         function applyTheme(themeValue) {
             const prefersDarkOS = window.matchMedia('(prefers-color-scheme: dark)').matches;
             let isDark = false;
@@ -2879,16 +2917,24 @@
                 isDark = prefersDarkOS;
             }
 
+            const codeThemeLink = document.getElementById("code-theme"); // 🔥 Highlight.js link pakda
+
             if (isDark) {
                 document.body.classList.add("dark-theme");
-                if (darkModeToggle) darkModeToggle.checked = true;
+                if (typeof darkModeToggle !== 'undefined' && darkModeToggle) darkModeToggle.checked = true;
+                
+                // 🔥 NAYA: Dark mode me dark colorful theme lagao
+                if (codeThemeLink) codeThemeLink.href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css";
             } else {
                 document.body.classList.remove("dark-theme");
-                if (darkModeToggle) darkModeToggle.checked = false;
+                if (typeof darkModeToggle !== 'undefined' && darkModeToggle) darkModeToggle.checked = false;
+                
+                // 🔥 NAYA: Light mode me light colorful theme lagao
+                if (codeThemeLink) codeThemeLink.href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css";
             }
         }
-
-        function initTheme() {
+        
+            function initTheme() {
             let savedTheme = localStorage.getItem("theme") || "system";
             applyTheme(savedTheme);
 
@@ -3299,6 +3345,10 @@
 
                 htmlContent += "</div>";
                 chatHistory.innerHTML = htmlContent;
+                // 🔥 COLOR TRIGGER: Chat history load hone par colors lagao 🔥
+                if (window.hljs) {
+                    chatHistory.querySelectorAll('pre code').forEach((block) => hljs.highlightElement(block));
+                }
 
                 setTimeout(() => {
                     chatHistory.scrollTop = chatHistory.scrollHeight;
@@ -3825,6 +3875,10 @@
 
                 contentDiv = document.querySelector(`#${CSS.escape(msgId)} .typing-content`);
                 if (contentDiv) contentDiv.innerHTML = renderBotMarkdown(displayReply);
+                // 🔥 COLOR TRIGGER: Live typing me code blocks ko color karo 🔥
+                if (contentDiv && window.hljs) {
+                    contentDiv.querySelectorAll('pre code').forEach((block) => hljs.highlightElement(block));
+                }
 
                 const botBubble = document.getElementById(msgId);
                 if (botBubble) botBubble.setAttribute("data-raw", encodeURIComponent(displayReply));
@@ -4426,142 +4480,142 @@
         let mediaStream;
 
         async function startVoiceVisualizer() {
-    try {
-        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioContext.state === 'suspended') await audioContext.resume();
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioContext.state === 'suspended') await audioContext.resume();
 
-        analyser = audioContext.createAnalyser();
+                analyser = audioContext.createAnalyser();
 
-        // ── ZERO analyser smoothing: hum khud frame-by-frame control karenge ──
-        analyser.fftSize = 2048;          // 1024 bins = high pitch resolution
-        analyser.smoothingTimeConstant = 0.0; // RAW data, no browser blurring
+                // ── ZERO analyser smoothing: hum khud frame-by-frame control karenge ──
+                analyser.fftSize = 2048;          // 1024 bins = high pitch resolution
+                analyser.smoothingTimeConstant = 0.0; // RAW data, no browser blurring
 
-        microphoneSource = audioContext.createMediaStreamSource(mediaStream);
-        microphoneSource.connect(analyser);
+                microphoneSource = audioContext.createMediaStreamSource(mediaStream);
+                microphoneSource.connect(analyser);
 
-        const bufferLength = analyser.frequencyBinCount; // 1024
-        const dataArray    = new Uint8Array(bufferLength);
-        const timeData     = new Float32Array(analyser.fftSize); // for RMS
-        const micBtn       = document.getElementById('mic-btn');
+                const bufferLength = analyser.frequencyBinCount; // 1024
+                const dataArray = new Uint8Array(bufferLength);
+                const timeData = new Float32Array(analyser.fftSize); // for RMS
+                const micBtn = document.getElementById('mic-btn');
 
-        // ── State variables ──
-        let smoothedEnergy  = 0;  // overall loudness (decays slowly = float effect)
-        let burstEnergy     = 0;  // syllable burst (decays fast = snappy onset)
-        let prevEnergy      = 0;  // for transient detection
-        let dominantHz      = 200; // tracked pitch
-        let smoothedHz      = 200;
+                // ── State variables ──
+                let smoothedEnergy = 0;  // overall loudness (decays slowly = float effect)
+                let burstEnergy = 0;  // syllable burst (decays fast = snappy onset)
+                let prevEnergy = 0;  // for transient detection
+                let dominantHz = 200; // tracked pitch
+                let smoothedHz = 200;
 
-        const sampleRate = audioContext.sampleRate;
-        const hzPerBin   = sampleRate / analyser.fftSize;
+                const sampleRate = audioContext.sampleRate;
+                const hzPerBin = sampleRate / analyser.fftSize;
 
-        // ── Asymmetric lerp: fast attack, slow decay ──
-        // attackRate 0.9 = reaches target in ~2 frames (33ms at 60fps) → catches "H" onset
-        // decayRate  0.12 = takes ~20 frames to fade → "llo" tail is visible but short
-        function lerp(cur, target, attack, decay) {
-            const rate = target > cur ? attack : decay;
-            return cur + (target - cur) * rate;
-        }
-
-        // ── RMS energy from time-domain: most accurate for speech loudness ──
-        function getRMSEnergy() {
-            analyser.getFloatTimeDomainData(timeData);
-            let sum = 0;
-            for (let i = 0; i < timeData.length; i++) {
-                sum += timeData[i] * timeData[i];
-            }
-            // Normalize: RMS 0→1, then boost quiet speech with sqrt curve
-            const rms = Math.sqrt(sum / timeData.length);
-            return Math.min(1, Math.sqrt(rms * 8)); // sqrt = log-like boost for soft voice
-        }
-
-        // ── Find dominant pitch bin (speech fundamental: 80Hz–600Hz) ──
-        function getDominantHz() {
-            analyser.getByteFrequencyData(dataArray);
-            const startBin = Math.floor(80  / hzPerBin);
-            const endBin   = Math.floor(600 / hzPerBin);
-
-            let maxAmp = 0;
-            let maxBin = startBin;
-            for (let i = startBin; i < endBin; i++) {
-                if (dataArray[i] > maxAmp) {
-                    maxAmp = dataArray[i];
-                    maxBin = i;
+                // ── Asymmetric lerp: fast attack, slow decay ──
+                // attackRate 0.9 = reaches target in ~2 frames (33ms at 60fps) → catches "H" onset
+                // decayRate  0.12 = takes ~20 frames to fade → "llo" tail is visible but short
+                function lerp(cur, target, attack, decay) {
+                    const rate = target > cur ? attack : decay;
+                    return cur + (target - cur) * rate;
                 }
-            }
-            // Only update pitch if there's real signal, else keep last value
-            return maxAmp > 20 ? maxBin * hzPerBin : dominantHz;
-        }
 
-        // ── Pitch → visual multiplier ──
-        // Low pitch (bass) = bigger rings, high pitch (bright) = tighter rings
-        // Maps 80Hz → 1.4x, 300Hz → 1.0x (neutral), 600Hz → 0.7x
-        function pitchMultiplier(hz) {
-            const clamped = Math.max(80, Math.min(600, hz));
-            return 1.4 - (clamped - 80) / (600 - 80) * 0.7; // 1.4 down to 0.7
-        }
+                // ── RMS energy from time-domain: most accurate for speech loudness ──
+                function getRMSEnergy() {
+                    analyser.getFloatTimeDomainData(timeData);
+                    let sum = 0;
+                    for (let i = 0; i < timeData.length; i++) {
+                        sum += timeData[i] * timeData[i];
+                    }
+                    // Normalize: RMS 0→1, then boost quiet speech with sqrt curve
+                    const rms = Math.sqrt(sum / timeData.length);
+                    return Math.min(1, Math.sqrt(rms * 8)); // sqrt = log-like boost for soft voice
+                }
 
-        function draw() {
-            if (!isListening) return;
-            visualizerAnimationId = requestAnimationFrame(draw);
+                // ── Find dominant pitch bin (speech fundamental: 80Hz–600Hz) ──
+                function getDominantHz() {
+                    analyser.getByteFrequencyData(dataArray);
+                    const startBin = Math.floor(80 / hzPerBin);
+                    const endBin = Math.floor(600 / hzPerBin);
 
-            // ── 1. Get raw energy this frame ──
-            const rawEnergy = getRMSEnergy();
+                    let maxAmp = 0;
+                    let maxBin = startBin;
+                    for (let i = startBin; i < endBin; i++) {
+                        if (dataArray[i] > maxAmp) {
+                            maxAmp = dataArray[i];
+                            maxBin = i;
+                        }
+                    }
+                    // Only update pitch if there's real signal, else keep last value
+                    return maxAmp > 20 ? maxBin * hzPerBin : dominantHz;
+                }
 
-            // ── 2. Transient detection: sudden spike = new syllable onset ──
-            // "HE" → H causes rawEnergy to jump above prevEnergy sharply
-            // delta > 0.15 means a fresh syllable just started
-            const delta = rawEnergy - prevEnergy;
-            const transient = delta > 0.08 ? delta * 2.5 : 0; // amplify the spike
-            prevEnergy = rawEnergy;
+                // ── Pitch → visual multiplier ──
+                // Low pitch (bass) = bigger rings, high pitch (bright) = tighter rings
+                // Maps 80Hz → 1.4x, 300Hz → 1.0x (neutral), 600Hz → 0.7x
+                function pitchMultiplier(hz) {
+                    const clamped = Math.max(80, Math.min(600, hz));
+                    return 1.4 - (clamped - 80) / (600 - 80) * 0.7; // 1.4 down to 0.7
+                }
 
-            // ── 3. Two energy tracks: burst (syllable onset) + sustained (body of word) ──
-            // burstEnergy:    ultra-fast attack (0.95), fast decay (0.25)
-            //                 → catches "HE" onset, gone by the time "llo" fades
-            // smoothedEnergy: fast attack (0.75), slow decay (0.10)
-            //                 → tracks the word's body & tail smoothly
-            burstEnergy    = lerp(burstEnergy,    rawEnergy + transient, 0.95, 0.25);
-            smoothedEnergy = lerp(smoothedEnergy, rawEnergy,             0.75, 0.10);
+                function draw() {
+                    if (!isListening) return;
+                    visualizerAnimationId = requestAnimationFrame(draw);
 
-            // ── 4. Pitch tracking (smoothed so rings don't jitter) ──
-            dominantHz = getDominantHz();
-            smoothedHz = lerp(smoothedHz, dominantHz, 0.4, 0.4); // symmetric, medium
-            const pitchMul = pitchMultiplier(smoothedHz);
+                    // ── 1. Get raw energy this frame ──
+                    const rawEnergy = getRMSEnergy();
 
-            // ── 5. Ring sizes ──
-            // Inner: driven by burst → snaps on every syllable onset
-            // Mid:   driven by smoothedEnergy → tracks word body
-            // Outer: combination → floats after word ends
-            const SILENCE = 1.5; // tiny resting glow (premium feel)
+                    // ── 2. Transient detection: sudden spike = new syllable onset ──
+                    // "HE" → H causes rawEnergy to jump above prevEnergy sharply
+                    // delta > 0.15 means a fresh syllable just started
+                    const delta = rawEnergy - prevEnergy;
+                    const transient = delta > 0.08 ? delta * 2.5 : 0; // amplify the spike
+                    prevEnergy = rawEnergy;
 
-            const innerPx = SILENCE + burstEnergy    * 12 * pitchMul;
-            const midPx   = SILENCE + smoothedEnergy * 20 * pitchMul;
-            const outerPx = SILENCE + (smoothedEnergy * 0.6 + burstEnergy * 0.4) * 30 * pitchMul;
+                    // ── 3. Two energy tracks: burst (syllable onset) + sustained (body of word) ──
+                    // burstEnergy:    ultra-fast attack (0.95), fast decay (0.25)
+                    //                 → catches "HE" onset, gone by the time "llo" fades
+                    // smoothedEnergy: fast attack (0.75), slow decay (0.10)
+                    //                 → tracks the word's body & tail smoothly
+                    burstEnergy = lerp(burstEnergy, rawEnergy + transient, 0.95, 0.25);
+                    smoothedEnergy = lerp(smoothedEnergy, rawEnergy, 0.75, 0.10);
 
-            // ── 6. Opacity: burst makes rings brighter, decay makes them fade ──
-            const baseAlpha  = 0.2 + smoothedEnergy * 0.65;
-            const burstBoost = burstEnergy * 0.3; // extra brightness on syllable onset
+                    // ── 4. Pitch tracking (smoothed so rings don't jitter) ──
+                    dominantHz = getDominantHz();
+                    smoothedHz = lerp(smoothedHz, dominantHz, 0.4, 0.4); // symmetric, medium
+                    const pitchMul = pitchMultiplier(smoothedHz);
 
-            const innerAlpha = Math.min(0.95, baseAlpha + burstBoost);
-            const midAlpha   = Math.min(0.65, baseAlpha * 0.7 + burstBoost * 0.5);
-            const outerAlpha = Math.min(0.30, baseAlpha * 0.35);
+                    // ── 5. Ring sizes ──
+                    // Inner: driven by burst → snaps on every syllable onset
+                    // Mid:   driven by smoothedEnergy → tracks word body
+                    // Outer: combination → floats after word ends
+                    const SILENCE = 1.5; // tiny resting glow (premium feel)
 
-            if (micBtn && micBtn.classList.contains('listening')) {
-                micBtn.style.boxShadow = `
+                    const innerPx = SILENCE + burstEnergy * 12 * pitchMul;
+                    const midPx = SILENCE + smoothedEnergy * 20 * pitchMul;
+                    const outerPx = SILENCE + (smoothedEnergy * 0.6 + burstEnergy * 0.4) * 30 * pitchMul;
+
+                    // ── 6. Opacity: burst makes rings brighter, decay makes them fade ──
+                    const baseAlpha = 0.2 + smoothedEnergy * 0.65;
+                    const burstBoost = burstEnergy * 0.3; // extra brightness on syllable onset
+
+                    const innerAlpha = Math.min(0.95, baseAlpha + burstBoost);
+                    const midAlpha = Math.min(0.65, baseAlpha * 0.7 + burstBoost * 0.5);
+                    const outerAlpha = Math.min(0.30, baseAlpha * 0.35);
+
+                    if (micBtn && micBtn.classList.contains('listening')) {
+                        micBtn.style.boxShadow = `
                     0 0 0 ${innerPx.toFixed(1)}px rgba(192, 133, 82, ${innerAlpha.toFixed(3)}),
                     0 0 0 ${midPx.toFixed(1)}px   rgba(192, 133, 82, ${midAlpha.toFixed(3)}),
                     0 0 0 ${outerPx.toFixed(1)}px  rgba(192, 133, 82, ${outerAlpha.toFixed(3)})
                 `;
+                    }
+                }
+
+                draw();
+
+            } catch (err) {
+                console.error("Audio visualizer error:", err);
             }
         }
 
-        draw();
-
-    } catch (err) {
-        console.error("Audio visualizer error:", err);
-    }
-}
-    
         function stopVoiceVisualizer() {
             // Sab kuch theek se clean karo taaki browser me red recording dot hat jaye
             if (visualizerAnimationId) cancelAnimationFrame(visualizerAnimationId);
@@ -4574,15 +4628,57 @@
             if (micBtn) micBtn.style.boxShadow = 'none'; // Shadow wapas normal
         }
 
-   
-      // =========================================
-        // 🎙️ PREMIUM VOICE RECOGNITION (3-SEC AUTO-STOP SILENCE ENGINE)
+        // =========================================
+        // 🎙️ PREMIUM VOICE RECOGNITION (ANTI-DUPLICATE ENGINE)
         // =========================================
         let recognition = null;
         let isListening = false;
-        let silenceTimer = null; // 🔥 NAYA: Silence track karne ke liye stopwatch variable
+        let silenceTimer = null;
 
         const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        // 🔥 NAYE VARIABLES AUR HELPERS ANDROID BUG KE LIYE 🔥
+        let originalInputText = "";
+        let finalTranscriptByIndex = [];
+        let acceptedFinals = [];
+
+        function cleanSpeechText(value) {
+            return String(value || "").replace(/\s+/g, " ").trim();
+        }
+
+        function speechKey(value) {
+            return cleanSpeechText(value).toLowerCase();
+        }
+
+        function uniqueConsecutive(parts) {
+            const output = [];
+            for (const part of parts) {
+                const cleaned = cleanSpeechText(part);
+                if (!cleaned) continue;
+                if (speechKey(output[output.length - 1]) === speechKey(cleaned)) continue;
+                output.push(cleaned);
+            }
+            return output;
+        }
+
+        function isFastAndroidDuplicate(text) {
+            const last = acceptedFinals[acceptedFinals.length - 1];
+            if (!last) return false;
+            return last.key === speechKey(text) && Date.now() - last.at < 900;
+        }
+
+        function rememberAcceptedFinal(text) {
+            acceptedFinals.push({ key: speechKey(text), at: Date.now() });
+            if (acceptedFinals.length > 10) acceptedFinals.shift();
+        }
+
+        function mergeOriginalWithSpeech(original, speech) {
+            const base = String(original || "").trimEnd();
+            const spoken = cleanSpeechText(speech);
+            if (!spoken) return base;
+            if (!base) return spoken;
+            return `${base} ${spoken}`;
+        }
 
         function initSpeechRecognition() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -4594,83 +4690,97 @@
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
 
-            recognition.continuous = true; // 🔥 TRUE RAKHA HAI: Taaki tu aaram se saans le sake, cut na ho!
-            recognition.interimResults = true; 
+            recognition.continuous = true;
+            recognition.interimResults = true;
             recognition.lang = 'en-IN';
 
             const micBtn = document.getElementById('mic-btn');
             const userInputBox = document.getElementById('user-input');
 
-            let originalInputText = ""; 
-            let sessionFinalText = ""; 
-
-            // 🔥 NAYA FUNCTION: Jaise hi sannata hoga, ye timer start hoga
+            // 3-sec auto stop timer
             function resetSilenceTimer() {
-                clearTimeout(silenceTimer); // Purana timer clear karo
-                
-                // Naya 3 second ka timer start karo
+                clearTimeout(silenceTimer);
                 silenceTimer = setTimeout(() => {
                     console.log("2 Seconds of silence detected! Auto stopping...");
                     if (isListening && recognition) {
-                        recognition.stop(); // 🎯 2 second hote hi apne aap mic band!
+                        recognition.stop();
                     }
-                }, 2000); // Exactly 2000 milliseconds (2 seconds)
+                }, 2000);
             }
 
-            // 1️⃣ NAYA ONSTART (Isme se timer hata diya hai)
+            // 1️⃣ ONSTART LOGIC
             recognition.onstart = function () {
                 isListening = true;
                 micBtn.classList.add('listening');
                 userInputBox.placeholder = "Listening... Speak now 🎙️";
-                updateInputIcons(); 
-                
-                originalInputText = userInputBox.value.trim();
-                sessionFinalText = ""; 
+                updateInputIcons();
 
-                // ❌ YAHAN SE resetSilenceTimer() HATA DIYA HAI ❌
-                // Ab pehla word aane ka wait karenge
+                // Arrays aur history ko reset karo
+                originalInputText = userInputBox.value.trimEnd();
+                finalTranscriptByIndex = [];
+                acceptedFinals = [];
 
                 if (!isMobileDevice) {
-                    startVoiceVisualizer(); 
+                    startVoiceVisualizer();
                 } else {
-                    micBtn.style.animation = "pulse-red 1.5s infinite ease-out"; 
+                    micBtn.style.animation = "pulse-red 1.5s infinite ease-out";
                 }
             };
 
-            // 2️⃣ NAYA ONRESULT (Yahan pehli baar timer start hoga)
+            // 2️⃣ ONRESULT LOGIC (CLAUDE'S ANTI-DUPLICATE MASTERPIECE)
             recognition.onresult = function (event) {
-                // ✅ Pehla result aate hi timer shuru (taaki ab se 2 sec ka sannata track ho)
-                resetSilenceTimer(); 
+                resetSilenceTimer(); // Pehla word bolte hi timer chalu
 
-                let sessionFinals = '';
-                let currentInterim = '';
+                const interimParts = [];
+                const startIndex = typeof event.resultIndex === "number" ? event.resultIndex : 0;
 
-                // Loop humesha 0 se chalega taaki Android duplication bug na aaye
                 for (let i = 0; i < event.results.length; i++) {
-                    if (event.results[i].isFinal) {
-                        sessionFinals += event.results[i][0].transcript;
+                    const result = event.results[i];
+                    const transcript = cleanSpeechText(result?.[0]?.transcript || "");
+                    if (!transcript) continue;
+
+                    if (result.isFinal) {
+                        // Purane results ko ignore karo
+                        if (i < startIndex && finalTranscriptByIndex[i]) continue;
+
+                        const isNewFinalSlot = !finalTranscriptByIndex[i];
+
+                        // Duplicate check
+                        if (isNewFinalSlot && isFastAndroidDuplicate(transcript)) {
+                            finalTranscriptByIndex[i] = "";
+                            continue;
+                        }
+
+                        // Index ke hisaab se array me set karo (no += duplication)
+                        finalTranscriptByIndex[i] = transcript;
+
+                        if (isNewFinalSlot) {
+                            rememberAcceptedFinal(transcript);
+                        }
                     } else {
-                        currentInterim += event.results[i][0].transcript;
+                        interimParts.push(transcript);
                     }
                 }
 
-                let spaceNeeded = (originalInputText.length > 0 && (sessionFinals + currentInterim).length > 0 && !(sessionFinals + currentInterim).startsWith(" ")) ? " " : "";
-                
-                userInputBox.value = originalInputText + spaceNeeded + sessionFinals + currentInterim;
-                
-                autoResizeInput(); 
+                // Final aur interim words ko merge karo
+                const finalText = cleanSpeechText(finalTranscriptByIndex.filter(Boolean).join(" "));
+                const interimText = cleanSpeechText(uniqueConsecutive(interimParts).join(" "));
+                const spokenText = cleanSpeechText(`${finalText} ${interimText}`);
+
+                // Box me update karo
+                userInputBox.value = mergeOriginalWithSpeech(originalInputText, spokenText);
+
+                autoResizeInput();
             };
 
-            // 3️⃣ NAYA ONERROR (no-speech se mic band nahi hoga)
+            // 3️⃣ ONERROR LOGIC
             recognition.onerror = function (event) {
                 console.error("Voice Error: ", event.error);
-                
                 if (event.error === 'not-allowed') {
                     showToast("Microphone permission denied. Please allow it in browser settings.", "error");
                     stopListening();
                 } else if (event.error === 'no-speech') {
-                    // ✅ 'no-speech' pe mic chupke se band nahi hoga, bas timer ko refresh karke sunta rahega
-                    resetSilenceTimer();
+                    resetSilenceTimer(); // Chupchap sunta rahega
                 } else if (event.error === 'network') {
                     showToast("Network issue with voice. Try again!", "error");
                     stopListening();
@@ -4679,10 +4789,11 @@
                 }
             };
 
-          recognition.onend = function () {
+            recognition.onend = function () {
                 stopListening();
             };
         }
+
 
         function toggleVoiceInput() {
             if (!isUserLoggedIn) {
@@ -4705,17 +4816,17 @@
             }
         }
 
-       // 🔥 UPDATED STOP LISTENING (Timer clean karne ke liye)
+        // 🔥 UPDATED STOP LISTENING (Timer clean karne ke liye)
         function stopListening() {
             isListening = false;
             clearTimeout(silenceTimer); // 🔥 NAYA: Mic band hote hi timer ko poori tarah clear karo taaki koi bug na aaye
-            
+
             const micBtn = document.getElementById('mic-btn');
             const userInputBox = document.getElementById('user-input');
 
             if (micBtn) {
                 micBtn.classList.remove('listening');
-                micBtn.style.animation = ""; 
+                micBtn.style.animation = "";
             }
             if (userInputBox) userInputBox.placeholder = "Type or speak here...";
 
@@ -4723,24 +4834,24 @@
                 userInputBox.focus();
                 userInputBox.selectionStart = userInputBox.selectionEnd = userInputBox.value.length;
             }
-            updateInputIcons(); 
-            stopVoiceVisualizer(); 
+            updateInputIcons();
+            stopVoiceVisualizer();
         }
 
-      // =========================================
+        // =========================================
         // 🎯 JS-POWERED SMART HOVER & LONG-PRESS FOR BUBBLES
         // =========================================
         function attachHoverListeners() {
             document.querySelectorAll('.chat-message-wrapper').forEach(wrapper => {
                 const bubble = wrapper.querySelector('.message-bubble');
-                if (!bubble || bubble._hoverAttached) return; 
+                if (!bubble || bubble._hoverAttached) return;
                 bubble._hoverAttached = true;
 
                 // 💻 DESKTOP: Hover Logic
                 bubble.addEventListener('mouseenter', () => {
                     if (!isMobileDevice) bubble.classList.add('hovered');
                 });
-                
+
                 bubble.addEventListener('mouseleave', () => {
                     if (!isMobileDevice) {
                         setTimeout(() => {
@@ -4756,17 +4867,17 @@
                 bubble.addEventListener('touchstart', (e) => {
                     if (!isMobileDevice) return;
                     isDragging = false;
-                    
+
                     // 1. Ungli rakhte hi highlight effect chalu
                     bubble.classList.add('is-pressing');
-                    
+
                     // 2. Timer start karo
                     pressTimer = setTimeout(() => {
                         // Timer khatam, matlab user ne hold kar liya
                         bubble.classList.remove('is-pressing'); // Highlight hatao
-                        
+
                         if (navigator.vibrate) navigator.vibrate(50); // Vibrate karo
-                        
+
                         // Action menu dikhao
                         document.querySelectorAll('.message-bubble.mobile-active').forEach(b => b.classList.remove('mobile-active'));
                         bubble.classList.add('mobile-active');
@@ -4798,7 +4909,7 @@
         // 📱 MOBILE: Screen par kahin bhi tap karne par menu band karo
         document.addEventListener('touchstart', (e) => {
             if (!isMobileDevice) return;
-            
+
             // Agar user ne button (pill) par tap kiya hai, toh menu band mat karo, click hone do
             if (e.target.closest('.copy-action-wrapper')) return;
 
@@ -4819,7 +4930,7 @@
             observer.observe(chatHistoryEl, { childList: true, subtree: true });
         });
 
-      
+
     </script>
 </body>
 
