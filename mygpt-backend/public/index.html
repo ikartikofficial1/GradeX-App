@@ -4635,25 +4635,37 @@
                 }
             };
 
-         recognition.onresult = function (event) {
-                // 🔥 User jaise hi ek shabd bhi bolega, 3-sec timer wapas reset ho jayega!
-                resetSilenceTimer(); 
+       recognition.onresult = function (event) {
+    resetSilenceTimer();
 
-                let currentSessionText = '';
+    // ── THE FIX: Rebuild completely from scratch every call ──
+    // Never trust event.resultIndex on Android — it lies.
+    // Instead, walk the FULL results array from 0 on every event.
+    // This is idempotent: calling it 10 times gives the same output as calling it once.
 
-                // 🔥 THE ULTIMATE ANDROID FIX: 
-                // Hum tukdo me add nahi karenge. Hum direct poora current sentence uthayenge.
-                for (let i = 0; i < event.results.length; ++i) {
-                    currentSessionText += event.results[i][0].transcript;
-                }
+    let sessionFinals  = '';  // All confirmed words so far this session
+    let currentInterim = '';  // What's being spoken right now (not yet confirmed)
 
-                // Purana text (mic on hone se pehle ka) + Naya fresh sentence
-                let spaceNeeded = (originalInputText.length > 0 && currentSessionText.length > 0 && !currentSessionText.startsWith(" ")) ? " " : "";
-                
-                userInputBox.value = originalInputText + spaceNeeded + currentSessionText;
-                
-                autoResizeInput(); 
-            };
+    for (let i = 0; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+            sessionFinals += event.results[i][0].transcript;
+        } else {
+            // Only the LAST non-final result is the live interim —
+            // overwrite, don't append, so only one interim chunk shows at a time
+            currentInterim = event.results[i][0].transcript;
+        }
+    }
+
+    // ── Build the complete textarea value ──
+    const separator = (originalInputText.length > 0 && (sessionFinals + currentInterim).length > 0)
+        ? ' '
+        : '';
+
+    userInputBox.value = originalInputText + separator + sessionFinals + currentInterim;
+
+    autoResizeInput();
+    updateInputIcons();
+};
 
             recognition.onerror = function (event) {
                 console.error("Voice Error: ", event.error);
