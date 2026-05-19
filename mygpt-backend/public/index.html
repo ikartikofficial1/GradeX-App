@@ -1064,10 +1064,9 @@
             color: #FFF8F0;
         }
 
-        /* 🚀 LIGHT MODE CODE BLOCK */
+       /* 🚀 LIGHT MODE CODE BLOCK */
         .bot-msg pre {
-            background-color: #f6f8fa !important;
-            /* GitHub Light BG */
+            background-color: #f6f8fa !important; /* GitHub Light BG */
             border-radius: 14px;
             padding: 16px;
             margin: 15px 0;
@@ -1079,8 +1078,7 @@
         .bot-msg pre code {
             background-color: transparent !important;
             padding: 0 !important;
-            color: #24292e !important;
-            /* Dark text for light mode */
+            color: #24292e !important; /* Dark text for light mode */
             font-family: 'Consolas', 'Courier New', monospace;
             font-size: 14px;
             line-height: 1.6;
@@ -1089,14 +1087,12 @@
 
         /* 🌑 DARK MODE CODE BLOCK */
         body.dark-theme .bot-msg pre {
-            background-color: #0d0d0d !important;
-            /* Deep dark BG */
+            background-color: #0d0d0d !important; /* Deep dark BG */
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-
+        
         body.dark-theme .bot-msg pre code {
-            color: #adbac7 !important;
-            /* Light text for dark mode */
+            color: #adbac7 !important; /* Light text for dark mode */
         }
 
         /* No old bridge pseudo-element needed */
@@ -2926,19 +2922,19 @@
             if (isDark) {
                 document.body.classList.add("dark-theme");
                 if (typeof darkModeToggle !== 'undefined' && darkModeToggle) darkModeToggle.checked = true;
-
+                
                 // 🔥 NAYA: Dark mode me dark colorful theme lagao
                 if (codeThemeLink) codeThemeLink.href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css";
             } else {
                 document.body.classList.remove("dark-theme");
                 if (typeof darkModeToggle !== 'undefined' && darkModeToggle) darkModeToggle.checked = false;
-
+                
                 // 🔥 NAYA: Light mode me light colorful theme lagao
                 if (codeThemeLink) codeThemeLink.href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css";
             }
         }
-
-        function initTheme() {
+        
+            function initTheme() {
             let savedTheme = localStorage.getItem("theme") || "system";
             applyTheme(savedTheme);
 
@@ -4632,131 +4628,277 @@
             if (micBtn) micBtn.style.boxShadow = 'none'; // Shadow wapas normal
         }
 
-        // =========================================
-        // 🎙️ FINAL STABLE VOICE ENGINE (NO AUTO-RESTART)
 
-        // =========================================
-        let recognition = null;
-        let isListening = false;
-        let silenceTimer = null;
-        let originalInputText = "";
 
-        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-        function initSpeechRecognition() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                return;
-            }
 
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
 
-            // 🔥 FIX: Continuous true rakho taaki mic beech me band na ho aur beep na baje
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = 'en-IN';
 
-            const micBtn = document.getElementById('mic-btn');
-            const userInputBox = document.getElementById('user-input');
+      // ============================================================
+// 🎙️ PRODUCTION VOICE ENGINE v2.0
+// Mobile (iOS/Android) + Desktop fully compatible
+// Features: 3s silence auto-stop, no duplicate text, auto-restart
+// ============================================================
 
-            // ⏱️ 3-Sec Silence Timer
-            function resetSilenceTimer() {
-                clearTimeout(silenceTimer);
-                silenceTimer = setTimeout(() => {
-                    console.log("3 seconds of silence, stopping...");
-                    if (recognition) recognition.stop();
-                }, 3000); // 3 seconds
-            }
+const VoiceEngine = (() => {
+  // ── Browser / Device Detection ──────────────────────────────
+  const UA = navigator.userAgent;
+  const isIOS     = /iPad|iPhone|iPod/.test(UA) && !(/** @type {any} */(window).MSStream);
+  const isAndroid = /Android/i.test(UA);
+  const isMobile  = isIOS || isAndroid;
 
-            recognition.onstart = function () {
-                isListening = true;
-                micBtn.classList.add('listening');
-                userInputBox.placeholder = "Listening... Speak now 🎙️";
-                updateInputIcons();
+  const SpeechRecognitionAPI =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  const isSupported = !!SpeechRecognitionAPI;
 
-                originalInputText = userInputBox.value.trimEnd();
+  // ── State ────────────────────────────────────────────────────
+  let recognition   = null;
+  let isListening   = false;
+  let manualStop    = false;   // true = user/silence triggered stop
+  let silenceTimer  = null;
+  let restartTimer  = null;
 
-                // Mic on hote hi timer chalu, taaki agar user bole hi na toh band ho jaye
-                resetSilenceTimer();
+  // Text state
+  let confirmedBase = "";   // text in box BEFORE mic session started
+  let sessionFinal  = "";   // final-confirmed words in current session
 
-                if (!isMobileDevice) {
-                    startVoiceVisualizer();
-                } else {
-                    micBtn.style.animation = "pulse-red 1.5s infinite ease-out";
-                }
-            };
+  // ── DOM helpers ──────────────────────────────────────────────
+  const getMicBtn   = () => document.getElementById("mic-btn");
+  const getInputBox = () => document.getElementById("user-input");
 
-            recognition.onresult = function (event) {
-                resetSilenceTimer(); // Har word par timer reset hoga
+  // ── Optional hooks (call if they exist in parent app) ───────
+  function callIfExists(name, ...args) {
+    if (typeof window[name] === "function") window[name](...args);
+  }
 
-                let sessionFinals = '';
-                let currentInterim = '';
+  // ── Silence Timer ────────────────────────────────────────────
+  function resetSilenceTimer() {
+    clearTimeout(silenceTimer);
+    silenceTimer = setTimeout(() => {
+      if (isListening) {
+        manualStop = true;        // treat silence-stop as intentional
+        safeStop();
+      }
+    }, 3000);
+  }
 
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    if (event.results[i].isFinal) {
-                        sessionFinals += event.results[i][0].transcript;
-                    } else {
-                        currentInterim += event.results[i][0].transcript;
-                    }
-                }
+  // ── Recognition factory ──────────────────────────────────────
+  function buildRecognition() {
+    const r = new SpeechRecognitionAPI();
 
-                let newSpeech = (sessionFinals + currentInterim).trim();
-                let spaceNeeded = (originalInputText.length > 0 && newSpeech.length > 0 && !newSpeech.startsWith(" ")) ? " " : "";
+    // iOS Safari ignores continuous=true and stops on its own; we restart manually.
+    // Android/Desktop: continuous works fine.
+    r.continuous      = !isIOS;
+    r.interimResults  = true;
+    r.lang            = "en-IN";
+    r.maxAlternatives = 1;
 
-                userInputBox.value = originalInputText + spaceNeeded + newSpeech;
-                autoResizeInput();
-            };
+    // ── onstart ────────────────────────────────────────────────
+    r.onstart = () => {
+      isListening = true;
 
-            recognition.onerror = function (event) {
-                if (event.error === 'no-speech') {
-                    resetSilenceTimer();
-                } else {
-                    stopListening();
-                }
-            };
+      const box = getInputBox();
+      const btn = getMicBtn();
 
-            // 🔥 FIX: Yahan se wo 'restart' wali sabhi conditions hata di hain
-            recognition.onend = function () {
-                stopListening();
-            };
-        }
+      if (btn) btn.classList.add("listening");
+      if (box) box.placeholder = "Listening… Speak now 🎙️";
 
-        function stopListening() {
-            isListening = false;
-            clearTimeout(silenceTimer);
+      // Save baseline text only on the FIRST start (not restarts)
+      if (!sessionFinal) {
+        confirmedBase = box ? box.value.trimEnd() : "";
+      }
 
-            const micBtn = document.getElementById('mic-btn');
-            const userInputBox = document.getElementById('user-input');
+      resetSilenceTimer();
+      callIfExists("updateInputIcons");
+      callIfExists("startVoiceVisualizer");
+    };
 
-            if (micBtn) {
-                micBtn.classList.remove('listening');
-                micBtn.style.animation = "";
-            }
-            if (userInputBox) userInputBox.placeholder = "Type or speak here...";
+    // ── onresult ───────────────────────────────────────────────
+    r.onresult = (event) => {
+      resetSilenceTimer();
 
-            updateInputIcons();
-            stopVoiceVisualizer();
-        }
+      let newFinal   = "";
+      let interimNow = "";
 
-        function toggleVoiceInput() {
-            if (!isUserLoggedIn) {
-                document.getElementById("login-warning-modal").style.display = "flex";
-                setTimeout(() => document.getElementById("login-warning-modal").classList.add("active"), 10);
-                return;
-            }
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const t = event.results[i][0].transcript;
+        if (event.results[i].isFinal) newFinal   += t;
+        else                           interimNow += t;
+      }
 
-            if (!recognition) initSpeechRecognition();
+      // Append new confirmed words
+      if (newFinal.trim()) {
+        const spacer = sessionFinal.length > 0 ? " " : "";
+        sessionFinal += spacer + newFinal.trim();
+      }
 
-            if (isListening) {
-                recognition.stop(); // Manual stop
-            } else {
-                try {
-                    recognition.start();
-                } catch (e) {
-                    console.log("Voice already running.");
-                }
-            }
-        }
+      // Compose full display value
+      const box = getInputBox();
+      if (!box) return;
+
+      const parts = [confirmedBase, sessionFinal, interimNow.trim()]
+        .filter(Boolean)
+        .join(" ");
+
+      box.value = parts;
+      callIfExists("autoResizeInput");
+    };
+
+    // ── onerror ────────────────────────────────────────────────
+    r.onerror = (event) => {
+      // no-speech is harmless — keep timer alive
+      if (event.error === "no-speech") {
+        resetSilenceTimer();
+        return;
+      }
+
+      // Permission denied → abort completely
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        manualStop = true;
+        const box = getInputBox();
+        if (box) box.placeholder = "Mic permission denied. Enable it in browser settings.";
+        teardown();
+        return;
+      }
+
+      // aborted = we called .abort() ourselves, ignore
+      if (event.error === "aborted") return;
+
+      // All other errors: log, let onend handle possible restart
+      console.warn("[VoiceEngine] error:", event.error);
+    };
+
+    // ── onend ──────────────────────────────────────────────────
+    r.onend = () => {
+      // If still supposed to be listening (not a manual/silence stop)
+      // → recognition ended on its own (common on iOS/mobile) → restart.
+      if (isListening && !manualStop) {
+        // Persist whatever we've confirmed so far
+        const spacer = confirmedBase.length > 0 && sessionFinal.length > 0 ? " " : "";
+        confirmedBase = confirmedBase + spacer + sessionFinal;
+        sessionFinal  = "";
+
+        // Small delay on iOS to avoid immediate re-trigger issues
+        const delay = isIOS ? 250 : 100;
+        restartTimer = setTimeout(() => {
+          if (!isListening || manualStop) return;
+          try {
+            recognition = buildRecognition();
+            recognition.start();
+          } catch (e) {
+            console.warn("[VoiceEngine] restart failed:", e);
+            teardown();
+          }
+        }, delay);
+        return;
+      }
+
+      teardown();
+    };
+
+    return r;
+  }
+
+  // ── Internal stop helpers ────────────────────────────────────
+  function safeStop() {
+    if (recognition) {
+      try { recognition.stop(); } catch (_) {}
+    }
+  }
+
+  function teardown() {
+    isListening  = false;
+    manualStop   = false;
+    sessionFinal = "";
+    clearTimeout(silenceTimer);
+    clearTimeout(restartTimer);
+
+    if (recognition) {
+      try { recognition.abort(); } catch (_) {}
+      recognition = null;
+    }
+
+    const btn = getMicBtn();
+    const box = getInputBox();
+
+    if (btn) {
+      btn.classList.remove("listening");
+      btn.style.animation = "";
+    }
+    if (box) {
+      box.placeholder = "Type or speak here…";
+    }
+
+    callIfExists("updateInputIcons");
+    callIfExists("stopVoiceVisualizer");
+  }
+
+  // ── Public API ───────────────────────────────────────────────
+
+  /**
+   * Toggle mic on/off.
+   * Call this from your mic button's click handler.
+   */
+  function toggleVoiceInput() {
+    // Login gate (uses global isUserLoggedIn if present)
+    if (typeof isUserLoggedIn !== "undefined" && !isUserLoggedIn) {
+      const modal = document.getElementById("login-warning-modal");
+      if (modal) {
+        modal.style.display = "flex";
+        setTimeout(() => modal.classList.add("active"), 10);
+      }
+      return;
+    }
+
+    if (!isSupported) {
+      alert(
+        isMobile
+          ? "Voice input requires Chrome on Android or Safari on iOS."
+          : "Your browser doesn't support voice input. Try Chrome."
+      );
+      return;
+    }
+
+    if (isListening) {
+      // User manually stopped
+      manualStop = true;
+      clearTimeout(silenceTimer);
+      safeStop();
+    } else {
+      manualStop    = false;
+      sessionFinal  = "";
+      recognition   = buildRecognition();
+      try {
+        recognition.start();
+      } catch (e) {
+        // Already started guard
+        console.warn("[VoiceEngine] start error:", e);
+      }
+    }
+  }
+
+  /** Force-stop from outside (e.g. before form submit). */
+  function forceStop() {
+    if (isListening) {
+      manualStop = true;
+      clearTimeout(silenceTimer);
+      safeStop();
+    }
+  }
+
+  return {
+    toggleVoiceInput,
+    forceStop,
+    isSupported,
+    get isListening() { return isListening; },
+  };
+})();
+
+// ── Global shim so existing HTML onclick="toggleVoiceInput()" works ──
+function toggleVoiceInput() {
+  VoiceEngine.toggleVoiceInput();
+}   
+     
 
 
 
