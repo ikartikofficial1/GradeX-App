@@ -4628,57 +4628,16 @@
             if (micBtn) micBtn.style.boxShadow = 'none'; // Shadow wapas normal
         }
 
-        // =========================================
-        // 🎙️ PREMIUM VOICE RECOGNITION (ANTI-DUPLICATE ENGINE)
+      // =========================================
+        // 🎙️ ZERO-BUG VOICE RECOGNITION (SENIOR DEV FIX)
         // =========================================
         let recognition = null;
         let isListening = false;
         let silenceTimer = null;
+        let forceStop = false; // 🔥 Ye batayega ki mic humne band kiya ya browser ne
+        let originalInputText = "";
 
         const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-        // 🔥 NAYE VARIABLES AUR HELPERS ANDROID BUG KE LIYE 🔥
-        let originalInputText = "";
-        let finalTranscriptByIndex = [];
-        let acceptedFinals = [];
-
-        function cleanSpeechText(value) {
-            return String(value || "").replace(/\s+/g, " ").trim();
-        }
-
-        function speechKey(value) {
-            return cleanSpeechText(value).toLowerCase();
-        }
-
-        function uniqueConsecutive(parts) {
-            const output = [];
-            for (const part of parts) {
-                const cleaned = cleanSpeechText(part);
-                if (!cleaned) continue;
-                if (speechKey(output[output.length - 1]) === speechKey(cleaned)) continue;
-                output.push(cleaned);
-            }
-            return output;
-        }
-
-        function isFastAndroidDuplicate(text) {
-            const last = acceptedFinals[acceptedFinals.length - 1];
-            if (!last) return false;
-            return last.key === speechKey(text) && Date.now() - last.at < 900;
-        }
-
-        function rememberAcceptedFinal(text) {
-            acceptedFinals.push({ key: speechKey(text), at: Date.now() });
-            if (acceptedFinals.length > 10) acceptedFinals.shift();
-        }
-
-        function mergeOriginalWithSpeech(original, speech) {
-            const base = String(original || "").trimEnd();
-            const spoken = cleanSpeechText(speech);
-            if (!spoken) return base;
-            if (!base) return spoken;
-            return `${base} ${spoken}`;
-        }
 
         function initSpeechRecognition() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -4690,35 +4649,30 @@
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
 
-            recognition.continuous = true;
+            // 🔥 MASTERSTROKE: Mobile par continuous FALSE rakhenge duplication rokne ke liye
+            recognition.continuous = !isMobileDevice; 
             recognition.interimResults = true;
             recognition.lang = 'en-IN';
 
             const micBtn = document.getElementById('mic-btn');
             const userInputBox = document.getElementById('user-input');
 
-            // 3-sec auto stop timer
+            // 2-Sec Smart Silence Timer
             function resetSilenceTimer() {
                 clearTimeout(silenceTimer);
                 silenceTimer = setTimeout(() => {
-                    console.log("2 Seconds of silence detected! Auto stopping...");
-                    if (isListening && recognition) {
-                        recognition.stop();
-                    }
+                    forceStop = true; // Timer ne mic band kiya hai
+                    if (isListening && recognition) recognition.stop();
                 }, 2000);
             }
 
             // 1️⃣ ONSTART LOGIC
             recognition.onstart = function () {
                 isListening = true;
+                forceStop = false;
                 micBtn.classList.add('listening');
                 userInputBox.placeholder = "Listening... Speak now 🎙️";
                 updateInputIcons();
-
-                // Arrays aur history ko reset karo
-                originalInputText = userInputBox.value.trimEnd();
-                finalTranscriptByIndex = [];
-                acceptedFinals = [];
 
                 if (!isMobileDevice) {
                     startVoiceVisualizer();
@@ -4727,99 +4681,62 @@
                 }
             };
 
-            // 2️⃣ ONRESULT LOGIC (CLAUDE'S ANTI-DUPLICATE MASTERPIECE)
+            // 2️⃣ ONRESULT LOGIC (Ekdum Clean, No Duplication)
             recognition.onresult = function (event) {
-                resetSilenceTimer(); // Pehla word bolte hi timer chalu
+                resetSilenceTimer(); 
 
-                const interimParts = [];
-                const startIndex = typeof event.resultIndex === "number" ? event.resultIndex : 0;
+                let sessionFinals = '';
+                let currentInterim = '';
 
-                for (let i = 0; i < event.results.length; i++) {
-                    const result = event.results[i];
-                    const transcript = cleanSpeechText(result?.[0]?.transcript || "");
-                    if (!transcript) continue;
-
-                    if (result.isFinal) {
-                        // Purane results ko ignore karo
-                        if (i < startIndex && finalTranscriptByIndex[i]) continue;
-
-                        const isNewFinalSlot = !finalTranscriptByIndex[i];
-
-                        // Duplicate check
-                        if (isNewFinalSlot && isFastAndroidDuplicate(transcript)) {
-                            finalTranscriptByIndex[i] = "";
-                            continue;
-                        }
-
-                        // Index ke hisaab se array me set karo (no += duplication)
-                        finalTranscriptByIndex[i] = transcript;
-
-                        if (isNewFinalSlot) {
-                            rememberAcceptedFinal(transcript);
-                        }
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        sessionFinals += event.results[i][0].transcript;
                     } else {
-                        interimParts.push(transcript);
+                        currentInterim += event.results[i][0].transcript;
                     }
                 }
 
-                // Final aur interim words ko merge karo
-                const finalText = cleanSpeechText(finalTranscriptByIndex.filter(Boolean).join(" "));
-                const interimText = cleanSpeechText(uniqueConsecutive(interimParts).join(" "));
-                const spokenText = cleanSpeechText(`${finalText} ${interimText}`);
-
-                // Box me update karo
-                userInputBox.value = mergeOriginalWithSpeech(originalInputText, spokenText);
-
+                let newSpeech = (sessionFinals + currentInterim).trim();
+                let spaceNeeded = (originalInputText.length > 0 && newSpeech.length > 0 && !newSpeech.startsWith(" ")) ? " " : "";
+                
+                userInputBox.value = originalInputText + spaceNeeded + newSpeech;
                 autoResizeInput();
             };
 
             // 3️⃣ ONERROR LOGIC
             recognition.onerror = function (event) {
-                console.error("Voice Error: ", event.error);
                 if (event.error === 'not-allowed') {
-                    showToast("Microphone permission denied. Please allow it in browser settings.", "error");
+                    forceStop = true;
+                    showToast("Microphone permission denied.", "error");
                     stopListening();
                 } else if (event.error === 'no-speech') {
-                    resetSilenceTimer(); // Chupchap sunta rahega
-                } else if (event.error === 'network') {
-                    showToast("Network issue with voice. Try again!", "error");
-                    stopListening();
-                } else {
-                    stopListening();
+                    resetSilenceTimer(); // Ignore background noise silent errors
                 }
             };
 
+            // 4️⃣ ONEND LOGIC (THE MAGIC POLYFILL)
             recognition.onend = function () {
-                stopListening();
+                // Agar mobile pe saans lene ki wajah se browser ne mic band kiya (lekin 2-sec timer bacha hai)
+                if (isListening && !forceStop && isMobileDevice) {
+                    // Purana text save karo aur engine wapas chalu kardo instantly!
+                    originalInputText = userInputBox.value.trimEnd();
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        stopListening();
+                    }
+                } else {
+                    // Normal Stop (User ne click kiya ya 2-sec timer pura hua)
+                    stopListening();
+                }
             };
         }
 
-
-        function toggleVoiceInput() {
-            if (!isUserLoggedIn) {
-                document.getElementById("login-warning-modal").style.display = "flex";
-                setTimeout(() => document.getElementById("login-warning-modal").classList.add("active"), 10);
-                return;
-            }
-
-            if (!recognition) initSpeechRecognition();
-
-            if (isListening) {
-                recognition.stop();
-                stopListening();
-            } else {
-                try {
-                    recognition.start();
-                } catch (e) {
-                    console.log("Voice started already.");
-                }
-            }
-        }
-
-        // 🔥 UPDATED STOP LISTENING (Timer clean karne ke liye)
+        // 🛑 STOP LISTENING CLEANUP
         function stopListening() {
             isListening = false;
-            clearTimeout(silenceTimer); // 🔥 NAYA: Mic band hote hi timer ko poori tarah clear karo taaki koi bug na aaye
+            forceStop = true;
+            clearTimeout(silenceTimer);
 
             const micBtn = document.getElementById('mic-btn');
             const userInputBox = document.getElementById('user-input');
@@ -4837,6 +4754,33 @@
             updateInputIcons();
             stopVoiceVisualizer();
         }
+
+        // 🎤 TOGGLE VOICE INPUT
+        function toggleVoiceInput() {
+            if (!isUserLoggedIn) {
+                document.getElementById("login-warning-modal").style.display = "flex";
+                setTimeout(() => document.getElementById("login-warning-modal").classList.add("active"), 10);
+                return;
+            }
+
+            if (!recognition) initSpeechRecognition();
+
+            if (isListening) {
+                forceStop = true; // User ne manual stop kiya
+                recognition.stop();
+                stopListening();
+            } else {
+                forceStop = false;
+                originalInputText = document.getElementById('user-input').value.trimEnd(); // Starting base set karo
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.log("Voice already started.");
+                }
+            }
+        }     
+
+       
 
         // =========================================
         // 🎯 JS-POWERED SMART HOVER & LONG-PRESS FOR BUBBLES
