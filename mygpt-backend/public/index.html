@@ -1064,9 +1064,10 @@
             color: #FFF8F0;
         }
 
-       /* 🚀 LIGHT MODE CODE BLOCK */
+        /* 🚀 LIGHT MODE CODE BLOCK */
         .bot-msg pre {
-            background-color: #f6f8fa !important; /* GitHub Light BG */
+            background-color: #f6f8fa !important;
+            /* GitHub Light BG */
             border-radius: 14px;
             padding: 16px;
             margin: 15px 0;
@@ -1078,21 +1079,108 @@
         .bot-msg pre code {
             background-color: transparent !important;
             padding: 0 !important;
-            color: #24292e !important; /* Dark text for light mode */
+            color: #24292e !important;
+            /* Dark text for light mode */
             font-family: 'Consolas', 'Courier New', monospace;
             font-size: 14px;
             line-height: 1.6;
             display: block;
         }
 
+        /* ====================================================
+   🔥 CODE BLOCK HEADER (Language + Copy Button)
+   ==================================================== */
+        .code-block-wrapper {
+            position: relative;
+            margin: 15px 0;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.07);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-theme .code-block-wrapper {
+            border-color: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-block-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 14px;
+            background: #e8eaed;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+        }
+
+        body.dark-theme .code-block-header {
+            background: #1a1917;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .code-lang-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Lexend Deca', sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        body.dark-theme .code-lang-label {
+            color: #999;
+        }
+
+        .code-copy-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12.5px;
+            font-weight: 600;
+            font-family: 'Lexend Deca', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .code-copy-btn:hover {
+            background: rgba(0, 0, 0, 0.09);
+            color: #222;
+        }
+
+        body.dark-theme .code-copy-btn {
+            color: #aaa;
+        }
+
+        body.dark-theme .code-copy-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        /* Pre ka apna margin/radius remove karo — wrapper handle karega */
+        .code-block-wrapper pre {
+            margin: 0 !important;
+            border-radius: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
         /* 🌑 DARK MODE CODE BLOCK */
         body.dark-theme .bot-msg pre {
-            background-color: #0d0d0d !important; /* Deep dark BG */
+            background-color: #0d0d0d !important;
+            /* Deep dark BG */
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
+
         body.dark-theme .bot-msg pre code {
-            color: #adbac7 !important; /* Light text for dark mode */
+            color: #adbac7 !important;
+            /* Light text for dark mode */
         }
 
         /* No old bridge pseudo-element needed */
@@ -2451,6 +2539,86 @@
                 padding: 14px 15px;
             }
         }
+
+        .sidebar-search-wrap {
+            margin-top: 16px;
+            padding: 0 4px;
+        }
+
+        .sidebar-search-box {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 248, 240, 0.14);
+            color: var(--sidebar-text);
+            transition: all 0.25s ease;
+        }
+
+        .sidebar-search-box:focus-within {
+            border-color: var(--light-brown);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 6px 16px rgba(192, 133, 82, 0.18);
+        }
+
+        .sidebar-search-box i {
+            font-size: 16px;
+            opacity: 0.75;
+            flex-shrink: 0;
+        }
+
+        #sidebar-chat-search {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--sidebar-text);
+            font-family: "Lexend Deca", sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        #sidebar-chat-search::placeholder {
+            color: rgba(255, 248, 240, 0.55);
+        }
+
+        .sidebar-search-clear {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--sidebar-text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-search-clear.visible {
+            display: flex;
+        }
+
+        .sidebar-search-clear:hover {
+            background: rgba(192, 133, 82, 0.25);
+            color: #fff;
+        }
+
+        .sidebar-empty-state {
+            margin: 18px 12px;
+            padding: 14px 12px;
+            border-radius: 14px;
+            color: rgba(255, 248, 240, 0.68);
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 13.5px;
+            font-weight: 600;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -2671,6 +2839,19 @@
                 <span style="font-size: 18px; line-height: 1;">🛠️</span> Other Tools
             </a>
         </div>
+
+        <div class="sidebar-search-wrap">
+            <div class="sidebar-search-box">
+                <i class="bi bi-search"></i>
+                <input id="sidebar-chat-search" type="text" placeholder="Search chats..." autocomplete="off"
+                    oninput="filterSidebarChats()">
+                <button id="sidebar-search-clear" class="sidebar-search-clear" type="button"
+                    onclick="clearSidebarSearch()" title="Clear search" aria-label="Clear search">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+
         <div class="chat-list" id="sidebar-chat-list"></div>
     </div>
 
@@ -2746,6 +2927,7 @@
         let currentAbortController = null;
         let isAtTop = true;
         let sidebarChatsRef = null;
+        let sidebarChatsCache = [];
 
         // DATABASE WRITE QUEUE
         let cloudSaveQueue = Promise.resolve();
@@ -2776,6 +2958,85 @@
                 '"': "&quot;",
                 "'": "&#039;"
             }[char]));
+        }
+
+        // =========================================
+        // 🔥 CODE BLOCK HEADER INJECTOR
+        // =========================================
+        function addCodeBlockHeaders(container) {
+            container.querySelectorAll('pre').forEach(pre => {
+                // Already wrapped hai toh skip
+                if (pre.closest('.code-block-wrapper')) return;
+
+                const code = pre.querySelector('code');
+                if (!code) return;
+
+                // Language detect karo (marked 'language-xxx' class deta hai)
+                let lang = '';
+                const langClass = Array.from(code.classList).find(c => c.startsWith('language-'));
+                if (langClass) {
+                    lang = langClass.replace('language-', '');
+                }
+                // hljs ka result bhi check karo (fallback)
+                if (!lang && code.result && code.result.language) {
+                    lang = code.result.language;
+                }
+
+                const displayLang = lang
+                    ? lang.charAt(0).toUpperCase() + lang.slice(1)
+                    : 'Code';
+
+                // Wrapper div banao
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-block-wrapper';
+
+                // Header div banao
+                const header = document.createElement('div');
+                header.className = 'code-block-header';
+                header.innerHTML = `
+            <span class="code-lang-label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M5.854 4.854a.5.5 0 1 0-.708-.708l-3.5 3.5a.5.5 0 0 0 0 .708l3.5 3.5a.5.5 0 0 0 .708-.708L2.707 8l3.147-3.146zm4.292 0a.5.5 0 0 1 .708-.708l3.5 3.5a.5.5 0 0 1 0 .708l-3.5 3.5a.5.5 0 0 1-.708-.708L13.293 8l-3.147-3.146z"/>
+                </svg>
+                ${escapeHTML(displayLang)}
+            </span>
+            <button class="code-copy-btn" title="Copy code">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                </svg>
+                Copy
+            </button>
+        `;
+
+                // Copy button ka click handler
+                const copyBtn = header.querySelector('.code-copy-btn');
+                copyBtn.addEventListener('click', () => {
+                    const text = code.innerText;
+                    copyToClipboard(text).then(() => {
+                        copyBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                    </svg>
+                    Copied!
+                `;
+                        copyBtn.style.color = '#27ae60';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                        </svg>
+                        Copy
+                    `;
+                            copyBtn.style.color = '';
+                        }, 2000);
+                    });
+                });
+
+                // DOM me inject karo
+                pre.parentNode.insertBefore(wrapper, pre);
+                wrapper.appendChild(header);
+                wrapper.appendChild(pre);
+            });
         }
 
         function escapeAttr(value) {
@@ -2922,19 +3183,19 @@
             if (isDark) {
                 document.body.classList.add("dark-theme");
                 if (typeof darkModeToggle !== 'undefined' && darkModeToggle) darkModeToggle.checked = true;
-                
+
                 // 🔥 NAYA: Dark mode me dark colorful theme lagao
                 if (codeThemeLink) codeThemeLink.href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css";
             } else {
                 document.body.classList.remove("dark-theme");
                 if (typeof darkModeToggle !== 'undefined' && darkModeToggle) darkModeToggle.checked = false;
-                
+
                 // 🔥 NAYA: Light mode me light colorful theme lagao
                 if (codeThemeLink) codeThemeLink.href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css";
             }
         }
-        
-            function initTheme() {
+
+        function initTheme() {
             let savedTheme = localStorage.getItem("theme") || "system";
             applyTheme(savedTheme);
 
@@ -3147,81 +3408,133 @@
             }
         }
 
-        function loadSidebarHistory() {
-            if (!currentUser) return;
+        function normalizeChatSearch(value) {
+    return String(value || "")
+        .toLowerCase()
+        .replace(/[^\w\s\u0900-\u097F]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
 
-            if (sidebarChatsRef) sidebarChatsRef.off();
+function updateSidebarSearchClearButton() {
+    const input = document.getElementById("sidebar-chat-search");
+    const clearBtn = document.getElementById("sidebar-search-clear");
+    if (!input || !clearBtn) return;
 
-            sidebarChatList.innerHTML = `<div class="loader-center"><div class="thinking-spinner" style="width: 35px; height: 35px; border-width: 4px;"></div></div>`;
+    clearBtn.classList.toggle("visible", input.value.trim().length > 0);
+}
 
-            sidebarChatsRef = database.ref("userChats/" + currentUser.uid);
-            sidebarChatsRef.on("value", snapshot => {
-                const data = snapshot.val();
-                let htmlContent = `<div class="fade-in-smooth">`;
-                htmlContent += `<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">Your Chats</small>`;
+function renderSidebarChats() {
+    const searchInput = document.getElementById("sidebar-chat-search");
+    const query = normalizeChatSearch(searchInput?.value || "");
 
-                if (data) {
-                    const chatsArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+    updateSidebarSearchClearButton();
 
-                    chatsArray.sort((a, b) => {
-                        const timeA = a.updatedAt || parseInt(String(a.id).split("_")[1]) || 0;
-                        const timeB = b.updatedAt || parseInt(String(b.id).split("_")[1]) || 0;
-                        return timeB - timeA;
-                    });
+    let htmlContent = `<div class="fade-in-smooth">`;
+    htmlContent += `<small class="text-secondary px-3 mt-2 d-block" style="opacity: 0.7; color: var(--sidebar-text) !important;">${query ? "Search Results" : "Your Chats"}</small>`;
 
-                    chatsArray.forEach(chat => {
-                        const id = String(chat.id);
-                        const idAttr = escapeAttr(id);
-                        const idJs = escapeJSString(id);
-                        const title = chat.title || "New Chat";
-                        const safeTitle = escapeHTML(title);
-                        const safeTitleAttr = escapeAttr(title);
-                        const isActive = currentChatId === id ? "active-chat" : "";
+    const filteredChats = query
+        ? sidebarChatsCache.filter(chat => normalizeChatSearch(chat.title || "New Chat").includes(query))
+        : sidebarChatsCache;
 
-                        htmlContent += `
-                    <div class="chat-wrapper" id="wrapper-${idAttr}">
-                        <div class="chat-item mt-2 ${isActive}" id="chat-item-${idAttr}" onclick="loadSpecificChat('${idJs}')">
-                            <span class="chat-title-text">${safeTitle}</span>
-                          <button class="chat-options-btn" onclick="event.stopPropagation(); toggleOptionsMenu('${idJs}')" title="Chat Options">
-    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="8" cy="2.5" r="1.8"/>
-        <circle cx="8" cy="8" r="1.8"/>
-        <circle cx="8" cy="13.5" r="1.8"/>
-    </svg>
-</button>
-                            <div class="chat-options-menu" id="menu-${idAttr}">
-                                <button class="chat-option-item" onclick="event.stopPropagation(); shareChat('${idJs}')">🔗 Share</button>
-                                <button class="chat-option-item" onclick="event.stopPropagation(); showRenameUI('${idJs}')">✏️ Rename</button>
-                                <button class="chat-option-item chat-option-delete" onclick="event.stopPropagation(); showDeleteUI('${idJs}')">🗑️ Delete</button>
-                            </div>
-                        </div>
+    if (!filteredChats.length) {
+        htmlContent += `<div class="sidebar-empty-state">${query ? "No matching chats found" : "No chats yet"}</div>`;
+    }
 
-                        <div class="inline-action-box" id="rename-box-${idAttr}">
-                            <input type="text" class="rename-input-box" id="rename-input-${idAttr}" value="${safeTitleAttr}">
-                            <div class="d-flex gap-2">
-                                <button class="action-btn btn-confirm-save" onclick="saveRename('${idJs}')">Save</button>
-                                <button class="action-btn btn-cancel" onclick="hideActionBox('${idJs}', 'rename')">Cancel</button>
-                            </div>
-                        </div>
+    filteredChats.forEach(chat => {
+        const id = String(chat.id);
+        const idAttr = escapeAttr(id);
+        const idJs = escapeJSString(id);
+        const title = chat.title || "New Chat";
+        const safeTitle = escapeHTML(title);
+        const safeTitleAttr = escapeAttr(title);
+        const isActive = currentChatId === id ? "active-chat" : "";
 
-                        <div class="inline-action-box" id="delete-box-${idAttr}">
-                           <div style="font-size: 14.5px; margin-bottom: 12px; color: var(--text-main); font-weight: 500; text-align: center; letter-spacing: 0.2px;">Are you sure you want to delete?</div>
-                            <div class="d-flex gap-2">
-                                <button class="action-btn btn-confirm-del" onclick="confirmDelete('${idJs}')">Yes</button>
-                                <button class="action-btn btn-cancel" onclick="hideActionBox('${idJs}', 'delete')">No</button>
-                            </div>
-                        </div>
+        htmlContent += `
+            <div class="chat-wrapper" id="wrapper-${idAttr}">
+                <div class="chat-item mt-2 ${isActive}" id="chat-item-${idAttr}" onclick="loadSpecificChat('${idJs}')">
+                    <span class="chat-title-text">${safeTitle}</span>
+
+                    <button class="chat-options-btn" onclick="event.stopPropagation(); toggleOptionsMenu('${idJs}')" title="Chat Options">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="8" cy="2.5" r="1.8"/>
+                            <circle cx="8" cy="8" r="1.8"/>
+                            <circle cx="8" cy="13.5" r="1.8"/>
+                        </svg>
+                    </button>
+
+                    <div class="chat-options-menu" id="menu-${idAttr}">
+                        <button class="chat-option-item" onclick="event.stopPropagation(); shareChat('${idJs}')">🔗 Share</button>
+                        <button class="chat-option-item" onclick="event.stopPropagation(); showRenameUI('${idJs}')">✏️ Rename</button>
+                        <button class="chat-option-item chat-option-delete" onclick="event.stopPropagation(); showDeleteUI('${idJs}')">🗑️ Delete</button>
                     </div>
-                `;
-                    });
-                }
+                </div>
 
-                htmlContent += "</div>";
-                sidebarChatList.innerHTML = htmlContent;
-            });
-        }
+                <div class="inline-action-box" id="rename-box-${idAttr}">
+                    <input type="text" class="rename-input-box" id="rename-input-${idAttr}" value="${safeTitleAttr}">
+                    <div class="d-flex gap-2">
+                        <button class="action-btn btn-confirm-save" onclick="saveRename('${idJs}')">Save</button>
+                        <button class="action-btn btn-cancel" onclick="hideActionBox('${idJs}', 'rename')">Cancel</button>
+                    </div>
+                </div>
 
-        window.toggleOptionsMenu = function (id) {
+                <div class="inline-action-box" id="delete-box-${idAttr}">
+                    <div style="font-size: 14.5px; margin-bottom: 12px; color: var(--text-main); font-weight: 500; text-align: center; letter-spacing: 0.2px;">Are you sure you want to delete?</div>
+                    <div class="d-flex gap-2">
+                        <button class="action-btn btn-confirm-del" onclick="confirmDelete('${idJs}')">Yes</button>
+                        <button class="action-btn btn-cancel" onclick="hideActionBox('${idJs}', 'delete')">No</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    htmlContent += "</div>";
+    sidebarChatList.innerHTML = htmlContent;
+}
+
+function filterSidebarChats() {
+    closeAllMenus();
+    closeAllActionBoxes();
+    renderSidebarChats();
+}
+
+function clearSidebarSearch() {
+    const input = document.getElementById("sidebar-chat-search");
+    if (!input) return;
+
+    input.value = "";
+    renderSidebarChats();
+    input.focus();
+}
+
+function loadSidebarHistory() {
+    if (!currentUser) return;
+
+    if (sidebarChatsRef) sidebarChatsRef.off();
+
+    sidebarChatList.innerHTML = `<div class="loader-center"><div class="thinking-spinner" style="width: 35px; height: 35px; border-width: 4px;"></div></div>`;
+
+    sidebarChatsRef = database.ref("userChats/" + currentUser.uid);
+
+    sidebarChatsRef.on("value", snapshot => {
+        const data = snapshot.val();
+
+        sidebarChatsCache = data
+            ? Object.keys(data).map(key => ({ id: key, ...data[key] }))
+            : [];
+
+        sidebarChatsCache.sort((a, b) => {
+            const timeA = a.updatedAt || parseInt(String(a.id).split("_")[1]) || 0;
+            const timeB = b.updatedAt || parseInt(String(b.id).split("_")[1]) || 0;
+            return timeB - timeA;
+        });
+
+        renderSidebarChats();
+    });
+}
+
+       window.toggleOptionsMenu = function (id) {
             const menu = document.getElementById(`menu-${id}`);
             const isAlreadyOpen = menu ? menu.classList.contains("active") : false;
 
@@ -3346,8 +3659,10 @@
                 htmlContent += "</div>";
                 chatHistory.innerHTML = htmlContent;
                 // 🔥 COLOR TRIGGER: Chat history load hone par colors lagao 🔥
+                // 🔥 COLOR TRIGGER: Chat history load hone par colors lagao 🔥
                 if (window.hljs) {
                     chatHistory.querySelectorAll('pre code').forEach((block) => hljs.highlightElement(block));
+                    addCodeBlockHeaders(chatHistory);
                 }
 
                 setTimeout(() => {
@@ -3878,6 +4193,7 @@
                 // 🔥 COLOR TRIGGER: Live typing me code blocks ko color karo 🔥
                 if (contentDiv && window.hljs) {
                     contentDiv.querySelectorAll('pre code').forEach((block) => hljs.highlightElement(block));
+                    addCodeBlockHeaders(contentDiv);
                 }
 
                 const botBubble = document.getElementById(msgId);
@@ -4628,280 +4944,280 @@
             if (micBtn) micBtn.style.boxShadow = 'none'; // Shadow wapas normal
         }
 
-      
 
-// ============================================================
-// 🎙️ FINAL MOBILE-SAFE VOICE ENGINE
-// Fixes Android Chrome progressive interim duplication:
-// "hello" -> "hello bhai" -> "hello bhai kaise" becomes only latest phrase.
-// ============================================================
-let recognition = null;
-let isListening = false;
-let silenceTimer = null;
-let originalVoiceInputText = "";
-let stableVoiceSpeech = "";
 
-const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        // ============================================================
+        // 🎙️ FINAL MOBILE-SAFE VOICE ENGINE
+        // Fixes Android Chrome progressive interim duplication:
+        // "hello" -> "hello bhai" -> "hello bhai kaise" becomes only latest phrase.
+        // ============================================================
+        let recognition = null;
+        let isListening = false;
+        let silenceTimer = null;
+        let originalVoiceInputText = "";
+        let stableVoiceSpeech = "";
 
-function cleanSpeechText(value) {
-    return String(value || "").replace(/\s+/g, " ").trim();
-}
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-function compareSpeech(value) {
-    return cleanSpeechText(value)
-        .toLowerCase()
-        .replace(/[.,!?;:"'`।]/g, "");
-}
-
-function isPrefixSpeech(shorter, longer) {
-    const a = compareSpeech(shorter);
-    const b = compareSpeech(longer);
-    return !!a && !!b && (a === b || b.startsWith(a + " "));
-}
-
-function containsSpeech(full, part) {
-    const a = compareSpeech(part);
-    const b = compareSpeech(full);
-    return !!a && !!b && (b === a || b.includes(" " + a) || b.includes(a + " "));
-}
-
-function collapseProgressiveParts(parts) {
-    const output = [];
-
-    for (const rawPart of parts) {
-        const part = cleanSpeechText(rawPart);
-        if (!part) continue;
-
-        const last = output[output.length - 1] || "";
-
-        if (!last) {
-            output.push(part);
-        } else if (compareSpeech(part) === compareSpeech(last)) {
-            continue;
-        } else if (isPrefixSpeech(last, part)) {
-            output[output.length - 1] = part;
-        } else if (isPrefixSpeech(part, last) || containsSpeech(last, part)) {
-            continue;
-        } else {
-            output.push(part);
+        function cleanSpeechText(value) {
+            return String(value || "").replace(/\s+/g, " ").trim();
         }
-    }
 
-    return cleanSpeechText(output.join(" "));
-}
-
-function buildSpeechFromResults(results) {
-    const finalParts = [];
-    const interimParts = [];
-
-    for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-        const transcript = cleanSpeechText(result?.[0]?.transcript || "");
-        if (!transcript) continue;
-
-        if (result.isFinal) {
-            finalParts.push(transcript);
-        } else {
-            interimParts.push(transcript);
+        function compareSpeech(value) {
+            return cleanSpeechText(value)
+                .toLowerCase()
+                .replace(/[.,!?;:"'`।]/g, "");
         }
-    }
 
-    const finalText = collapseProgressiveParts(finalParts);
-    const interimText = collapseProgressiveParts(interimParts);
+        function isPrefixSpeech(shorter, longer) {
+            const a = compareSpeech(shorter);
+            const b = compareSpeech(longer);
+            return !!a && !!b && (a === b || b.startsWith(a + " "));
+        }
 
-    return collapseProgressiveParts([finalText, interimText]);
-}
+        function containsSpeech(full, part) {
+            const a = compareSpeech(part);
+            const b = compareSpeech(full);
+            return !!a && !!b && (b === a || b.includes(" " + a) || b.includes(a + " "));
+        }
 
-function chooseBestSpeech(current, candidate) {
-    current = cleanSpeechText(current);
-    candidate = cleanSpeechText(candidate);
+        function collapseProgressiveParts(parts) {
+            const output = [];
 
-    if (!candidate) return current;
-    if (!current) return candidate;
+            for (const rawPart of parts) {
+                const part = cleanSpeechText(rawPart);
+                if (!part) continue;
 
-    if (isPrefixSpeech(candidate, current)) return current;
+                const last = output[output.length - 1] || "";
 
-    return candidate;
-}
+                if (!last) {
+                    output.push(part);
+                } else if (compareSpeech(part) === compareSpeech(last)) {
+                    continue;
+                } else if (isPrefixSpeech(last, part)) {
+                    output[output.length - 1] = part;
+                } else if (isPrefixSpeech(part, last) || containsSpeech(last, part)) {
+                    continue;
+                } else {
+                    output.push(part);
+                }
+            }
 
-function capitalizeFirstLetter(text) {
-    const value = cleanSpeechText(text);
-    if (!value) return "";
-    return value.charAt(0).toUpperCase() + value.slice(1);
-}
+            return cleanSpeechText(output.join(" "));
+        }
 
-function mergeOriginalWithSpeech(original, speech) {
-    const base = String(original || "").trimEnd();
-    let spoken = cleanSpeechText(speech);
+        function buildSpeechFromResults(results) {
+            const finalParts = [];
+            const interimParts = [];
 
-    if (!spoken) return base;
+            for (let i = 0; i < results.length; i++) {
+                const result = results[i];
+                const transcript = cleanSpeechText(result?.[0]?.transcript || "");
+                if (!transcript) continue;
 
-    if (!base) {
-        return capitalizeFirstLetter(spoken);
-    }
+                if (result.isFinal) {
+                    finalParts.push(transcript);
+                } else {
+                    interimParts.push(transcript);
+                }
+            }
 
-    return `${base} ${spoken}`;
-}
+            const finalText = collapseProgressiveParts(finalParts);
+            const interimText = collapseProgressiveParts(interimParts);
 
-function resetVoiceSilenceTimer() {
-    clearTimeout(silenceTimer);
+            return collapseProgressiveParts([finalText, interimText]);
+        }
 
-    silenceTimer = setTimeout(() => {
-        if (isListening && recognition) {
+        function chooseBestSpeech(current, candidate) {
+            current = cleanSpeechText(current);
+            candidate = cleanSpeechText(candidate);
+
+            if (!candidate) return current;
+            if (!current) return candidate;
+
+            if (isPrefixSpeech(candidate, current)) return current;
+
+            return candidate;
+        }
+
+        function capitalizeFirstLetter(text) {
+            const value = cleanSpeechText(text);
+            if (!value) return "";
+            return value.charAt(0).toUpperCase() + value.slice(1);
+        }
+
+        function mergeOriginalWithSpeech(original, speech) {
+            const base = String(original || "").trimEnd();
+            let spoken = cleanSpeechText(speech);
+
+            if (!spoken) return base;
+
+            if (!base) {
+                return capitalizeFirstLetter(spoken);
+            }
+
+            return `${base} ${spoken}`;
+        }
+
+        function resetVoiceSilenceTimer() {
+            clearTimeout(silenceTimer);
+
+            silenceTimer = setTimeout(() => {
+                if (isListening && recognition) {
+                    try {
+                        recognition.stop();
+                    } catch (e) {
+                        console.warn("Recognition stop ignored:", e);
+                    }
+                }
+            }, 3000);
+        }
+
+        function initSpeechRecognition() {
+            if (recognition) return;
+
+            const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognitionAPI) {
+                console.warn("Speech Recognition API is not supported in this browser.");
+                const micBtn = document.getElementById("mic-btn");
+                if (micBtn) micBtn.style.display = "none";
+                return;
+            }
+
+            recognition = new SpeechRecognitionAPI();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = "en-IN";
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = function () {
+                isListening = true;
+
+                const micBtn = document.getElementById("mic-btn");
+                const inputBox = document.getElementById("user-input");
+
+                if (micBtn) {
+                    micBtn.classList.add("listening");
+                }
+
+                if (inputBox) {
+                    inputBox.placeholder = "Listening... Speak now 🎙️";
+                    originalVoiceInputText = inputBox.value.trimEnd();
+                }
+
+                stableVoiceSpeech = "";
+                resetVoiceSilenceTimer();
+
+                if (!isMobileDevice) {
+                    startVoiceVisualizer();
+                } else if (micBtn) {
+                    micBtn.style.animation = "pulse-red 1.5s infinite ease-out";
+                }
+
+                updateInputIcons();
+            };
+
+            recognition.onresult = function (event) {
+                resetVoiceSilenceTimer();
+
+                const candidateSpeech = buildSpeechFromResults(event.results);
+                stableVoiceSpeech = chooseBestSpeech(stableVoiceSpeech, candidateSpeech);
+
+                const inputBox = document.getElementById("user-input");
+                if (inputBox) {
+                    inputBox.value = mergeOriginalWithSpeech(originalVoiceInputText, stableVoiceSpeech);
+                    autoResizeInput();
+                }
+
+                updateInputIcons();
+            };
+
+            recognition.onerror = function (event) {
+                console.error("Voice Error:", event.error);
+
+                if (event.error === "no-speech") {
+                    resetVoiceSilenceTimer();
+                    return;
+                }
+
+                if (event.error === "not-allowed") {
+                    showToast("Microphone permission denied. Please allow it in browser settings.", "error");
+                } else if (event.error === "network") {
+                    showToast("Network issue with voice. Try again!", "error");
+                }
+
+                stopListeningUI();
+            };
+
+            recognition.onend = function () {
+                stopListeningUI();
+            };
+        }
+
+        function stopListeningUI() {
+            isListening = false;
+            clearTimeout(silenceTimer);
+
+            const micBtn = document.getElementById("mic-btn");
+            const inputBox = document.getElementById("user-input");
+
+            if (micBtn) {
+                micBtn.classList.remove("listening");
+                micBtn.style.animation = "";
+                micBtn.style.boxShadow = "none";
+            }
+
+            if (inputBox) {
+                inputBox.placeholder = "Type or speak here...";
+
+                if (isUserLoggedIn) {
+                    inputBox.focus();
+                    inputBox.selectionStart = inputBox.selectionEnd = inputBox.value.length;
+                }
+            }
+
+            updateInputIcons();
+            stopVoiceVisualizer();
+        }
+
+        function stopVoiceInputSession() {
+            clearTimeout(silenceTimer);
+
+            if (recognition && isListening) {
+                try {
+                    recognition.stop();
+                } catch (e) {
+                    console.warn("Recognition stop ignored:", e);
+                }
+            }
+
+            stopListeningUI();
+        }
+
+        function toggleVoiceInput() {
+            if (!isUserLoggedIn) {
+                const modal = document.getElementById("login-warning-modal");
+                modal.style.display = "flex";
+                setTimeout(() => modal.classList.add("active"), 10);
+                return;
+            }
+
+            initSpeechRecognition();
+
+            if (!recognition) return;
+
+            if (isListening) {
+                stopVoiceInputSession();
+                return;
+            }
+
             try {
-                recognition.stop();
+                recognition.start();
             } catch (e) {
-                console.warn("Recognition stop ignored:", e);
+                console.warn("Voice recognition already active or starting:", e);
             }
         }
-    }, 3000);
-}
-
-function initSpeechRecognition() {
-    if (recognition) return;
-
-    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognitionAPI) {
-        console.warn("Speech Recognition API is not supported in this browser.");
-        const micBtn = document.getElementById("mic-btn");
-        if (micBtn) micBtn.style.display = "none";
-        return;
-    }
-
-    recognition = new SpeechRecognitionAPI();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "en-IN";
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = function () {
-        isListening = true;
-
-        const micBtn = document.getElementById("mic-btn");
-        const inputBox = document.getElementById("user-input");
-
-        if (micBtn) {
-            micBtn.classList.add("listening");
-        }
-
-        if (inputBox) {
-            inputBox.placeholder = "Listening... Speak now 🎙️";
-            originalVoiceInputText = inputBox.value.trimEnd();
-        }
-
-        stableVoiceSpeech = "";
-        resetVoiceSilenceTimer();
-
-        if (!isMobileDevice) {
-            startVoiceVisualizer();
-        } else if (micBtn) {
-            micBtn.style.animation = "pulse-red 1.5s infinite ease-out";
-        }
-
-        updateInputIcons();
-    };
-
-    recognition.onresult = function (event) {
-        resetVoiceSilenceTimer();
-
-        const candidateSpeech = buildSpeechFromResults(event.results);
-        stableVoiceSpeech = chooseBestSpeech(stableVoiceSpeech, candidateSpeech);
-
-        const inputBox = document.getElementById("user-input");
-        if (inputBox) {
-            inputBox.value = mergeOriginalWithSpeech(originalVoiceInputText, stableVoiceSpeech);
-            autoResizeInput();
-        }
-
-        updateInputIcons();
-    };
-
-    recognition.onerror = function (event) {
-        console.error("Voice Error:", event.error);
-
-        if (event.error === "no-speech") {
-            resetVoiceSilenceTimer();
-            return;
-        }
-
-        if (event.error === "not-allowed") {
-            showToast("Microphone permission denied. Please allow it in browser settings.", "error");
-        } else if (event.error === "network") {
-            showToast("Network issue with voice. Try again!", "error");
-        }
-
-        stopListeningUI();
-    };
-
-    recognition.onend = function () {
-        stopListeningUI();
-    };
-}
-
-function stopListeningUI() {
-    isListening = false;
-    clearTimeout(silenceTimer);
-
-    const micBtn = document.getElementById("mic-btn");
-    const inputBox = document.getElementById("user-input");
-
-    if (micBtn) {
-        micBtn.classList.remove("listening");
-        micBtn.style.animation = "";
-        micBtn.style.boxShadow = "none";
-    }
-
-    if (inputBox) {
-        inputBox.placeholder = "Type or speak here...";
-
-        if (isUserLoggedIn) {
-            inputBox.focus();
-            inputBox.selectionStart = inputBox.selectionEnd = inputBox.value.length;
-        }
-    }
-
-    updateInputIcons();
-    stopVoiceVisualizer();
-}
-
-function stopVoiceInputSession() {
-    clearTimeout(silenceTimer);
-
-    if (recognition && isListening) {
-        try {
-            recognition.stop();
-        } catch (e) {
-            console.warn("Recognition stop ignored:", e);
-        }
-    }
-
-    stopListeningUI();
-}
-
-function toggleVoiceInput() {
-    if (!isUserLoggedIn) {
-        const modal = document.getElementById("login-warning-modal");
-        modal.style.display = "flex";
-        setTimeout(() => modal.classList.add("active"), 10);
-        return;
-    }
-
-    initSpeechRecognition();
-
-    if (!recognition) return;
-
-    if (isListening) {
-        stopVoiceInputSession();
-        return;
-    }
-
-    try {
-        recognition.start();
-    } catch (e) {
-        console.warn("Voice recognition already active or starting:", e);
-    }
-}
 
 
 
@@ -4909,9 +5225,9 @@ function toggleVoiceInput() {
 
 
 
-      
 
-       
+
+
 
         // =========================================
         // 🎯 JS-POWERED SMART HOVER & LONG-PRESS FOR BUBBLES
