@@ -4630,118 +4630,282 @@
 
       
 
-
-        // ============================================================
-// 🎙️ FINAL STABLE VOICE ENGINE (NO RESTART, NO BEEP, 3S SILENCE)
 // ============================================================
+// 🎙️ FINAL MOBILE-SAFE VOICE ENGINE
+// Fixes Android Chrome progressive interim duplication:
+// "hello" -> "hello bhai" -> "hello bhai kaise" becomes only latest phrase.
+// ============================================================
+let recognition = null;
+let isListening = false;
+let silenceTimer = null;
+let originalVoiceInputText = "";
+let stableVoiceSpeech = "";
 
-const VoiceEngine = (() => {
-  const UA = navigator.userAgent;
-  const isIOS = /iPad|iPhone|iPod/.test(UA) && !(/** @type {any} */(window).MSStream);
-  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const isSupported = !!SpeechRecognitionAPI;
+const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-  let recognition = null;
-  let isListening = false;
-  let silenceTimer = null;
-  let originalInputText = "";
-  let finalTranscriptByIndex = []; // Duplicate rokne ke liye memory
+function cleanSpeechText(value) {
+    return String(value || "").replace(/\s+/g, " ").trim();
+}
 
-  const getMicBtn = () => document.getElementById("mic-btn");
-  const getInputBox = () => document.getElementById("user-input");
+function compareSpeech(value) {
+    return cleanSpeechText(value)
+        .toLowerCase()
+        .replace(/[.,!?;:"'`।]/g, "");
+}
 
-  function resetSilenceTimer() {
-    clearTimeout(silenceTimer);
-    silenceTimer = setTimeout(() => {
-      if (isListening && recognition) recognition.stop();
-    }, 3000); // 3 seconds silence detection
-  }
+function isPrefixSpeech(shorter, longer) {
+    const a = compareSpeech(shorter);
+    const b = compareSpeech(longer);
+    return !!a && !!b && (a === b || b.startsWith(a + " "));
+}
 
-  function buildRecognition() {
-    const r = new SpeechRecognitionAPI();
-    r.continuous = true; // 🔥 IMPORTANT: True rakha hai taaki beech me band na ho
-    r.interimResults = true;
-    r.lang = "en-IN";
+function containsSpeech(full, part) {
+    const a = compareSpeech(part);
+    const b = compareSpeech(full);
+    return !!a && !!b && (b === a || b.includes(" " + a) || b.includes(a + " "));
+}
 
-    r.onstart = () => {
-      isListening = true;
-      const box = getInputBox();
-      const btn = getMicBtn();
-      if (btn) btn.classList.add("listening");
-      if (box) {
-        box.placeholder = "Listening… Speak now 🎙️";
-        originalInputText = box.value.trimEnd();
-      }
-      finalTranscriptByIndex = []; // Reset memory
-      // 🔥 FIX: Yahan resetSilenceTimer() nahi hataya hai, 
-      // lekin ye timer sirf silence track karega, restart nahi.
-      resetSilenceTimer(); 
-    };
+function collapseProgressiveParts(parts) {
+    const output = [];
 
-    r.onresult = (event) => {
-      resetSilenceTimer(); // Jab tak bol rahe ho, timer 0 pe reset hota rahega
+    for (const rawPart of parts) {
+        const part = cleanSpeechText(rawPart);
+        if (!part) continue;
 
-      let interimNow = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript.trim();
-        if (event.results[i].isFinal) {
-          finalTranscriptByIndex[i] = transcript;
+        const last = output[output.length - 1] || "";
+
+        if (!last) {
+            output.push(part);
+        } else if (compareSpeech(part) === compareSpeech(last)) {
+            continue;
+        } else if (isPrefixSpeech(last, part)) {
+            output[output.length - 1] = part;
+        } else if (isPrefixSpeech(part, last) || containsSpeech(last, part)) {
+            continue;
         } else {
-          interimNow = transcript;
+            output.push(part);
         }
-      }
+    }
 
-      const box = getInputBox();
-      if (box) {
-        const finalText = finalTranscriptByIndex.filter(Boolean).join(" ");
-        const spokenText = (finalText + " " + interimNow).trim();
-        let spaceNeeded = (originalInputText.length > 0 && spokenText.length > 0) ? " " : "";
-        box.value = originalInputText + spaceNeeded + spokenText;
-        autoResizeInput();
-      }
+    return cleanSpeechText(output.join(" "));
+}
+
+function buildSpeechFromResults(results) {
+    const finalParts = [];
+    const interimParts = [];
+
+    for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+        const transcript = cleanSpeechText(result?.[0]?.transcript || "");
+        if (!transcript) continue;
+
+        if (result.isFinal) {
+            finalParts.push(transcript);
+        } else {
+            interimParts.push(transcript);
+        }
+    }
+
+    const finalText = collapseProgressiveParts(finalParts);
+    const interimText = collapseProgressiveParts(interimParts);
+
+    return collapseProgressiveParts([finalText, interimText]);
+}
+
+function chooseBestSpeech(current, candidate) {
+    current = cleanSpeechText(current);
+    candidate = cleanSpeechText(candidate);
+
+    if (!candidate) return current;
+    if (!current) return candidate;
+
+    if (isPrefixSpeech(candidate, current)) return current;
+
+    return candidate;
+}
+
+function capitalizeFirstLetter(text) {
+    const value = cleanSpeechText(text);
+    if (!value) return "";
+    return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function mergeOriginalWithSpeech(original, speech) {
+    const base = String(original || "").trimEnd();
+    let spoken = cleanSpeechText(speech);
+
+    if (!spoken) return base;
+
+    if (!base) {
+        return capitalizeFirstLetter(spoken);
+    }
+
+    return `${base} ${spoken}`;
+}
+
+function resetVoiceSilenceTimer() {
+    clearTimeout(silenceTimer);
+
+    silenceTimer = setTimeout(() => {
+        if (isListening && recognition) {
+            try {
+                recognition.stop();
+            } catch (e) {
+                console.warn("Recognition stop ignored:", e);
+            }
+        }
+    }, 3000);
+}
+
+function initSpeechRecognition() {
+    if (recognition) return;
+
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognitionAPI) {
+        console.warn("Speech Recognition API is not supported in this browser.");
+        const micBtn = document.getElementById("mic-btn");
+        if (micBtn) micBtn.style.display = "none";
+        return;
+    }
+
+    recognition = new SpeechRecognitionAPI();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-IN";
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = function () {
+        isListening = true;
+
+        const micBtn = document.getElementById("mic-btn");
+        const inputBox = document.getElementById("user-input");
+
+        if (micBtn) {
+            micBtn.classList.add("listening");
+        }
+
+        if (inputBox) {
+            inputBox.placeholder = "Listening... Speak now 🎙️";
+            originalVoiceInputText = inputBox.value.trimEnd();
+        }
+
+        stableVoiceSpeech = "";
+        resetVoiceSilenceTimer();
+
+        if (!isMobileDevice) {
+            startVoiceVisualizer();
+        } else if (micBtn) {
+            micBtn.style.animation = "pulse-red 1.5s infinite ease-out";
+        }
+
+        updateInputIcons();
     };
 
-    r.onerror = (event) => {
-      if (event.error === "no-speech") resetSilenceTimer();
-      else teardown();
+    recognition.onresult = function (event) {
+        resetVoiceSilenceTimer();
+
+        const candidateSpeech = buildSpeechFromResults(event.results);
+        stableVoiceSpeech = chooseBestSpeech(stableVoiceSpeech, candidateSpeech);
+
+        const inputBox = document.getElementById("user-input");
+        if (inputBox) {
+            inputBox.value = mergeOriginalWithSpeech(originalVoiceInputText, stableVoiceSpeech);
+            autoResizeInput();
+        }
+
+        updateInputIcons();
     };
 
-    r.onend = () => {
-      teardown(); // 🔥 FIX: Restart hat gaya, ab mic band hua toh band hi rahega
+    recognition.onerror = function (event) {
+        console.error("Voice Error:", event.error);
+
+        if (event.error === "no-speech") {
+            resetVoiceSilenceTimer();
+            return;
+        }
+
+        if (event.error === "not-allowed") {
+            showToast("Microphone permission denied. Please allow it in browser settings.", "error");
+        } else if (event.error === "network") {
+            showToast("Network issue with voice. Try again!", "error");
+        }
+
+        stopListeningUI();
     };
 
-    return r;
-  }
+    recognition.onend = function () {
+        stopListeningUI();
+    };
+}
 
-  function teardown() {
+function stopListeningUI() {
     isListening = false;
     clearTimeout(silenceTimer);
-    const btn = getMicBtn();
-    const box = getInputBox();
-    if (btn) btn.classList.remove("listening");
-    if (box) box.placeholder = "Type or speak here…";
+
+    const micBtn = document.getElementById("mic-btn");
+    const inputBox = document.getElementById("user-input");
+
+    if (micBtn) {
+        micBtn.classList.remove("listening");
+        micBtn.style.animation = "";
+        micBtn.style.boxShadow = "none";
+    }
+
+    if (inputBox) {
+        inputBox.placeholder = "Type or speak here...";
+
+        if (isUserLoggedIn) {
+            inputBox.focus();
+            inputBox.selectionStart = inputBox.selectionEnd = inputBox.value.length;
+        }
+    }
+
     updateInputIcons();
     stopVoiceVisualizer();
-  }
-
-  return {
-    toggleVoiceInput: () => {
-      if (!isSupported) return;
-      if (isListening) {
-        recognition.stop();
-      } else {
-        recognition = buildRecognition();
-        try { recognition.start(); } catch (e) { console.warn(e); }
-      }
-    },
-    get isListening() { return isListening; }
-  };
-})();
-
-// Link it to your button
-function toggleVoiceInput() {
-    VoiceEngine.toggleVoiceInput();
 }
+
+function stopVoiceInputSession() {
+    clearTimeout(silenceTimer);
+
+    if (recognition && isListening) {
+        try {
+            recognition.stop();
+        } catch (e) {
+            console.warn("Recognition stop ignored:", e);
+        }
+    }
+
+    stopListeningUI();
+}
+
+function toggleVoiceInput() {
+    if (!isUserLoggedIn) {
+        const modal = document.getElementById("login-warning-modal");
+        modal.style.display = "flex";
+        setTimeout(() => modal.classList.add("active"), 10);
+        return;
+    }
+
+    initSpeechRecognition();
+
+    if (!recognition) return;
+
+    if (isListening) {
+        stopVoiceInputSession();
+        return;
+    }
+
+    try {
+        recognition.start();
+    } catch (e) {
+        console.warn("Voice recognition already active or starting:", e);
+    }
+}
+
+
+
+
 
 
 
