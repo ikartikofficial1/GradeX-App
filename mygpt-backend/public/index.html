@@ -1064,9 +1064,10 @@
             color: #FFF8F0;
         }
 
-       /* 🚀 LIGHT MODE CODE BLOCK */
+        /* 🚀 LIGHT MODE CODE BLOCK */
         .bot-msg pre {
-            background-color: #f6f8fa !important; /* GitHub Light BG */
+            background-color: #f6f8fa !important;
+            /* GitHub Light BG */
             border-radius: 14px;
             padding: 16px;
             margin: 15px 0;
@@ -1078,7 +1079,8 @@
         .bot-msg pre code {
             background-color: transparent !important;
             padding: 0 !important;
-            color: #24292e !important; /* Dark text for light mode */
+            color: #24292e !important;
+            /* Dark text for light mode */
             font-family: 'Consolas', 'Courier New', monospace;
             font-size: 14px;
             line-height: 1.6;
@@ -1087,12 +1089,14 @@
 
         /* 🌑 DARK MODE CODE BLOCK */
         body.dark-theme .bot-msg pre {
-            background-color: #0d0d0d !important; /* Deep dark BG */
+            background-color: #0d0d0d !important;
+            /* Deep dark BG */
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
+
         body.dark-theme .bot-msg pre code {
-            color: #adbac7 !important; /* Light text for dark mode */
+            color: #adbac7 !important;
+            /* Light text for dark mode */
         }
 
         /* No old bridge pseudo-element needed */
@@ -2922,19 +2926,19 @@
             if (isDark) {
                 document.body.classList.add("dark-theme");
                 if (typeof darkModeToggle !== 'undefined' && darkModeToggle) darkModeToggle.checked = true;
-                
+
                 // 🔥 NAYA: Dark mode me dark colorful theme lagao
                 if (codeThemeLink) codeThemeLink.href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css";
             } else {
                 document.body.classList.remove("dark-theme");
                 if (typeof darkModeToggle !== 'undefined' && darkModeToggle) darkModeToggle.checked = false;
-                
+
                 // 🔥 NAYA: Light mode me light colorful theme lagao
                 if (codeThemeLink) codeThemeLink.href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css";
             }
         }
-        
-            function initTheme() {
+
+        function initTheme() {
             let savedTheme = localStorage.getItem("theme") || "system";
             applyTheme(savedTheme);
 
@@ -4628,51 +4632,52 @@
             if (micBtn) micBtn.style.boxShadow = 'none'; // Shadow wapas normal
         }
 
-      // =========================================
-        // 🎙️ ZERO-BUG VOICE RECOGNITION (SENIOR DEV FIX)
+        // =========================================
+        // 🎙️ FINAL STABLE VOICE ENGINE (NO AUTO-RESTART)
+
         // =========================================
         let recognition = null;
         let isListening = false;
         let silenceTimer = null;
-        let forceStop = false; // 🔥 Ye batayega ki mic humne band kiya ya browser ne
         let originalInputText = "";
 
         const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         function initSpeechRecognition() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                console.warn("Speech Recognition API is not supported in this browser.");
-                document.getElementById('mic-btn').style.display = 'none';
                 return;
             }
 
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
 
-            // 🔥 MASTERSTROKE: Mobile par continuous FALSE rakhenge duplication rokne ke liye
-            recognition.continuous = !isMobileDevice; 
+            // 🔥 FIX: Continuous true rakho taaki mic beech me band na ho aur beep na baje
+            recognition.continuous = true;
             recognition.interimResults = true;
             recognition.lang = 'en-IN';
 
             const micBtn = document.getElementById('mic-btn');
             const userInputBox = document.getElementById('user-input');
 
-            // 2-Sec Smart Silence Timer
+            // ⏱️ 3-Sec Silence Timer
             function resetSilenceTimer() {
                 clearTimeout(silenceTimer);
                 silenceTimer = setTimeout(() => {
-                    forceStop = true; // Timer ne mic band kiya hai
-                    if (isListening && recognition) recognition.stop();
-                }, 2000);
+                    console.log("3 seconds of silence, stopping...");
+                    if (recognition) recognition.stop();
+                }, 3000); // 3 seconds
             }
 
-            // 1️⃣ ONSTART LOGIC
             recognition.onstart = function () {
                 isListening = true;
-                forceStop = false;
                 micBtn.classList.add('listening');
                 userInputBox.placeholder = "Listening... Speak now 🎙️";
                 updateInputIcons();
+
+                originalInputText = userInputBox.value.trimEnd();
+
+                // Mic on hote hi timer chalu, taaki agar user bole hi na toh band ho jaye
+                resetSilenceTimer();
 
                 if (!isMobileDevice) {
                     startVoiceVisualizer();
@@ -4681,9 +4686,8 @@
                 }
             };
 
-            // 2️⃣ ONRESULT LOGIC (Ekdum Clean, No Duplication)
             recognition.onresult = function (event) {
-                resetSilenceTimer(); 
+                resetSilenceTimer(); // Har word par timer reset hoga
 
                 let sessionFinals = '';
                 let currentInterim = '';
@@ -4698,44 +4702,27 @@
 
                 let newSpeech = (sessionFinals + currentInterim).trim();
                 let spaceNeeded = (originalInputText.length > 0 && newSpeech.length > 0 && !newSpeech.startsWith(" ")) ? " " : "";
-                
+
                 userInputBox.value = originalInputText + spaceNeeded + newSpeech;
                 autoResizeInput();
             };
 
-            // 3️⃣ ONERROR LOGIC
             recognition.onerror = function (event) {
-                if (event.error === 'not-allowed') {
-                    forceStop = true;
-                    showToast("Microphone permission denied.", "error");
+                if (event.error === 'no-speech') {
+                    resetSilenceTimer();
+                } else {
                     stopListening();
-                } else if (event.error === 'no-speech') {
-                    resetSilenceTimer(); // Ignore background noise silent errors
                 }
             };
 
-            // 4️⃣ ONEND LOGIC (THE MAGIC POLYFILL)
+            // 🔥 FIX: Yahan se wo 'restart' wali sabhi conditions hata di hain
             recognition.onend = function () {
-                // Agar mobile pe saans lene ki wajah se browser ne mic band kiya (lekin 2-sec timer bacha hai)
-                if (isListening && !forceStop && isMobileDevice) {
-                    // Purana text save karo aur engine wapas chalu kardo instantly!
-                    originalInputText = userInputBox.value.trimEnd();
-                    try {
-                        recognition.start();
-                    } catch (e) {
-                        stopListening();
-                    }
-                } else {
-                    // Normal Stop (User ne click kiya ya 2-sec timer pura hua)
-                    stopListening();
-                }
+                stopListening();
             };
         }
 
-        // 🛑 STOP LISTENING CLEANUP
         function stopListening() {
             isListening = false;
-            forceStop = true;
             clearTimeout(silenceTimer);
 
             const micBtn = document.getElementById('mic-btn');
@@ -4747,15 +4734,10 @@
             }
             if (userInputBox) userInputBox.placeholder = "Type or speak here...";
 
-            if (userInputBox && isUserLoggedIn) {
-                userInputBox.focus();
-                userInputBox.selectionStart = userInputBox.selectionEnd = userInputBox.value.length;
-            }
             updateInputIcons();
             stopVoiceVisualizer();
         }
 
-        // 🎤 TOGGLE VOICE INPUT
         function toggleVoiceInput() {
             if (!isUserLoggedIn) {
                 document.getElementById("login-warning-modal").style.display = "flex";
@@ -4766,21 +4748,21 @@
             if (!recognition) initSpeechRecognition();
 
             if (isListening) {
-                forceStop = true; // User ne manual stop kiya
-                recognition.stop();
-                stopListening();
+                recognition.stop(); // Manual stop
             } else {
-                forceStop = false;
-                originalInputText = document.getElementById('user-input').value.trimEnd(); // Starting base set karo
                 try {
                     recognition.start();
                 } catch (e) {
-                    console.log("Voice already started.");
+                    console.log("Voice already running.");
                 }
             }
-        }     
+        }
 
-       
+
+
+
+
+
 
         // =========================================
         // 🎯 JS-POWERED SMART HOVER & LONG-PRESS FOR BUBBLES
